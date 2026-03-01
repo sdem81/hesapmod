@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e3a8a"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#60a5fa"/>
+      <stop offset="100%" style="stop-color:#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- Decorative circles -->
+  <circle cx="950" cy="315" r="280" fill="#3b82f6" opacity="0.08"/>
+  <circle cx="1050" cy="200" r="150" fill="#60a5fa" opacity="0.06"/>
+  <!-- Logo text -->
+  <text x="80" y="290" font-family="system-ui, -apple-system, sans-serif" font-size="100" font-weight="800" fill="url(#textGrad)">Hesap</text>
+  <text x="80" y="390" font-family="system-ui, -apple-system, sans-serif" font-size="100" font-weight="800" fill="#ffffff">Mod</text>
+  <!-- Subtitle -->
+  <text x="82" y="450" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="#94a3b8" font-weight="400">300+ Ücretsiz Online Hesaplama Aracı</text>
+  <!-- Math symbols -->
+  <text x="820" y="260" font-family="system-ui, sans-serif" font-size="120" fill="#3b82f6" opacity="0.25">∑</text>
+  <text x="960" y="380" font-family="system-ui, sans-serif" font-size="100" fill="#60a5fa" opacity="0.20">√</text>
+  <text x="880" y="470" font-family="system-ui, sans-serif" font-size="80" fill="#93c5fd" opacity="0.18">%</text>
+  <!-- Bottom bar -->
+  <rect x="80" y="510" width="120" height="6" rx="3" fill="#3b82f6"/>
+  <text x="80" y="560" font-family="system-ui, sans-serif" font-size="20" fill="#475569">hesapmod.com</text>
+</svg>
