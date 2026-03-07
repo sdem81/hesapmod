@@ -1,5 +1,6 @@
 import { articles } from "@/lib/articles";
 import { calculators } from "@/lib/calculators";
+import { getCategoryPath } from "@/lib/categories";
 import { SITE_EDITOR_NAME, SITE_NAME, SITE_URL } from "@/lib/site";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -135,12 +136,13 @@ export default function RehberPage() {
                         >
                             {/* Üst Kısım */}
                             <div className="flex items-center justify-between mb-3">
-                                <span
-                                    className={`text-xs font-semibold rounded-full px-3 py-1 ${categoryColors[article.category] ?? "bg-muted text-muted-foreground"
+                                <Link
+                                    href={getCategoryPath(article.categorySlug)}
+                                    className={`text-xs font-semibold rounded-full px-3 py-1 transition-opacity hover:opacity-80 ${categoryColors[article.category] ?? "bg-muted text-muted-foreground"
                                         }`}
                                 >
                                     {article.category}
-                                </span>
+                                </Link>
                                 <span className="text-xs text-muted-foreground">
                                     {article.readingTime} dk okuma
                                 </span>

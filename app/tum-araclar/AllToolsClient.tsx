@@ -1,9 +1,11 @@
 "use client";
 
+import { CategoryIcon } from "@/components/category/CategoryIcon";
 import { useDeferredValue, useState } from "react";
 import { mainCategories } from "@/lib/categories";
 import { Search, Calculator, ArrowRight } from "lucide-react";
 import type { CalculatorSearchEntry } from "@/lib/calculator-types";
+import Link from "next/link";
 
 interface Props {
     entries: CalculatorSearchEntry[];
@@ -12,6 +14,12 @@ interface Props {
 export default function AllToolsClient({ entries }: Props) {
     const [query, setQuery] = useState("");
     const deferredQuery = useDeferredValue(query);
+    const categoryEntries = mainCategories
+        .map((category) => ({
+            category,
+            items: entries.filter((entry) => entry.category === category.slug),
+        }))
+        .filter(({ items }) => items.length > 0);
 
     const filtered = deferredQuery.trim()
         ? entries.filter(
@@ -64,31 +72,37 @@ export default function AllToolsClient({ entries }: Props) {
             ) : (
                 /* Category Sections */
                 <div className="space-y-16">
-                    {mainCategories.map((cat) => {
-                        const catCalcs = entries.filter(
-                            (c) => c.category === cat.slug
-                        );
-                        if (catCalcs.length === 0) return null;
+                    {categoryEntries.map(({ category, items }) => {
                         return (
-                            <section key={cat.id}>
+                            <section key={category.id}>
                                 <div className="flex items-center justify-between mb-6">
-                                    <div>
-                                        <h2 className="text-2xl font-bold">
-                                            {cat.name.tr}
-                                        </h2>
-                                        <p className="text-muted-foreground text-sm mt-1">
-                                            {cat.description.tr}
-                                        </p>
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                                            <CategoryIcon icon={category.icon} size={22} />
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-3">
+                                                <h2 className="text-2xl font-bold">
+                                                    {category.name.tr}
+                                                </h2>
+                                                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                                    {items.length} araç
+                                                </span>
+                                            </div>
+                                            <p className="text-muted-foreground text-sm mt-1">
+                                                {category.description.tr}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <a
-                                        href={`/kategori/${cat.slug}`}
+                                    <Link
+                                        href={`/kategori/${category.slug}`}
                                         className="flex items-center gap-1 text-sm text-primary font-semibold hover:gap-2 transition-all whitespace-nowrap"
                                     >
                                         Tümü <ArrowRight size={14} />
-                                    </a>
+                                    </Link>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                                    {catCalcs.map((calc) => (
+                                    {items.map((calc) => (
                                         <CalculatorCard
                                             key={calc.id}
                                             calc={calc}
@@ -106,7 +120,7 @@ export default function AllToolsClient({ entries }: Props) {
 
 function CalculatorCard({ calc }: { calc: CalculatorSearchEntry }) {
     return (
-        <a
+        <Link
             href={`/${calc.category}/${calc.slug}`}
             className="group p-5 rounded-2xl bg-card border hover:border-primary/50 hover-glow hover-lift transition-all animate-fade-in-up"
         >
@@ -123,6 +137,6 @@ function CalculatorCard({ calc }: { calc: CalculatorSearchEntry }) {
                     </p>
                 </div>
             </div>
-        </a>
+        </Link>
     );
 }

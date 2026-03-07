@@ -1,5 +1,6 @@
 import { articles, getArticleBySlug, getAllArticleSlugs } from "@/lib/articles";
 import { calculators } from "@/lib/calculators";
+import { getCategoryPath } from "@/lib/categories";
 import { SITE_EDITOR_NAME, SITE_NAME, SITE_PUBLISHER_LOGO_URL, SITE_URL } from "@/lib/site";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -173,9 +174,12 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
 
                     {/* Meta */}
                     <div className="flex items-center gap-3 mb-4">
-                        <span className="text-xs font-semibold bg-primary/10 text-primary rounded-full px-3 py-1">
+                        <Link
+                            href={getCategoryPath(article.categorySlug)}
+                            className="text-xs font-semibold bg-primary/10 text-primary rounded-full px-3 py-1 transition-colors hover:bg-primary/15"
+                        >
                             {article.category}
-                        </span>
+                        </Link>
                         <span className="text-xs text-muted-foreground">
                             Yayın: {formatDateLabel(article.publishedAt)}
                         </span>

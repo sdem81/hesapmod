@@ -133,6 +133,192 @@ export const financeCalculators: CalculatorConfig[] = [
         }
     },
     {
+        id: "early-loan-closure-fee",
+        slug: "kredi-erken-kapatma-cezasi-hesaplama",
+        category: "finansal-hesaplamalar",
+        name: { tr: "Kredi Erken Kapatma Cezası Hesaplama", en: "Early Loan Closure Fee Calculator" },
+        h1: { tr: "Kredi Erken Kapatma Cezası Hesaplama", en: "Early Loan Closure Fee Calculator" },
+        description: {
+            tr: "Kalan anapara ve vade bilgisine göre konut kredisi erken ödeme tazminatını ve toplam kapama maliyetini hesaplayın.",
+            en: "Calculate the early repayment compensation and total payoff cost for a mortgage based on remaining principal and maturity.",
+        },
+        shortDescription: {
+            tr: "Sabit faizli konut kredilerinde uygulanabilecek %1 veya %2 erken kapama tazminatını saniyeler içinde görün.",
+            en: "Instantly see the 1% or 2% early repayment compensation that may apply to fixed-rate mortgages.",
+        },
+        relatedCalculators: [
+            "kredi-erken-kapama-hesaplama",
+            "konut-kredisi-hesaplama",
+            "kredi-taksit-hesaplama",
+        ],
+        inputs: [
+            {
+                id: "loanType",
+                name: { tr: "Kredi Türü", en: "Loan Type" },
+                type: "select",
+                defaultValue: "housing-fixed",
+                options: [
+                    { label: { tr: "Sabit faizli konut kredisi", en: "Fixed-rate mortgage" }, value: "housing-fixed" },
+                    { label: { tr: "Değişken faizli konut kredisi", en: "Variable-rate mortgage" }, value: "housing-variable" },
+                    { label: { tr: "İhtiyaç / taşıt / ticari kredi", en: "Personal / auto / commercial loan" }, value: "other" },
+                ],
+            },
+            {
+                id: "remainingPrincipal",
+                name: { tr: "Kalan Anapara", en: "Remaining Principal" },
+                type: "number",
+                defaultValue: 350000,
+                suffix: "₺",
+                required: true,
+            },
+            {
+                id: "remainingMonths",
+                name: { tr: "Kalan Vade", en: "Remaining Maturity" },
+                type: "number",
+                defaultValue: 48,
+                suffix: " ay",
+                required: true,
+            },
+        ],
+        results: [
+            {
+                id: "feeRatePercent",
+                label: { tr: "Uygulanan Tazminat Oranı", en: "Applied Compensation Rate" },
+                suffix: "%",
+                decimalPlaces: 0,
+            },
+            {
+                id: "feeAmount",
+                label: { tr: "Erken Kapama Cezası / Tazminatı", en: "Early Closure Fee / Compensation" },
+                suffix: " ₺",
+                decimalPlaces: 2,
+            },
+            {
+                id: "totalPayoff",
+                label: { tr: "Toplam Kapatma Tutarı", en: "Total Payoff Amount" },
+                suffix: " ₺",
+                decimalPlaces: 2,
+            },
+            {
+                id: "legalNote",
+                label: { tr: "Yasal Değerlendirme", en: "Legal Assessment" },
+                type: "text",
+            },
+        ],
+        formula: (v) => {
+            const remainingPrincipal = Math.max(0, parseFloat(v.remainingPrincipal) || 0);
+            const remainingMonths = Math.max(0, parseFloat(v.remainingMonths) || 0);
+            const loanType = v.loanType || "housing-fixed";
+
+            let feeRate = 0;
+            let legalNote = {
+                tr: "Bu araç sabit faizli konut kredileri için yaygın kullanılan erken ödeme tazminatı kuralını esas alır.",
+                en: "This tool applies the common early repayment compensation rule used for fixed-rate mortgages.",
+            };
+
+            if (loanType === "housing-fixed") {
+                feeRate = remainingMonths > 36 ? 0.02 : 0.01;
+                legalNote = remainingMonths > 36
+                    ? {
+                        tr: "Sabit faizli konut kredilerinde kalan vade 36 ayı aşıyorsa araç %2 tazminat üst sınırını uygular.",
+                        en: "For fixed-rate mortgages with more than 36 months remaining, the tool applies the 2% upper-limit compensation rule.",
+                    }
+                    : {
+                        tr: "Sabit faizli konut kredilerinde kalan vade 36 ay veya altındaysa araç %1 tazminat üst sınırını uygular.",
+                        en: "For fixed-rate mortgages with 36 months or less remaining, the tool applies the 1% upper-limit compensation rule.",
+                    };
+            } else if (loanType === "housing-variable") {
+                legalNote = {
+                    tr: "Değişken faizli konut kredilerinde erken ödeme tazminatı uygulanmaması beklenir; bankanızın sözleşmesini yine de kontrol edin.",
+                    en: "Variable-rate mortgages are generally expected not to charge early repayment compensation; still verify your contract with the bank.",
+                };
+            } else {
+                legalNote = {
+                    tr: "İhtiyaç, taşıt ve ticari kredilerde erken ödeme maliyeti ürün şartlarına göre değişebilir; bu araç konut kredisi üst sınırını referans alan hızlı bir ön kontroldür.",
+                    en: "For personal, auto, and commercial loans, early payment costs may vary by product terms; this tool is a quick mortgage-based reference check.",
+                };
+            }
+
+            const feeAmount = remainingPrincipal * feeRate;
+
+            return {
+                feeRatePercent: feeRate * 100,
+                feeAmount,
+                totalPayoff: remainingPrincipal + feeAmount,
+                legalNote,
+            };
+        },
+        seo: {
+            title: {
+                tr: "Kredi Erken Kapatma Cezası Hesaplama 2026",
+                en: "Early Loan Closure Fee Calculator 2026",
+            },
+            metaDescription: {
+                tr: "Konut kredisi erken kapamada uygulanabilecek %1 veya %2 tazminatı ve toplam kapama maliyetini anında hesaplayın.",
+                en: "Instantly calculate the 1% or 2% early repayment compensation and total payoff cost for a mortgage.",
+            },
+            content: {
+                tr: `Kredi erken kapatma cezası hesaplama aracı, özellikle konut kredisi kullanan ve kalan borcunu tek seferde kapatmayı düşünen kullanıcılar için hazırlanmıştır. Uygulamada birçok kişi “erken kapatırsam bankaya ne kadar ek ücret öderim?” sorusuna net cevap arar. Bu araç tam olarak bu noktada devreye girer ve kalan anapara ile vadeyi kullanarak erken ödeme tazminatını hızlı biçimde hesaplar.
+
+Erken kapama cezası ifadesi günlük dilde yaygın kullanılsa da bankacılık metinlerinde çoğu zaman “erken ödeme tazminatı” olarak geçer. Buradaki mantık, bankanın gelecekte tahsil edeceği faiz akışının bir kısmını kaybetmesi nedeniyle sınırlı bir telafi mekanizması uygulanmasıdır. Ancak bu uygulama her kredi türünde aynı değildir. Özellikle sabit faizli konut kredilerinde belirli üst sınırlar öne çıkarken, değişken faizli konut kredilerinde ve bazı diğer ürünlerde farklı sözleşme kuralları devreye girebilir.
+
+Bu sayfa, sabit faizli konut kredilerinde piyasada en çok karşılaşılan ve mevzuat çerçevesinde bilinen üst sınır mantığına göre hesaplama yapar. Kalan vade 36 ayı aşıyorsa kalan anaparanın %2'si, 36 ay ve altındaysa %1'i tazminat olarak öngörülür. Böylece erken kapama kararı öncesinde “faizden kazanacağım tutar ile ödeyeceğim tazminat arasında mantıklı bir denge var mı?” sorusunu daha sağlıklı değerlendirebilirsiniz.
+
+Araç, bankadan gelecek resmi kapama yazısının yerini tutmaz; bunun yerine karar öncesi bir ön kontrol sağlar. Çünkü gerçek kapama tutarı sadece tazminattan oluşmaz. Kapatma gününe kadar işleyen günlük faiz, tahakkuk etmiş sigorta primleri, yeniden yapılandırma olup olmadığı ve bankanın operasyonel süreçleri küçük farklar yaratabilir. Buna rağmen kalan anapara ve vade bilgisiyle yapılan bu hesap, çoğu senaryoda yön gösterici bir ilk çerçeve sunar.
+
+Konut kredisi tarafında erken kapama kararı verirken sadece tazminata bakmak yeterli değildir. Eğer kredi yüksek faizli dönemde çekildiyse ve bugün elinize toplu para geçtiyse, kapama sonrası kurtulacağınız toplam faiz yükü genellikle tazminat maliyetinden çok daha yüksek olabilir. Özellikle vadenin ilk yarısında, taksitlerin önemli kısmı faiz olduğu için erken kapama ciddi tasarruf yaratabilir. Buna karşılık kredinin son dönemlerinde tazminat oranı düşük olsa bile toplam kazanç daha sınırlı olabilir.
+
+Bu nedenle en sağlıklı yaklaşım, kredi erken kapama hesaplama aracı ile bu sayfadaki erken kapama cezası hesabını birlikte kullanmaktır. Önce kalan anapara ve silinecek faiz tutarını görün, ardından burada ödeyeceğiniz tazminatı ekleyin. Böylece net avantajı daha doğru okuyabilirsiniz. Eğer sonuç pozitifse kredi kapama kararı daha anlamlı hale gelir; negatif ya da çok sınırlıysa paranızı başka bir yatırım veya likidite amacıyla tutmanız daha mantıklı olabilir.
+
+İhtiyaç, taşıt veya ticari kredilerde durum ürün bazlı farklılaşabildiği için bu araçta onları ayrı bir seçenek olarak tutuyoruz. Bu seçim yapıldığında araç otomatik olarak sıfır tazminat varsayımı üretir ancak ekranda sözleşme kontrolü gerektiğini özellikle belirtir. Çünkü pratikte refinansman, tahsis masrafı, kampanya şartı veya kurumsal kredi maddeleri nedeniyle maliyet kalemleri değişebilir. Bu nedenle sonuçları nihai resmi belge gibi değil, karar destek çıktısı olarak kullanmak gerekir.
+
+Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken ödeme tazminatı” veya “erken kapamada yüzde kaç ödenir” gibi sorgular yapan kullanıcıların çoğu hızlı, sade ve mobil uyumlu bir araç ister. Bu sayfa tam da bu ihtiyaca odaklanır: gereksiz tablo kalabalığı olmadan kalan anapara, kalan vade ve kredi türünü girersiniz; sistem anında oranı, ceza tutarını ve toplam kapama maliyetini çıkarır. Ardından aşağıdaki formül açıklaması, örnek senaryo ve sık sorulan sorular bölümü ile sonucu nasıl yorumlamanız gerektiğini okuyabilirsiniz.`,
+                en: `This calculator helps users estimate the early repayment compensation that may apply when closing a mortgage before maturity. In Turkish banking practice this cost is commonly called an early closure penalty, although many contracts describe it as early repayment compensation. The tool focuses on remaining principal and remaining maturity to generate a fast planning estimate.`,
+            },
+            faq: [
+                {
+                    q: { tr: "Kredi erken kapatma cezası her kredide uygulanır mı?", en: "Does every loan have an early closure fee?" },
+                    a: {
+                        tr: "Hayır. Bu araç özellikle sabit faizli konut kredilerindeki erken ödeme tazminatı mantığını esas alır. Diğer ürünlerde sözleşme şartları farklı olabilir.",
+                        en: "No. This tool mainly follows the early repayment compensation logic used in fixed-rate mortgages. Other products may have different contract terms.",
+                    },
+                },
+                {
+                    q: { tr: "Kalan vade 36 ayın altına düşünce oran neden azalıyor?", en: "Why does the rate decrease when remaining maturity falls below 36 months?" },
+                    a: {
+                        tr: "Yaygın uygulamada sabit faizli konut kredilerinde 36 ayı aşan kalan vadeler için %2, 36 ay ve altı için %1 üst sınırı esas alınır.",
+                        en: "In common fixed-rate mortgage practice, the upper limit is generally 2% above 36 months and 1% at or below 36 months remaining.",
+                    },
+                },
+                {
+                    q: { tr: "Erken kapama mı, ara ödeme mi daha mantıklı?", en: "Is full closure or partial prepayment better?" },
+                    a: {
+                        tr: "Elinizdeki nakdin büyüklüğüne göre değişir. Tam kapama faizi tamamen bitirir; ara ödeme ise vade veya taksit yükünü azaltarak daha esnek bir çözüm sunabilir.",
+                        en: "It depends on your available cash. Full closure ends the interest burden entirely, while partial prepayment may reduce maturity or installments with more flexibility.",
+                    },
+                },
+            ],
+            richContent: {
+                howItWorks: {
+                    tr: "Araç üç girdiyi kullanır: kredi türü, kalan anapara ve kalan vade. Sabit faizli konut kredisi seçildiğinde sistem önce kalan vadenin 36 ay üstünde mi altında mı olduğuna bakar. Buna göre tazminat oranını %2 veya %1 olarak belirler. Ardından bu oranı kalan anaparaya uygular ve ortaya çıkan erken ödeme tazminatını toplam kapama tutarına ekler. Değişken faizli konut kredisi ya da diğer kredi türleri seçildiğinde araç kullanıcıyı sözleşme kontrolü konusunda uyararak daha temkinli bir çıktı üretir.",
+                    en: "The tool uses three inputs: loan type, remaining principal, and remaining maturity. For fixed-rate mortgages, it checks whether remaining maturity is above or below 36 months, then applies 2% or 1% accordingly.",
+                },
+                formulaText: {
+                    tr: "Erken Ödeme Tazminatı = Kalan Anapara x Tazminat Oranı. Sabit faizli konut kredisinde kalan vade > 36 ay ise oran %2, kalan vade <= 36 ay ise oran %1 alınır. Toplam Kapatma Tutarı = Kalan Anapara + Erken Ödeme Tazminatı.",
+                    en: "Early Repayment Compensation = Remaining Principal x Compensation Rate. For fixed-rate mortgages, the rate is 2% if remaining maturity exceeds 36 months and 1% if it is 36 months or less.",
+                },
+                exampleCalculation: {
+                    tr: "Örnek senaryo: Kalan anapara 500.000 TL ve kalan vade 48 ay olan sabit faizli bir konut krediniz olsun. Araç, 48 ay 36 ayın üzerinde olduğu için oranı %2 kabul eder. Ceza tutarı 500.000 x 0,02 = 10.000 TL olur. Buna göre yalnızca tazminat kaynaklı ekstra maliyet 10.000 TL'dir ve toplam kapama tutarı 510.000 TL olarak görünür. Eğer aynı kredi için kalan vade 24 ay olsaydı oran %1'e düşer ve ceza 5.000 TL olarak hesaplanırdı.",
+                    en: "Example: if your remaining principal is 500,000 TL and 48 months remain on a fixed-rate mortgage, the calculator applies 2%. The fee becomes 10,000 TL and the total payoff amount is shown as 510,000 TL.",
+                },
+                miniGuide: {
+                    tr: "<ul><li><b>Kararı net kazanç üzerinden verin:</b> Sadece ceza tutarına değil, kapanacak toplam faiz yüküne de bakın.</li><li><b>Banka kapama yazısı isteyin:</b> Günlük faiz ve operasyon farkları nedeniyle resmi rakam birkaç yüz lira oynayabilir.</li><li><b>Ara ödeme seçeneğini değerlendirin:</b> Tam kapama yerine kısmi ödeme, hem nakit dengenizi koruyup hem de faiz yükünü azaltabilir.</li><li><b>Sözleşme maddesini kontrol edin:</b> Ticari ve özel kampanyalı kredilerde ek şartlar bulunabilir.</li></ul>",
+                    en: "Compare the fee with the total interest you will avoid, request an official payoff letter from the bank, and consider partial prepayment if full closure is not ideal.",
+                },
+            },
+        },
+    },
+    {
         id: "vat-kdv",
         slug: "kdv-hesaplama",
         category: "finansal-hesaplamalar",
@@ -13918,12 +14104,20 @@ const CALCULATOR_SLUG_ALIASES: Record<string, string> = {
     "cc-minimum-payment": "kredi-karti-asgari-odeme",
     "kredi-karti-asgari-odeme-hesaplama": "kredi-karti-asgari-odeme",
     "kredi-hesaplama": "kredi-taksit-hesaplama",
+    "is-yeri-kredisi-hesaplama": "is-yeri-ve-ticari-kredi-hesaplama",
+    "kira-artis-orani-hesaplama": "kira-artis-hesaplama",
     "yillik-maliyet-orani-hesaplama": "kredi-yillik-maliyet-orani-hesaplama",
     "loan-allocation-fee": "kredi-dosya-masrafi-hesaplama",
     "kus-ak-hesaplama": "kusak-hesaplama",
     "kombinasyon-permitasyon-hesaplama": "kombinasyon-permutasyon-faktoriyel",
     "takdir-tessekur-hesaplama": "takdir-tesekkur-hesaplama",
     "faiz-hesaplama": "basit-faiz-hesaplama",
+    "gecmis-altin-fiyatlari-hesaplama": "gecmis-altin-fiyatlari",
+    "gecmis-doviz-kurlari-hesaplama": "gecmis-doviz-kurlari",
+    "ic-ve-dis-iskonto-hesaplama": "iskonto-hesaplama",
+    "parasal-deger-hesaplama": "parasal-deger-zaman-hesaplama",
+    "vadeli-islem-fiyati-hesaplama": "vadeli-islem-fiyat-hesaplama",
+    "vadeli-mevduat-faizi-hesaplama": "mevduat-faiz-hesaplama",
     "yaş-hesaplama": "yas-hesaplama-gun-ay-yil",
 };
 

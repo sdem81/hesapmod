@@ -1,3 +1,4 @@
+import { CategoryIcon } from "@/components/category/CategoryIcon";
 import { mainCategories } from "@/lib/categories";
 import { calculatorCount, calculatorSearchIndex } from "@/lib/calculators";
 import { Metadata } from "next";
@@ -6,7 +7,7 @@ import Link from "next/link";
 import Script from "next/script";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import HomeSEOContent from "@/components/home/HomeSEOContent";
-import { ArrowRight, BadgeDollarSign, HeartPulse, GraduationCap, Calculator, Sparkles, Clock, Car, Banknote, ShieldCheck, Zap, BarChart3, BriefcaseBusiness } from "lucide-react";
+import { ArrowRight, BadgeDollarSign, HeartPulse, GraduationCap, Calculator, Clock, Banknote, ShieldCheck, Zap, BarChart3 } from "lucide-react";
 
 export const metadata: Metadata = {
     title: "HesapMod | Ücretsiz Online Hesaplama Araçları",
@@ -15,6 +16,14 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
+    const categoryCounts = calculatorSearchIndex.reduce<Record<string, number>>(
+        (counts, entry) => {
+            counts[entry.category] = (counts[entry.category] ?? 0) + 1;
+            return counts;
+        },
+        {}
+    );
+
     const popularTools = [
         { href: "/maas-ve-vergi/maas-hesaplama", name: "Net Maaş Hesaplama", desc: "Brüt maaşınızdan yasal kesintileri (SGK, Vergi) anında hesaplayın.", icon: <Banknote className="text-emerald-500 mb-4" size={28} /> },
         { href: "/finansal-hesaplamalar/kredi-taksit-hesaplama", name: "Kredi Faiz Hesaplama", desc: "Aylık taksit tutarı ve toplam geri ödeme planı oluşturun.", icon: <BadgeDollarSign className="text-blue-500 mb-4" size={28} /> },
@@ -116,18 +125,15 @@ export default function Home() {
                     {mainCategories.map((cat) => (
                         <Link key={cat.id} href={`/kategori/${cat.slug}`} className="flex items-center gap-4 p-5 rounded-2xl bg-white border border-slate-200 hover:border-blue-200 shadow-sm hover:shadow-md transition-all duration-300 group">
                             <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                                {cat.icon === 'Banknote' && <Banknote size={24} />}
-                                {cat.icon === 'Car' && <Car size={24} />}
-                                {cat.icon === 'BadgeDollarSign' && <BadgeDollarSign size={24} />}
-                                {cat.icon === 'GraduationCap' && <GraduationCap size={24} />}
-                                {cat.icon === 'Calculator' && <Calculator size={24} />}
-                                {cat.icon === 'Clock' && <Clock size={24} />}
-                                {cat.icon === 'HeartPulse' && <HeartPulse size={24} />}
-                                {cat.icon === 'Sparkles' && <Sparkles size={24} />}
-                                {cat.icon === 'BriefcaseBusiness' && <BriefcaseBusiness size={24} />}
+                                <CategoryIcon icon={cat.icon} size={24} />
                             </div>
-                            <div>
-                                <h3 className="text-lg font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">{cat.name.tr}</h3>
+                            <div className="min-w-0 flex-1">
+                                <div className="flex items-center justify-between gap-3">
+                                    <h3 className="text-lg font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">{cat.name.tr}</h3>
+                                    <span className="text-xs font-semibold text-slate-500 whitespace-nowrap">
+                                        {categoryCounts[cat.slug] ?? 0} araç
+                                    </span>
+                                </div>
                                 <p className="text-xs text-slate-500 mt-1 line-clamp-1">{cat.description.tr}</p>
                             </div>
                         </Link>

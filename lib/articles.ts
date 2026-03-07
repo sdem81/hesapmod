@@ -3,6 +3,7 @@ export interface Article {
   title: string;
   description: string;
   category: string;
+  categorySlug: string;
   publishedAt: string;
   updatedAt?: string;
   readingTime: number; // dakika
@@ -18,6 +19,7 @@ export const articles: Article[] = [
     description:
       "Kıdem tazminatı nedir, kimler alabilir, 2026 tavanı ne kadar? Adım adım formül ve gerçek örneklerle kıdem tazminatınızı hesaplayın.",
     category: "Maaş & Vergi",
+    categorySlug: "maas-ve-vergi",
     publishedAt: "2026-03-03",
     updatedAt: "2026-03-07",
     readingTime: 7,
@@ -51,6 +53,7 @@ export const articles: Article[] = [
     description:
       "Brüt maaşınızdan ne kadar kesinti yapıldığını hiç merak ettiniz mi? SGK, işsizlik sigortası, gelir vergisi ve damga vergisi kalemlerini bu rehberle öğrenin.",
     category: "Maaş & Vergi",
+    categorySlug: "maas-ve-vergi",
     publishedAt: "2026-03-03",
     updatedAt: "2026-03-07",
     readingTime: 6,
@@ -89,6 +92,7 @@ export const articles: Article[] = [
     description:
       "İşsizlik ödeneği başvurusu için gerekli şartlar, ne kadar alırsınız ve kaç gün devam eder? 2026 güncel bilgileri ve hesaplama aracı.",
     category: "Maaş & Vergi",
+    categorySlug: "maas-ve-vergi",
     publishedAt: "2026-03-03",
     updatedAt: "2026-03-07",
     readingTime: 5,
@@ -125,6 +129,7 @@ export const articles: Article[] = [
     description:
       "İhbar süreleri kaç haftadır? İşçi mi öder, işveren mi? İhbar tazminatı hesaplama formülü ve 2026 güncel örnek tablosu.",
     category: "Maaş & Vergi",
+    categorySlug: "maas-ve-vergi",
     publishedAt: "2026-03-03",
     updatedAt: "2026-03-07",
     readingTime: 5,
@@ -159,6 +164,7 @@ export const articles: Article[] = [
     description:
       "Kaç yıl çalıştığınıza göre yıllık izin hakkınız kaç gün? Kullanılmayan izinler nasıl ücrete dönüşür? 2026 eksiksiz rehber.",
     category: "Maaş & Vergi",
+    categorySlug: "maas-ve-vergi",
     publishedAt: "2026-03-03",
     updatedAt: "2026-03-07",
     readingTime: 5,
@@ -195,4 +201,8 @@ export function getArticleBySlug(slug: string): Article | undefined {
 
 export function getAllArticleSlugs(): string[] {
   return articles.map((a) => a.slug);
+}
+
+export function getArticlesByCategorySlug(categorySlug: string): Article[] {
+  return articles.filter((article) => article.categorySlug === categorySlug);
 }

@@ -681,6 +681,49 @@ export const formulas: CalculatorRuntimeMap = {
                 standardRemaining: totalRemainingWithInterest
             };
         },
+    "kredi-erken-kapatma-cezasi-hesaplama": (v) => {
+            const remainingPrincipal = Math.max(0, parseFloat(v.remainingPrincipal) || 0);
+            const remainingMonths = Math.max(0, parseFloat(v.remainingMonths) || 0);
+            const loanType = v.loanType || "housing-fixed";
+
+            let feeRate = 0;
+            let legalNote = {
+                tr: "Bu araç sabit faizli konut kredileri için yaygın kullanılan erken ödeme tazminatı kuralını esas alır.",
+                en: "This tool applies the common early repayment compensation rule used for fixed-rate mortgages.",
+            };
+
+            if (loanType === "housing-fixed") {
+                feeRate = remainingMonths > 36 ? 0.02 : 0.01;
+                legalNote = remainingMonths > 36
+                    ? {
+                        tr: "Sabit faizli konut kredilerinde kalan vade 36 ayı aşıyorsa araç %2 tazminat üst sınırını uygular.",
+                        en: "For fixed-rate mortgages with more than 36 months remaining, the tool applies the 2% upper-limit compensation rule.",
+                    }
+                    : {
+                        tr: "Sabit faizli konut kredilerinde kalan vade 36 ay veya altındaysa araç %1 tazminat üst sınırını uygular.",
+                        en: "For fixed-rate mortgages with 36 months or less remaining, the tool applies the 1% upper-limit compensation rule.",
+                    };
+            } else if (loanType === "housing-variable") {
+                legalNote = {
+                    tr: "Değişken faizli konut kredilerinde erken ödeme tazminatı uygulanmaması beklenir; bankanızın sözleşmesini yine de kontrol edin.",
+                    en: "Variable-rate mortgages are generally expected not to charge early repayment compensation; still verify your contract with the bank.",
+                };
+            } else {
+                legalNote = {
+                    tr: "İhtiyaç, taşıt ve ticari kredilerde erken ödeme maliyeti ürün şartlarına göre değişebilir; bu araç konut kredisi üst sınırını referans alan hızlı bir ön kontroldür.",
+                    en: "For personal, auto, and commercial loans, early payment costs may vary by product terms; this tool is a quick mortgage-based reference check.",
+                };
+            }
+
+            const feeAmount = remainingPrincipal * feeRate;
+
+            return {
+                feeRatePercent: feeRate * 100,
+                feeAmount,
+                totalPayoff: remainingPrincipal + feeAmount,
+                legalNote,
+            };
+        },
     "kdv-hesaplama": (v) => {
             const amount = parseFloat(v.amount) || 0;
             const rate = parseFloat(v.rate) / 100;
