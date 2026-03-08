@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "mobile:android": "powershell -ExecutionPolicy Bypass -File ./mobile/scripts/start-android-simulator.ps1 -Clear",
+    "mobile:android:no-clear": "powershell -ExecutionPolicy Bypass -File ./mobile/scripts/start-android-simulator.ps1",
     "analyze:coverage": "tsx scripts/analyze-calculator-coverage.ts",
     "export:index-priority": "tsx scripts/generate-index-priority.ts",
     "generate:runtimes": "tsx scripts/generate-runtime-modules.ts",

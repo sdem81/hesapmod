@@ -1,4 +1,5 @@
 import type { CalculatorRuntimeMap } from "@/lib/calculator-types";
+import { calculateBmi, calculateLoanPayment, calculateVatBreakdown, normalizeLoanType } from "@/mobile/src/sharedCalculations";
 
 export const formulas: CalculatorRuntimeMap = {
     "ideal-kilo-hesaplama": (v) => {
@@ -70,14 +71,18 @@ export const formulas: CalculatorRuntimeMap = {
             };
         },
     "vucut-kitle-indeksi-hesaplama": (v) => {
-            const w = parseFloat(v.weight);
-            const h = parseFloat(v.height) / 100;
-            const bmi = w / (h * h);
-            let status = "Normal";
-            if (bmi < 18.5) status = "Zayıf";
-            else if (bmi < 25) status = "Normal";
-            else if (bmi < 30) status = "Fazla Kilolu";
-            else status = "Obez";
+            const { bmi, category } = calculateBmi({
+                weightKg: v.weight,
+                heightCm: v.height,
+            });
+            const statusMap = {
+                missing: "Boy bilgisi girildiğinde sonuç görünür.",
+                underweight: "Zayıf",
+                normal: "Normal",
+                overweight: "Fazla Kilolu",
+                obese: "Obez",
+            } as const;
+            const status = statusMap[category];
             return { bmi, status };
         },
     "gunluk-kalori-ihtiyaci": (v) => {

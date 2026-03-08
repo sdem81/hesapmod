@@ -1,14 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
+import { calculateVatBreakdown } from '@/mobile/src/sharedCalculations';
 
 export function QuickCalculator() {
     const [amount, setAmount] = useState<string>('1000');
     const [rate, setRate] = useState<number>(20);
 
-    const numAmount = parseFloat(amount || '0');
-    const vatAmount = numAmount * (rate / 100);
-    const totalAmount = numAmount + vatAmount;
+    const { vatAmount, totalAmount } = calculateVatBreakdown({
+        amount,
+        ratePercent: rate,
+        type: 'excluded',
+    });
 
     return (
         <div className="w-full max-w-[640px] mx-auto mt-12 mb-8 bg-card/60 backdrop-blur-xl border border-border/60 rounded-2xl shadow-2xl overflow-hidden animate-[fade-in-up_0.9s_0.9s_both]">

@@ -88,6 +88,26 @@ const helperImports = [
         name: "calculateYksScores",
         statement: 'import { calculateYksScores } from "@/lib/yks";',
     },
+    {
+        name: "calculateVatBreakdown",
+        statement:
+            'import { calculateBmi, calculateLoanPayment, calculateVatBreakdown, normalizeLoanType } from "@/mobile/src/sharedCalculations";',
+    },
+    {
+        name: "calculateLoanPayment",
+        statement:
+            'import { calculateBmi, calculateLoanPayment, calculateVatBreakdown, normalizeLoanType } from "@/mobile/src/sharedCalculations";',
+    },
+    {
+        name: "calculateBmi",
+        statement:
+            'import { calculateBmi, calculateLoanPayment, calculateVatBreakdown, normalizeLoanType } from "@/mobile/src/sharedCalculations";',
+    },
+    {
+        name: "normalizeLoanType",
+        statement:
+            'import { calculateBmi, calculateLoanPayment, calculateVatBreakdown, normalizeLoanType } from "@/mobile/src/sharedCalculations";',
+    },
 ];
 
 const arrayOrder = [

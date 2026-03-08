@@ -3,6 +3,12 @@ import { calculateDividendPortfolio } from "./dividendPortfolio";
 import { calculateDebtPayoff } from "./debtPayoff";
 import { calculateLoanComparison } from "./loanComparison";
 import { calculateRentVsBuy } from "./rentVsBuy";
+import {
+    calculateBmi,
+    calculateLoanPayment,
+    calculateVatBreakdown,
+    normalizeLoanType,
+} from "../mobile/src/sharedCalculations";
 import { calculateYksScores, yksYearConfigs } from "./yks";
 import { normalizeCategorySlug } from "./categories";
 
@@ -350,32 +356,32 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
             { id: "chart", label: { tr: "Fiyat Dağılımı", en: "Price Distribution" }, type: "pieChart" }
         ],
         formula: (v) => {
-            const amount = parseFloat(v.amount) || 0;
-            const rate = parseFloat(v.rate) / 100;
+            const { baseAmount, vatAmount, totalAmount } = calculateVatBreakdown({
+                amount: v.amount,
+                ratePercent: v.rate,
+                type: v.type,
+            });
             if (v.type === "excluded") {
-                const vat = amount * rate;
                 return {
-                    baseAmount: amount,
-                    vatAmount: vat,
-                    totalAmount: amount + vat,
+                    baseAmount,
+                    vatAmount,
+                    totalAmount,
                     chart: {
                         segments: [
-                            { label: { tr: "Matrah", en: "Base Amount" }, value: amount, colorClass: "bg-white", colorHex: "#ffffff" },
-                            { label: { tr: "KDV Tutarı", en: "VAT Amount" }, value: vat, colorClass: "bg-destructive", colorHex: "hsl(var(--destructive))" }
+                            { label: { tr: "Matrah", en: "Base Amount" }, value: baseAmount, colorClass: "bg-white", colorHex: "#ffffff" },
+                            { label: { tr: "KDV Tutarı", en: "VAT Amount" }, value: vatAmount, colorClass: "bg-destructive", colorHex: "hsl(var(--destructive))" }
                         ]
                     }
                 };
             } else {
-                const base = amount / (1 + rate);
-                const vat = amount - base;
                 return {
-                    baseAmount: base,
-                    vatAmount: vat,
-                    totalAmount: amount,
+                    baseAmount,
+                    vatAmount,
+                    totalAmount,
                     chart: {
                         segments: [
-                            { label: { tr: "Matrah", en: "Base Amount" }, value: base, colorClass: "bg-white", colorHex: "#ffffff" },
-                            { label: { tr: "KDV Tutarı", en: "VAT Amount" }, value: vat, colorClass: "bg-destructive", colorHex: "hsl(var(--destructive))" }
+                            { label: { tr: "Matrah", en: "Base Amount" }, value: baseAmount, colorClass: "bg-white", colorHex: "#ffffff" },
+                            { label: { tr: "KDV Tutarı", en: "VAT Amount" }, value: vatAmount, colorClass: "bg-destructive", colorHex: "hsl(var(--destructive))" }
                         ]
                     }
                 };
@@ -497,10 +503,14 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
             { id: "amortizationSchedule", label: { tr: `Ödeme Planı`, en: `Amortization Schedule` }, type: "schedule" },
         ],
         formula: (v) => {
-            const p = parseFloat(v.amount) || 0;
-            const r = parseFloat(v.rate) / 100;
-            const n = parseFloat(v.months) || 1;
-            const type = v.loanType || "tuketici";
+            const type = normalizeLoanType(v.loanType);
+            const { monthlyPayment, totalPayment, totalInterest, amortizationSchedule } = calculateLoanPayment({
+                principal: v.amount,
+                monthlyRatePercent: v.rate,
+                termMonths: v.months,
+            });
+            const principalAmount = Math.max(0, Number.parseFloat(String(v.amount ?? 0).replace(",", ".")) || 0);
+            const numericRate = Math.max(0, Number.parseFloat(String(v.rate ?? 0).replace(",", ".")) || 0);
 
             // Generate dummy but realistic rates based on loan type
             let bankRatesList: any[] = [];
@@ -527,52 +537,24 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
                 ];
             }
 
-            if (r === 0) {
-                const arr = Array.from({ length: n }, (_, i) => ({
-                    month: i + 1,
-                    payment: p / n,
-                    principal: p / n,
-                    interest: 0,
-                    remaining: Math.max(0, p - (i + 1) * (p / n))
-                }));
+            if (numericRate === 0) {
                 return {
-                    monthly: p / n, totalPayment: p, totalInterest: 0, bankRatesList,
+                    monthly: monthlyPayment, totalPayment, totalInterest, bankRatesList,
                     chart: {
                         segments: [
-                            { label: { tr: "Anapara", en: "Principal" }, value: p, colorClass: "bg-white", colorHex: "#ffffff" },
+                            { label: { tr: "Anapara", en: "Principal" }, value: principalAmount, colorClass: "bg-white", colorHex: "#ffffff" },
                             { label: { tr: "Toplam Faiz", en: "Total Interest" }, value: 0, colorClass: "bg-destructive", colorHex: "hsl(var(--destructive))" }
                         ]
                     },
-                    amortizationSchedule: arr
+                    amortizationSchedule
                 };
             }
 
-            const monthly = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-            const totalPayment = monthly * n;
-            const totalInterest = totalPayment - p;
-
-            // Generate Amortization Schedule
-            const amortizationSchedule = [];
-            let currentBalance = p;
-
-            for (let i = 1; i <= n; i++) {
-                const interestPayment = currentBalance * r;
-                const principalPayment = monthly - interestPayment;
-                currentBalance -= principalPayment;
-                amortizationSchedule.push({
-                    month: i,
-                    payment: monthly,
-                    principal: principalPayment,
-                    interest: interestPayment,
-                    remaining: Math.max(0, currentBalance)
-                });
-            }
-
             return {
-                monthly, totalPayment, totalInterest, bankRatesList,
+                monthly: monthlyPayment, totalPayment, totalInterest, bankRatesList,
                 chart: {
                     segments: [
-                        { label: { tr: "Anapara", en: "Principal" }, value: p, colorClass: "bg-white", colorHex: "#ffffff" },
+                        { label: { tr: "Anapara", en: "Principal" }, value: principalAmount, colorClass: "bg-white", colorHex: "#ffffff" },
                         { label: { tr: "Toplam Faiz", en: "Total Interest" }, value: totalInterest, colorClass: "bg-destructive", colorHex: "hsl(var(--destructive))" }
                     ]
                 },
@@ -2207,14 +2189,18 @@ export const healthCalculators: CalculatorConfig[] = [
             { id: "status", label: { tr: `Durum`, en: `Status` } },
         ],
         formula: (v) => {
-            const w = parseFloat(v.weight);
-            const h = parseFloat(v.height) / 100;
-            const bmi = w / (h * h);
-            let status = "Normal";
-            if (bmi < 18.5) status = "Zayıf";
-            else if (bmi < 25) status = "Normal";
-            else if (bmi < 30) status = "Fazla Kilolu";
-            else status = "Obez";
+            const { bmi, category } = calculateBmi({
+                weightKg: v.weight,
+                heightCm: v.height,
+            });
+            const statusMap = {
+                missing: "Boy bilgisi girildiğinde sonuç görünür.",
+                underweight: "Zayıf",
+                normal: "Normal",
+                overweight: "Fazla Kilolu",
+                obese: "Obez",
+            } as const;
+            const status = statusMap[category];
             return { bmi, status };
         },
         seo: {
