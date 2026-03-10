@@ -329,9 +329,9 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
         slug: "kdv-hesaplama",
         category: "finansal-hesaplamalar",
         name: { tr: `KDV Hesaplama`, en: `VAT Calculator` },
-        h1: { tr: `Online KDV Hesaplama Aracı — Dahil/Hariç, %1 %10 %20`, en: `Online VAT Calculator — Inclusive & Exclusive` },
-        description: { tr: `KDV dahil ve hariç tutarı, matrahı ve vergi yükünü hızlıca hesaplayın.`, en: `Calculate VAT-inclusive and VAT-exclusive amounts, base price, and tax burden quickly.` },
-        shortDescription: { tr: `KDV dahil ya da hariç fiyatı saniyeler içinde hesaplayın; %1, %10 ve %20 oranlarında matrah ile vergi tutarını ayrı görün.`, en: `Calculate VAT-inclusive or exclusive prices instantly and see the base amount and tax separately for 1%, 10%, and 20% rates.` },
+        h1: { tr: `KDV Hesaplama Aracı 2026 — KDV Dahil, Hariç ve Tevkifatlı Tutar`, en: `Online VAT Calculator — Inclusive & Exclusive` },
+        description: { tr: `Güncel %1, %10 ve %20 KDV oranları ile saniyeler içinde matrah ve KDV tutarını ayrıştırın veya fiyata dahil edin.`, en: `Calculate VAT-inclusive and VAT-exclusive amounts, base price, and tax burden quickly.` },
+        shortDescription: { tr: `KDV dahil veya hariç tutarı anında hesaplayın; %1, %10 ve %20 güncel oranlar ile fatura matrahınızı netleştirin.`, en: `Calculate VAT-inclusive or exclusive prices instantly and see the base amount and tax separately for 1%, 10%, and 20% rates.` },
         relatedCalculators: ["kar-zarar-marji", "basit-faiz-hesaplama", "yuzde-hesaplama"],
         inputs: [
             { id: "amount", name: { tr: `Tutar`, en: `Amount` }, type: "number", defaultValue: 1000, suffix: "₺", required: true },
@@ -388,28 +388,30 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
             }
         },
         seo: {
-            title: { tr: `KDV Hesaplama 2026 — KDV Dahil ve Hariç Tutar`, en: `VAT Calculator 2026 — Inclusive and Exclusive Amounts` },
-            metaDescription: { tr: `KDV dahil veya hariç fiyat girerek matrahı, KDV tutarını ve toplam bedeli %1, %10 ve %20 oranlarıyla anında hesaplayın.`, en: `Enter a VAT-inclusive or VAT-exclusive price and instantly calculate the base amount, VAT amount, and total using 1%, 10%, and 20% rates.` },
-            content: { tr: `KDV (Katma Değer Vergisi), mal ve hizmet teslimlerinde fiyatın üzerine eklenen dolaylı bir vergidir. Pratikte en sık ihtiyaç duyulan işlem, KDV dahil bir bedelin içindeki matrahı ayırmak veya vergisiz fiyat üzerine doğru KDV oranını eklemektir. Bu araç, %1, %10 ve %20 oranlarında hem fatura kontrolü hem teklif hazırlığı hem de e-ticaret fiyatlandırması için matrah, vergi tutarı ve toplam bedeli aynı ekranda gösterir.`, en: `VAT is an indirect tax added to the sale price of goods and services. In practice, the most common need is either separating the base amount from a VAT-inclusive total or adding the correct VAT rate to a tax-exclusive price. This tool shows the base amount, tax amount, and total together for 1%, 10%, and 20% scenarios.` },
+            title: { tr: `KDV Hesaplama 2026 | KDV Dahil ve Hariç Fiyat (Yüzde 1, 10, 20)`, en: `VAT Calculator 2026 — Inclusive and Exclusive Amounts` },
+            metaDescription: { tr: `Güncel %20, %10 ve %1 oranlarına göre KDV dahil fiyat içinden matrahı bulun veya hariç fiyata KDV ekleyin. Muhasebeciler ve e-ticaret için pratik arayüz.`, en: `Enter a VAT-inclusive or VAT-exclusive price and instantly calculate the base amount, VAT amount, and total using 1%, 10%, and 20% rates.` },
+            content: { tr: `<h2>KDV Hesaplama Mantığı ve Güncel Oranlar (2026)</h2><p>Katma Değer Vergisi (KDV), Türkiye'deki ticari teslim ve hizmetlerin bedeli üzerinden kesilen dolaylı bir tüketim vergisidir. Ticari işletmelerin ve e-ticaret satıcılarının KDV matrah hesaplamasını sıfır hatayla yapması, kârlılık oranlarını saptamada kritik rol oynar; zira KDV işletmenin geliri değil, devlete ödenecek bir emanet paradır. 2026 yılında yürürlükte olan temel oranlar <strong>%1, %10 ve %20</strong>'dir (Mal gruplarına göre farklılık gösterir).</p><h2>Fatura ve Teklif Keserken Yapılan Hatalar</h2><p>Bir ürünün son satış fiyatını belirlerken maliyetin üzerine sadece <em>"(+Kâr Marjı) + (%20 KDV)"</em> eklemek, pazar yeri maliyetlerini gözden kaçırmaya sebep olabilir. Benzer şekilde, faturası gelmiş <strong>KDV dahil</strong> bir harcamanın <strong>vergisiz matrahını (çıplak bedelini)</strong> bulmak için tutardan düz %20 çıkarmak en sık rastlanan kritik matematiksel hatadır. (Örn: 1.200 TL'lik KDV dahil fişin vergisiz matrahı 1.200 - 240 = 960 TL değil, 1.200 / 1.20 = 1.000 TL'dir).</p>`, en: `VAT is an indirect tax added to the sale price of goods and services. In practice, the most common need is either separating the base amount from a VAT-inclusive total or adding the correct VAT rate to a tax-exclusive price. This tool shows the base amount, tax amount, and total together for 1%, 10%, and 20% scenarios.` },
             faq: [
-                { q: { tr: `KDV hesaplaması nasıl yapılır?`, en: `How to calculate VAT?` }, a: { tr: `KDV dahil fiyattan hariç fiyata geçmek için [Tutar / (1 + KDV Oranı)] formülü kullanılır.`, en: `To calculate VAT excluded price use [Total / (1 + VAT Rate)].` } },
-                { q: { tr: `%20 KDV nasıl hesaplanır?`, en: `How to calculate 20% VAT?` }, a: { tr: `Bir tutarın %20 KDV hariç halini bulmak için tutarı 1,20'ye bölmelisiniz.`, en: `To find the 20% VAT excluded amount, divide the total by 1.20.` } }
+                { q: { tr: `KDV dahil fiyattan KDV nasıl hesaplanır (Pratik Formül)?`, en: `How to calculate VAT from inclusive price?` }, a: { tr: `KDV dahil toplam bedeli, uygulanan vergi oranına göre [1 + (Oran/100)] şeklindeki bölene bölmelisiniz. Yani %20 KDV'li bir rakamın matrahını (vergisiz tutarını) bulmak için tutarı 1.20'ye bölmeli; %10 için 1.10'a, %1 için 1.01'e bölmelisiniz. Çıkan matrahı toplam tutardan çıkardığınızda saf KDV tutarını bulursunuz.`, en: `To calculate VAT excluded price use [Total / (1 + VAT Rate)].` } },
+                { q: { tr: `Matrah nedir ve satış fiyatıyla farkı nedir?`, en: `What is the tax base (matrah)?` }, a: { tr: `Matrah, bir verginin hesaplanmasına temel oluşturan asıl (çıplak) değerdir. Faturadaki 'mal hizmet toplam tutarı' matrahtır. Bu matrahın üzerine KDV eklendiğinde ortaya çıkan tutar ise tahsilatı yapılacak satış fiyatı (KDV Dahil/Genel Toplam) olur. İşletmeler cirosunu matrah üzerinden ölçer.`, en: `The tax base is the original value before tax is added. Sales revenue is measured on this base amount, not the final inclusive price.` } },
+                { q: { tr: `Dışarıdan kesilen KDV tevkifatı ne anlama gelir?`, en: `What is KDV withholding?` }, a: { tr: `Tevkifat (kesinti), devlete ödenmesi gereken KDV'nin belli bir oranının (%50'si, %90'ı vb.) satıcıya değil, alıcı tarafından doğrudan devlete ödenmesidir. KDV Hesaplayıcı üzerinden önce KDV tutarını bulmalı, ardından kendi sektörünüze ait tevkifat oranını (örn: 5/10) bu tutara uygulamalısınız.`, en: `Withholding implies the buyer pays a portion of the VAT directly to the state instead of the vendor.` } },
+                { q: { tr: `Yüzde 20 KDV hesaplaması nasıl yapılır?`, en: `How to calculate 20% VAT?` }, a: { tr: `KDV Hariç 1.000 TL'ye %20 uygulanacaksa: 1000 x 0.20 = 200 TL vergi doğar. Toplam fatura 1.200 TL olur. Tersinden; faturada 1.200 TL yazıyorsa bunun ne kadarı vergi diye bakıyorsak: 1200 / 1.20 = 1000 TL (Matrah) bulunur, aradaki 200 TL vergidir. Asla direkt %20 çıkarmamalıyız.`, en: `To find the 20% VAT excluded amount, divide the total by 1.20. Never subtract 20% directly.` } }
             ],
             richContent: {
                 howItWorks: {
-                    tr: `KDV hesaplayıcı, mal ve hizmetlerin el değişimi sürecinde oluşan Katma Değer Vergisi yükünü hesaplamak için geliştirilmiştir. İki temel modülde çalışır: 'KDV Dahil' modunda toplam ödenecek tutarın içindeki vergi ve matrah ayrıştırılır; 'KDV Hariç' modunda ise temel fiyata ilgili oranda vergi eklenir. Türkiye'de uygulanan güncel %1, %10 ve %20 oranlarını destekleyen araç, özellikle esnaf, muhasebeci ve bireysel tüketiciler için fatura ve fiş kontrollerinde profesyonel bir doğrulama sağlar.`,
-                    en: `The VAT calculator is designed to compute the Value Added Tax incurred during the exchange of goods and services. It operates in two main modes: 'VAT Inclusive' separates the tax and base amount from the total price, while 'VAT Exclusive' adds tax to the base price at the relevant rate.`
+                    tr: `Aracımız 'Dahil' ve 'Hariç' olmak üzere 2 mantıkla çalışır: <ul><li><strong>KDV Dahil Modülü:</strong> Nihai tüketici fiyatından, devletin payı olan vergi kesintisini söküp çıkararak kasada kalan 'Matrah' bedelini gösterir. Fatura kontrolü yapar.</li><li><strong>KDV Hariç Modülü:</strong> Ürettiğiniz malın maliyeti veya satmak istediğiniz taban fiyat (Matrah) üzerine resmi vergi oranını yansıtarak etikete ve faturaya yazmanız gereken genel toplamı hesaplar.</li></ul>`,
+                    en: `The calculator operates in two main modes: 'VAT Inclusive' separates the tax and base amount from the total price, while 'VAT Exclusive' adds tax to the base price at the relevant rate.`
                 },
                 formulaText: {
-                    tr: `KDV Dahil = Matrah x (1 + KDV Oranı). KDV tutarı ise Matrah ile KDV Oranının çarpımıyla elde edilir. KDV dahil bir fiyattan matrahı bulmak için toplam tutar (1 + KDV Oranı) değerine bölünür.`,
+                    tr: `Vergi Eklemek İçin: Fatura Toplamı = Matrah + (Matrah x %KDV). <br>Vergiyi Ayırmak İçin: Matrah = KDV Dahil Tutar / (1 + (KDV Oranı / 100)). Örneğin oran 20 ise bölücü 1,20 olur. KDV Tutarı = Genel Toplam - Matrah şeklinde bulunur.`,
                     en: `VAT Inclusive = Base x (1 + VAT Rate). The tax amount is found by multiplying the Base by the VAT rate.`
                 },
                 exampleCalculation: {
-                    tr: `Örneğin; KDV dahil fiyatı 1.200 TL olan ve %20 KDV oranına tabi bir ürün için hesaplama süreci şöyledir: Matrah = 1.200 / 1,20 işlemi sonucunda 1.000 TL olarak bulunur. Bu ürünün vergisiz fiyatı 1.000 TL'dir. Buradaki vergi yükü (KDV tutarı) ise 1.200 - 1.000 = 200 TL olarak hesaplanacaktır.`,
+                    tr: `Örnek (KDV Dahil'den Matrah Bulma): Cebinizden 120 TL'lik restoran (%10) veya kırtasiye fişi çıktıysa. KDV Dahil Tutar = 120 TL. Matrah = 120 / 1,10 = 109,09 TL. Fişin üstündeki Vergi Tutarı = 10,91 TL'dir. Özetle devletin payı 10,91 TL, işletmenin üretim bedeli 109,09 TL'dir.`,
                     en: `Example: For a product with a VAT-inclusive price of 1,200 TL and a 20% VAT rate, the base price is 1,200 / 1.20 = 1,000 TL. The tax amount is 200 TL.`
                 },
                 miniGuide: {
-                    tr: `Ticari işlemlerde KDV, ürün maliyetinin bir parçası değil, alıcı tarafından satıcı aracılığıyla devlete ödenen bir emanet paradır. <ul><li><b>Fatura Keserken:</b> Daima matrah (KDV hariç tutar) üzerinden hesaplama yapıp KDV'yi ayrıca belirtmelisiniz.</li><li><b>Tevkifat Durumu:</b> Bazı sektörlerde KDV'nin bir kısmı alıcı tarafından doğrudan devlete ödenir; bu duruma tevkifat denir.</li><li><b>İade Süreçleri:</b> İhracat yapan firmalar, ödedikleri KDV'yi belirli şartlar altında devletten iade alabilirler.</li></ul>`,
+                    tr: `<ul><li><b>Kâr Marjına Dikkat:</b> Kâr oranınızı KDV Dahil bedel üzerinden hesaplamayın. İşletme cironuz daima vergisiz matrahtır.</li><li><b>Yanlış Hesaplar:</b> KDV Dahil tutardan matematiksel olarak '%20' çıkartırsanız yanlış rakam bulursunuz! Sabit bölme formuüllerini (%20 için 1.20 vb.) kullanmalısınız.</li><li><b>Oran Değişiklikleri:</b> Sabun, şampuan, hijyen ürünlerinde ve gıdada güncel tarifenin (%1, %10 veya %20) doğru dilimde olduğundan BDP üzerinden emin olun.</li></ul>`,
                     en: `In commercial transactions, VAT is not part of the product cost but an escrow amount paid to the state. Always calculate based on the base amount and specify VAT separately.`
                 }
             }
@@ -14264,25 +14266,7 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
             faqEntry("Trafikli rota için nasıl daha gerçekçi sonuç alırım?", "Navigasyon uygulamanızın önerdiği ortalama seyir hızını veya geçmiş yolculuk verisini girmek daha gerçekçi olur. Saf teorik hız kullanmak çoğu zaman varış süresini olduğundan kısa gösterir.", "How do I get a more realistic result for a congested route?", "Use the average travel speed suggested by navigation apps or your historical trip data. Purely theoretical speeds often make arrival times look too optimistic."),
         ],
     },
-    "kdv-hesaplama": {
-        relatedCalculators: ["kar-zarar-marji", "fiyat-hesaplama", "kdv-tevkifati-hesaplama", "gelir-vergisi-hesaplama", "damga-vergisi-hesaplama"],
-        title: {
-            tr: "KDV Hesaplama 2026 — Matrah, Vergi Tutarı ve Dahil/Hariç Fiyat",
-            en: "VAT Calculator 2026 — Base Amount, Tax, Inclusive and Exclusive Price",
-        },
-        metaDescription: {
-            tr: "KDV dahil veya hariç fiyat üzerinden matrahı, vergi tutarını ve toplam bedeli hesaplayın; sonucu fiyatlama ve fatura kontrolü için daha doğru okuyun.",
-            en: "Calculate base amount, VAT, and total from inclusive or exclusive prices, and read the result more accurately for pricing and invoice checks.",
-        },
-        contentAppend: {
-            tr: "KDV hesabı en çok teklif hazırlama, fatura kontrolü ve satış fiyatını vergi hariç okumada işe yarar. Ancak ticari karar verirken yalnızca KDV oranına bakmak yeterli değildir; matrahın kârlılık üzerindeki etkisi, tevkifat senaryoları ve vergi hariç fiyatla çalışan marj hesapları birlikte değerlendirilmelidir.",
-            en: "VAT calculation is most useful in quoting, invoice checks, and reading a sales price without tax. But when making a commercial decision, looking only at the VAT rate is not enough; margin impact on the base amount, withholding scenarios, and tax-exclusive pricing logic should also be considered together.",
-        },
-        faqAppend: [
-            faqEntry("KDV dahil fiyatla kâr hesabı yapmak neden yanıltıcı olabilir?", "Çünkü KDV satış gelirinin işletmede kalan kısmı değildir; devlete aktarılan vergi unsurudur. Kârlılık analizi yapılırken vergi hariç satış bedeline dönmek daha sağlıklı sonuç verir.", "Why can profit analysis be misleading on a VAT-inclusive price?", "Because VAT is not the portion of sales revenue that stays with the business; it is a tax passed to the state. Profitability analysis is more accurate when you move back to the VAT-exclusive sale price."),
-            faqEntry("KDV oranı doğru olsa bile fatura toplamı neden farklı çıkabilir?", "Çünkü iskonto, tevkifat, ek masraf, yuvarlama veya birden fazla vergi kalemi toplam bedeli değiştirebilir. Bu yüzden sonuç tek başına değil, faturadaki diğer kalemlerle birlikte kontrol edilmelidir.", "Why can the invoice total differ even when the VAT rate is correct?", "Because discounts, withholding, added charges, rounding, or multiple tax items can change the final total. The result should therefore be checked together with the other items on the invoice."),
-        ],
-    },
+
     "mtv-hesaplama": {
         title: {
             tr: "MTV Hesaplama 2026 — Binek Araç Vergi ve Taksit Planı",
