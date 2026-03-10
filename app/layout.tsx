@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider, DarkModeToggle } from "@/components/ThemeProvider";
 import MobileMenu from "@/components/MobileMenu";
+import BottomNav from "@/components/BottomNav";
 import { mainCategories } from "@/lib/categories";
 import { calculatorSearchIndex } from "@/lib/calculators";
 import Link from "next/link";
@@ -131,7 +132,7 @@ export default function RootLayout({
                             </div>
                         </div>
                     </header>
-                    <main className="flex-1">{children}</main>
+                    <main className="flex-1 pb-20 md:pb-0">{children}</main>
                     <footer className="border-t border-slate-200 bg-slate-100">
                         <div className="container mx-auto py-12 px-4">
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -179,6 +180,7 @@ export default function RootLayout({
                         </div>
                     </footer>
                     <CookieBanner />
+                    <BottomNav />
                 </ThemeProvider>
             </body>
         </html>
