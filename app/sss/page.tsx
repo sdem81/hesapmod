@@ -1,4 +1,6 @@
 import { Metadata } from "next";
+import Script from "next/script";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
     title: "Sıkça Sorulan Sorular",
@@ -78,8 +80,34 @@ const faqs = [
 ];
 
 export default function SSSPage() {
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqs.flatMap((section) =>
+            section.items.map((item) => ({
+                "@type": "Question",
+                name: item.q,
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: item.a,
+                },
+            }))
+        ),
+    };
+
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: SITE_URL },
+            { "@type": "ListItem", position: 2, name: "Sıkça Sorulan Sorular", item: `${SITE_URL}/sss` },
+        ],
+    };
+
     return (
         <div className="container mx-auto px-4 py-16 max-w-4xl">
+            <Script id="sss-faq-schema" type="application/ld+json" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+            <Script id="sss-breadcrumb-schema" type="application/ld+json" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
             <div className="mb-12">
                 <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">SSS</span>
                 <h1 className="text-4xl font-extrabold tracking-tight mt-4 mb-4">Sıkça Sorulan Sorular</h1>

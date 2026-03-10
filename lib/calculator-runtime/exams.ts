@@ -884,4 +884,40 @@ export const formulas: CalculatorRuntimeMap = {
                             : ({ tr: "Ortalama riskli bölgede", en: "Average is in the risk zone" } as any),
             };
         },
+    "ogg-sinav-puan-hesaplama": (v) => {
+            const temelDogru = Math.min(Math.max(Math.round(parseFloat(v.temelEgitimDogru) || 0), 0), 100);
+            const silahDogru = Math.min(Math.max(Math.round(parseFloat(v.silahBilgisiDogru) || 0), 0), 25);
+            const atisSayisi = Math.min(Math.max(Math.round(parseFloat(v.atisSayisi) || 0), 0), 5);
+
+            const temelPuan = temelDogru * 1;
+            const silahPuan = silahDogru * 2;
+            const atisPuan = atisSayisi * 10;
+            const silahliAveraj = (temelPuan + silahPuan + atisPuan) / 2;
+            const silahArtiAtis = silahPuan + atisPuan;
+
+            let durumuTr = "";
+            let durumuEn = "";
+
+            const silahsizGecti = temelPuan >= 60;
+            const silahliGecti = (silahliAveraj >= 60) && (temelPuan >= 50) && (silahArtiAtis >= 50);
+
+            if (silahliGecti) {
+                durumuTr = `SİLAHLI BAŞARILI ✓ — Ortalamanız ${silahliAveraj.toFixed(1)} ve tüm barajları aştınız. Silahlı ÖGG kartı alabilirsiniz.`;
+                durumuEn = `PASSED (Armed) ✓ — Average ${silahliAveraj.toFixed(1)}.`;
+            } else if (silahsizGecti) {
+                durumuTr = `SİLAHSIZ BAŞARILI ⚠️ — Silahlı genel averajı veya barajı sağlayamadınız, ANCAK Temel Eğitimden ${temelPuan} aldığınız için SİLAHSIZ geçerli sayılırsınız.`;
+                durumuEn = `PASSED (Unarmed) ⚠️ — Qualified for Unarmed.`;
+            } else {
+                durumuTr = `BAŞARISIZ ✗ — Silahlı ortalamanız ${silahliAveraj.toFixed(1)}. Silahsız için de gerekli 60 barajını (${temelPuan}) aşamadınız. Yeniden sınava girmeniz gereklidir.`;
+                durumuEn = `FAILED ✗ — Score: ${silahliAveraj.toFixed(1)}.`;
+            }
+
+            return {
+                temelPuan,
+                silahPuan,
+                atisPuan,
+                silahliPuan: silahliAveraj,
+                durumu: { tr: durumuTr, en: durumuEn } as unknown as number,
+            };
+        },
 };

@@ -24,6 +24,9 @@ const DividendPortfolioCalculator = dynamic(
     () => import("./custom/DividendPortfolioCalculator")
 );
 const YksCalculator = dynamic(() => import("./custom/YksCalculator"));
+const AltinHesaplamaCalculator = dynamic(() => import("./custom/AltinHesaplamaCalculator"));
+const DovizHesaplamaCalculator = dynamic(() => import("./custom/DovizHesaplamaCalculator"));
+const GecmisAltinFiyatlariCalculator = dynamic(() => import("./custom/GecmisAltinFiyatlariCalculator"));
 
 interface Props {
     calculator: CalculatorClientEntry;
@@ -35,7 +38,10 @@ type SpecialCalculatorSlug =
     | "kira-mi-konut-kredisi-mi-hesaplama"
     | "kredi-karsilastirma-hesaplama"
     | "borc-kapatma-planlayici-hesaplama"
-    | "sermaye-ve-temettu-hesaplama";
+    | "sermaye-ve-temettu-hesaplama"
+    | "altin-hesaplama"
+    | "doviz-hesaplama"
+    | "gecmis-altin-fiyatlari";
 
 const specialCalculatorComponents = {
     "yks-puan-hesaplama": YksCalculator,
@@ -43,6 +49,9 @@ const specialCalculatorComponents = {
     "kredi-karsilastirma-hesaplama": LoanComparisonCalculator,
     "borc-kapatma-planlayici-hesaplama": DebtPayoffPlannerCalculator,
     "sermaye-ve-temettu-hesaplama": DividendPortfolioCalculator,
+    "altin-hesaplama": AltinHesaplamaCalculator,
+    "doviz-hesaplama": DovizHesaplamaCalculator,
+    "gecmis-altin-fiyatlari": GecmisAltinFiyatlariCalculator,
 } satisfies Record<SpecialCalculatorSlug, React.ComponentType<{ lang: LanguageCode }>>;
 
 function isSpecialCalculatorSlug(slug: string): slug is SpecialCalculatorSlug {

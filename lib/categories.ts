@@ -22,7 +22,10 @@ export interface Category {
 
 export const CATEGORY_ALIASES: Record<string, string> = {
     "finans-hesaplama": "finansal-hesaplamalar",
+    "finans": "finansal-hesaplamalar",
+    "matematik": "matematik-hesaplama",
     "saglik": "yasam-hesaplama",
+    "gunluk": "yasam-hesaplama",
     "zaman-hesaplamalari": "zaman-hesaplama",
 };
 

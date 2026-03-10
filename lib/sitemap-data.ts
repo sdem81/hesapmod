@@ -1,6 +1,6 @@
 import { articles } from "./articles";
 import { calculators } from "./calculator-source";
-import { isHealthCategory, mainCategories } from "./categories";
+import { isHealthCategory, mainCategories, normalizeCategorySlug } from "./categories";
 import {
     ABOUT_PAGE_LAST_MODIFIED,
     ALL_TOOLS_PAGE_LAST_MODIFIED,
@@ -129,12 +129,15 @@ export function buildSitemapEntries(): SitemapEntry[] {
         };
     });
 
-    const calcPages: SitemapEntry[] = calculators.map((calc) => ({
-        url: `${SITE_URL}/${calc.category}/${calc.slug}`,
-        lastModified: getCalculatorLastModified(calc.slug),
-        changeFrequency: "weekly",
-        priority: isHealthCategory(calc.category) ? 0.84 : 0.78,
-    }));
+    const calcPages: SitemapEntry[] = calculators.map((calc) => {
+        const canonicalCategory = normalizeCategorySlug(calc.category);
+        return {
+            url: `${SITE_URL}/${canonicalCategory}/${calc.slug}`,
+            lastModified: getCalculatorLastModified(calc.slug),
+            changeFrequency: "weekly",
+            priority: isHealthCategory(canonicalCategory) ? 0.84 : 0.78,
+        };
+    });
 
     const rehberPage: SitemapEntry[] = [
         {

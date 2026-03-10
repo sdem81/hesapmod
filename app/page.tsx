@@ -1,5 +1,5 @@
 import { CategoryIcon } from "@/components/category/CategoryIcon";
-import { mainCategories } from "@/lib/categories";
+import { getCategoryName, mainCategories } from "@/lib/categories";
 import { calculatorCount, calculatorSearchIndex, calculators } from "@/lib/calculators";
 import { Metadata } from "next";
 import GlobalSearch from "@/components/search/GlobalSearch";
@@ -167,7 +167,7 @@ export default function Home() {
                             <div className="flex items-start justify-between gap-4">
                                 <div className="min-w-0">
                                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                        {calculator.category.replace(/-/g, " ")}
+                                        {getCategoryName(calculator.category, "tr")}
                                     </p>
                                     <h3 className="mt-2 text-lg font-bold text-slate-900 transition-colors group-hover:text-blue-600">
                                         {calculator.name.tr}

@@ -59,10 +59,22 @@ export default function AllToolsPage() {
         },
     };
 
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: SITE_URL },
+            { "@type": "ListItem", position: 2, name: "Tüm Araçlar", item: `${SITE_URL}/tum-araclar` },
+        ],
+    };
+
     return (
         <div className="container mx-auto px-4 py-16 max-w-6xl">
             <Script id="all-tools-schema" type="application/ld+json" strategy="afterInteractive" dangerouslySetInnerHTML={{
                 __html: JSON.stringify(itemListSchema),
+            }} />
+            <Script id="all-tools-breadcrumb" type="application/ld+json" strategy="afterInteractive" dangerouslySetInnerHTML={{
+                __html: JSON.stringify(breadcrumbSchema),
             }} />
 
             {/* Header — sunucuda render edilir, SEO için ideal */}

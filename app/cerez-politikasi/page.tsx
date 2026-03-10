@@ -1,15 +1,35 @@
 import { Metadata } from "next";
+import Script from "next/script";
 import { CONTACT_FORM_PATH } from "@/lib/contact";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
     title: "Çerez Politikası",
     description: "HesapMod çerez politikası — hangi çerezlerin kullanıldığı, amaçları ve nasıl yönetebileceğiniz hakkında bilgi.",
     alternates: { canonical: "/cerez-politikasi" },
+    robots: { index: true, follow: true },
+};
+
+const pageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Çerez Politikası — HesapMod",
+    url: `${SITE_URL}/cerez-politikasi`,
+    inLanguage: "tr-TR",
+    isPartOf: { "@type": "WebSite", name: SITE_NAME, url: SITE_URL },
+    breadcrumb: {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: SITE_URL },
+            { "@type": "ListItem", position: 2, name: "Çerez Politikası", item: `${SITE_URL}/cerez-politikasi` },
+        ],
+    },
 };
 
 export default function CerezPolitikasi() {
     return (
         <div className="container mx-auto px-4 py-16 max-w-4xl">
+            <Script id="cerez-schema" type="application/ld+json" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }} />
             <div className="mb-12">
                 <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Yasal Belgeler</span>
                 <h1 className="text-4xl font-extrabold tracking-tight mt-4 mb-4">Çerez Politikası</h1>

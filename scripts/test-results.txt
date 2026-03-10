@@ -1,0 +1,25 @@
+Starting Formula Stress Test for 49 calculators...
+
+ÔØî Found 22 formula errors:
+- Calculator "vat-kdv" returned NaN when fields are empty. Key "baseAmount".
+- Calculator "vat-kdv" returned NaN when fields are empty. Key "vatAmount".
+- Calculator "simple-interest" returned NaN when fields are empty. Key "interest".
+- Calculator "simple-interest" returned NaN when fields are empty. Key "total".
+- Calculator "loan-payment" returned NaN when fields are empty. Key "monthly".
+- Calculator "loan-payment" returned NaN when fields are empty. Key "totalPayment".
+- Calculator "loan-payment" returned NaN when fields are empty. Key "totalInterest".
+- Calculator "rent-increase" returned NaN when fields are empty. Key "increaseAmount".
+- Calculator "rent-increase" returned NaN when fields are empty. Key "newRent".
+- Calculator "bmi" returned NaN when fields are empty. Key "bmi".
+- Calculator "age" returned NaN when fields are empty. Key "years".
+- Calculator "age" returned NaN when fields are empty. Key "months".
+- Calculator "age" returned NaN when fields are empty. Key "days".
+- Calculator "date-diff" returned NaN when fields are empty. Key "days".
+- Calculator "date-diff" returned NaN when fields are empty. Key "weeks".
+- Calculator "date-diff" returned NaN when fields are empty. Key "months".
+- Calculator "date-diff" returned NaN when fields are empty. Key "years".
+- Calculator "deposit" returned NaN when fields are empty. Key "effectiveRate".
+- Calculator "birth-countdown" returned NaN when fields are empty. Key "age".
+- Calculator "birth-countdown" returned NaN when fields are empty. Key "nextAge".
+- Calculator "birth-countdown" returned NaN when fields are empty. Key "daysLeft".
+- Calculator "eurobond" returned NaN when fields are empty. Key "ytm".

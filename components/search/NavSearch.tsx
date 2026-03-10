@@ -4,13 +4,10 @@ import { useCallback, useDeferredValue, useEffect, useRef, useState } from "reac
 import { Search, X, Calculator } from "lucide-react";
 import Link from "next/link";
 import type { CalculatorSearchEntry } from "@/lib/calculator-types";
+import { getCategoryName } from "@/lib/categories";
 
 interface Props {
     entries: CalculatorSearchEntry[];
-}
-
-function formatCategoryLabel(category: string) {
-    return category.replace(/-/g, " ");
 }
 
 export default function NavSearch({ entries }: Props) {
@@ -119,7 +116,7 @@ export default function NavSearch({ entries }: Props) {
                                                         {calc.shortDescription.tr}
                                                     </p>
                                                     <p className="text-[11px] text-slate-500 uppercase tracking-wide mt-2 truncate">
-                                                        {formatCategoryLabel(calc.category)}
+                                                        {getCategoryName(calc.category, "tr")}
                                                     </p>
                                                 </div>
                                             </Link>

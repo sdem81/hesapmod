@@ -461,9 +461,10 @@ export default function CalculatorPage({
                 >
                     {`${calc.name.tr} Nedir? ${isHealth ? "Nasıl Yorumlanır?" : "Nasıl Hesaplanır?"}`}
                 </h2>
-                <div className="text-lg leading-relaxed text-slate-600 whitespace-pre-line">
-                    {calc.seo.content.tr}
-                </div>
+                <div
+                    className="text-lg leading-relaxed text-slate-600"
+                    dangerouslySetInnerHTML={{ __html: calc.seo.content.tr }}
+                />
 
                 {/* SSS */}
                 {calc.seo.faq.length > 0 && (

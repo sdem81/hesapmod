@@ -1,14 +1,35 @@
 import { Metadata } from "next";
+import Script from "next/script";
 import { CONTACT_FORM_PATH } from "@/lib/contact";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
     title: "Kullanım Koşulları",
     description: "HesapMod kullanım koşulları — platformu kullanırken geçerli kurallar, sorumluluk sınırlamaları ve fikri mülkiyet hakları.",
     alternates: { canonical: "/kullanim-kosullari" },
+    robots: { index: true, follow: true },
+};
+
+const pageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Kullanım Koşulları — HesapMod",
+    url: `${SITE_URL}/kullanim-kosullari`,
+    inLanguage: "tr-TR",
+    isPartOf: { "@type": "WebSite", name: SITE_NAME, url: SITE_URL },
+    breadcrumb: {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: SITE_URL },
+            { "@type": "ListItem", position: 2, name: "Kullanım Koşulları", item: `${SITE_URL}/kullanim-kosullari` },
+        ],
+    },
 };
 
 export default function KullanimKosullariPage() {
     return (
+        <>
+            <Script id="kullanim-schema" type="application/ld+json" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }} />
         <div className="container mx-auto px-4 py-16 max-w-4xl">
             <div className="mb-12">
                 <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Yasal Belgeler</span>
@@ -107,5 +128,6 @@ export default function KullanimKosullariPage() {
                 <a href="/kvkk" className="text-sm text-primary hover:underline">→ KVKK Aydınlatma Metni</a>
             </div>
         </div>
+        </>
     );
 }

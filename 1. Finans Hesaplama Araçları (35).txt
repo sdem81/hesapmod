@@ -1,0 +1,489 @@
+1. Finans Hesaplama Araçları (35)
+
+Faiz hesaplama
+
+Bileşik faiz hesaplama
+
+Vadeli mevduat getirisi
+
+Kredi taksit hesaplama
+
+Konut kredisi hesaplama
+
+İhtiyaç kredisi hesaplama
+
+Taşıt kredisi hesaplama
+
+Kredi erken kapama
+
+Kredi toplam geri ödeme
+
+Enflasyon hesaplama
+
+Reel getiri hesaplama
+
+Altın getirisi hesaplama
+
+Dolar getirisi hesaplama
+
+Euro getirisi hesaplama
+
+Gram altın hesaplama
+
+Döviz çevirici
+
+Para değer kaybı hesaplama
+
+Borsa kar zarar
+
+Hisse ortalama maliyet
+
+Portföy dağılımı
+
+Yatırım getiri oranı
+
+Stopaj hesaplama
+
+Kar payı hesaplama
+
+ETF getiri hesaplama
+
+Tahvil getirisi
+
+Bono getirisi
+
+Döviz kar zarar
+
+Altın al sat karı
+
+Kripto kar zarar
+
+Kira getirisi
+
+Gayrimenkul ROI
+
+Amortisman süresi
+
+Finansal özgürlük hesaplama
+
+Pasif gelir hesaplama
+
+Yatırım hedef hesaplama
+
+2. Maaş & Vergi Hesaplama (30)
+
+Net maaş hesaplama
+
+Brüt maaş hesaplama
+
+Brütten nete maaş
+
+Netten brüte maaş
+
+Asgari ücret hesaplama
+
+Vergi dilimi hesaplama
+
+Gelir vergisi hesaplama
+
+Damga vergisi hesaplama
+
+SGK kesintisi hesaplama
+
+İşsizlik sigortası kesintisi
+
+Maaş zam oranı hesaplama
+
+Maaş artış hesaplama
+
+Yıllık maaş hesaplama
+
+Saatlik ücret hesaplama
+
+Günlük ücret hesaplama
+
+Fazla mesai hesaplama
+
+Kıdem tazminatı hesaplama
+
+İhbar tazminatı hesaplama
+
+İzin ücreti hesaplama
+
+Emeklilik maaşı tahmini
+
+EYT emeklilik hesaplama
+
+Emeklilik yaşı hesaplama
+
+SGK prim hesaplama
+
+İşveren maliyeti hesaplama
+
+Bordro hesaplama
+
+Net gelir hesaplama
+
+Freelance vergi hesaplama
+
+Serbest meslek vergisi
+
+Fatura KDV hesaplama
+
+Stopaj hesaplama
+
+3. Matematik Hesaplama Araçları (40)
+
+Yüzde hesaplama
+
+Yüzde artış hesaplama
+
+Yüzde azalış hesaplama
+
+Ortalama hesaplama
+
+Aritmetik ortalama
+
+Geometrik ortalama
+
+Medyan hesaplama
+
+Standart sapma
+
+Varyans hesaplama
+
+Oran hesaplama
+
+Orantı hesaplama
+
+Faktöriyel hesaplama
+
+Kombinasyon hesaplama
+
+Permütasyon hesaplama
+
+Üslü sayı hesaplama
+
+Logaritma hesaplama
+
+Kare hesaplama
+
+Karekök hesaplama
+
+Küpkök hesaplama
+
+Alan hesaplama
+
+Hacim hesaplama
+
+Çevre hesaplama
+
+Üçgen alanı
+
+Dikdörtgen alanı
+
+Daire alanı
+
+Silindir hacmi
+
+Küre hacmi
+
+Piramit hacmi
+
+Trigonometri hesaplama
+
+Sin cos tan hesaplama
+
+Polinom hesaplama
+
+Denklem çözücü
+
+İkinci derece denklem
+
+Matris hesaplama
+
+Determinant hesaplama
+
+Rasyonel sayı hesaplama
+
+Kesir hesaplama
+
+Kesir sadeleştirme
+
+Kesir toplama çıkarma
+
+Sayı tabanı dönüştürme
+
+
+4. Sağlık Hesaplama Araçları (25)
+
+BMI hesaplama
+
+İdeal kilo hesaplama
+
+Günlük kalori ihtiyacı
+
+BMR hesaplama
+
+Vücut yağ oranı
+
+Bel kalça oranı
+
+Su ihtiyacı hesaplama
+
+Protein ihtiyacı
+
+Karbonhidrat ihtiyacı
+
+Yağ ihtiyacı
+
+Kalori yakma hesaplama
+
+Adım kalori hesaplama
+
+Nabız aralığı hesaplama
+
+Hamilelik hesaplama
+
+Doğum tarihi hesaplama
+
+Gebelik haftası
+
+Bebek boy kilo hesaplama
+
+Çocuk BMI
+
+İlaç doz hesaplama
+
+Alkol promil hesaplama
+
+Uyku süresi hesaplama
+
+Yaş hesaplama
+
+Metabolizma yaşı
+
+Fitness kalori hesaplama
+
+Spor kalori hesaplama
+
+
+5. Günlük Yaşam Araçları (30)
+
+Yaş hesaplama
+
+Tarih farkı hesaplama
+
+Gün hesaplama
+
+Hafta hesaplama
+
+Ay hesaplama
+
+Yıl hesaplama
+
+Gün ekleme çıkarma
+
+Saat farkı hesaplama
+
+Zaman hesaplama
+
+Geri sayım hesaplama
+
+Doğum günü sayacı
+
+Burç hesaplama
+
+Boy kilo oranı
+
+Günlük su tüketimi
+
+Günlük harcama hesaplama
+
+Aylık bütçe hesaplama
+
+Tasarruf hesaplama
+
+Elektrik tüketim hesaplama
+
+Su faturası hesaplama
+
+Doğalgaz tüketimi
+
+Yakıt maliyeti
+
+Araç km maliyeti
+
+Yol maliyeti
+
+Tatil bütçesi hesaplama
+
+Kira artış hesaplama
+
+Ev gider hesaplama
+
+Alışveriş indirimi hesaplama
+
+Fiyat karşılaştırma
+
+Bahşiş hesaplama
+
+Split hesaplama
+
+6. Eğitim & Sınav Hesaplama (30)
+
+YKS puan hesaplama
+
+TYT puan hesaplama
+
+AYT puan hesaplama
+
+LGS puan hesaplama
+
+KPSS puan hesaplama
+
+KPSS net hesaplama
+
+YKS sıralama tahmini
+
+Not ortalaması hesaplama
+
+GPA hesaplama
+
+Kredi notu hesaplama
+
+Ders ortalaması
+
+Final notu hesaplama
+
+Harf notu hesaplama
+
+Devamsızlık hesaplama
+
+Ders geçme notu
+
+Üniversite ortalama
+
+Diploma notu
+
+Akademik ortalama
+
+Eğitim süresi hesaplama
+
+Ders çalışma planı
+
+Net hesaplama
+
+Test başarı oranı
+
+Ders çalışma saati
+
+Öğrenci bütçe hesaplama
+
+Burs hesaplama
+
+Eğitim kredisi
+
+Yurt maliyeti
+
+Okul gider hesaplama
+
+Kitap maliyeti
+
+Öğrenci yaşam maliyeti
+
+
+7. İnşaat & Mühendislik (25)
+
+Beton hesaplama
+
+Çimento hesaplama
+
+Tuğla hesaplama
+
+Boya hesaplama
+
+Seramik hesaplama
+
+Parke hesaplama
+
+Demir hesaplama
+
+Çatı alan hesaplama
+
+Merdiven hesaplama
+
+Metrekare hesaplama
+
+Metreküp hesaplama
+
+Hafriyat hesaplama
+
+Kum hesaplama
+
+Alçı hesaplama
+
+Sıva hesaplama
+
+İnşaat maliyeti hesaplama
+
+Arsa değer hesaplama
+
+Bina maliyet hesaplama
+
+Elektrik kablo hesaplama
+
+Su tesisat hesaplama
+
+Isı kaybı hesaplama
+
+Güneş paneli hesaplama
+
+Klima kapasite hesaplama
+
+Jeneratör güç hesaplama
+
+Enerji tüketim hesaplama
+
+
+8. Spor & Fitness (20)
+
+Koşu pace hesaplama
+
+Maraton tempo hesaplama
+
+Kalori yakma hesaplama
+
+Adım mesafe hesaplama
+
+VO2 max hesaplama
+
+Nabız aralığı
+
+Yağ yakım bölgesi
+
+Fitness kalori
+
+Protein ihtiyacı
+
+Makro hesaplama
+
+Kas kütlesi hesaplama
+
+Bench press max
+
+Squat max
+
+Deadlift max
+
+Vücut kompozisyonu
+
+Spor hedef hesaplama
+
+Antrenman hacmi
+
+Set tekrar hesaplama
+
+Dinlenme süresi
+
+Kardiyo süresi

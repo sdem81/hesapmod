@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Vercel Production Deploy",
+			"type": "shell",
+			"command": "npx vercel --prod --yes",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Vercel Production Deploy",
+			"type": "shell",
+			"command": "npx vercel --prod --yes",
+			"isBackground": false,
+			"problemMatcher": []
+		}
+	]
+}

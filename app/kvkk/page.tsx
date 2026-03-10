@@ -1,14 +1,35 @@
 import { Metadata } from "next";
+import Script from "next/script";
 import { CONTACT_FORM_PATH, CONTACT_RESPONSE_SLA } from "@/lib/contact";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
     title: "KVKK Aydınlatma Metni",
     description: "HesapMod KVKK aydınlatma metni — 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında kişisel verilerinizin işlenmesi hakkında bilgi.",
     alternates: { canonical: "/kvkk" },
+    robots: { index: true, follow: true },
+};
+
+const pageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "KVKK Aydınlatma Metni — HesapMod",
+    url: `${SITE_URL}/kvkk`,
+    inLanguage: "tr-TR",
+    isPartOf: { "@type": "WebSite", name: SITE_NAME, url: SITE_URL },
+    breadcrumb: {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: SITE_URL },
+            { "@type": "ListItem", position: 2, name: "KVKK Aydınlatma Metni", item: `${SITE_URL}/kvkk` },
+        ],
+    },
 };
 
 export default function KVKKPage() {
     return (
+        <>
+            <Script id="kvkk-schema" type="application/ld+json" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }} />
         <div className="container mx-auto px-4 py-16 max-w-4xl">
             <div className="mb-12">
                 <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Yasal Belgeler</span>
@@ -107,5 +128,6 @@ export default function KVKKPage() {
                 <a href="/cerez-politikasi" className="text-sm text-primary hover:underline">→ Çerez Politikası</a>
             </div>
         </div>
+        </>
     );
 }

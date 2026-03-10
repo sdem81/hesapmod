@@ -1,5 +1,23 @@
 import { Metadata } from "next";
+import Script from "next/script";
 import { CONTACT_FORM_PATH, CONTACT_RESPONSE_SLA } from "@/lib/contact";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
+
+const pageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Gizlilik Politikası — HesapMod",
+    url: `${SITE_URL}/gizlilik-politikasi`,
+    inLanguage: "tr-TR",
+    isPartOf: { "@type": "WebSite", name: SITE_NAME, url: SITE_URL },
+    breadcrumb: {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: SITE_URL },
+            { "@type": "ListItem", position: 2, name: "Gizlilik Politikası", item: `${SITE_URL}/gizlilik-politikasi` },
+        ],
+    },
+};
 
 export const metadata: Metadata = {
     title: "Gizlilik Politikası",
@@ -10,7 +28,9 @@ export const metadata: Metadata = {
 
 export default function GizlilikPolitikasi() {
     return (
-        <div className="container mx-auto px-4 py-16 max-w-4xl">
+        <>
+            <Script id="gizlilik-schema" type="application/ld+json" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }} />
+            <div className="container mx-auto px-4 py-16 max-w-4xl">
             <div className="mb-12">
                 <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Yasal Belgeler</span>
                 <h1 className="text-4xl font-extrabold tracking-tight mt-4 mb-4">Gizlilik Politikası</h1>
@@ -131,5 +151,6 @@ export default function GizlilikPolitikasi() {
                 <a href="/iletisim" className="text-sm text-primary hover:underline">→ İletişim</a>
             </div>
         </div>
+        </>
     );
 }

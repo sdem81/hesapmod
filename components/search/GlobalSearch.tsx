@@ -4,13 +4,10 @@ import React, { useDeferredValue, useEffect, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import Link from "next/link";
 import type { CalculatorSearchEntry } from "@/lib/calculator-types";
+import { getCategoryName } from "@/lib/categories";
 
 interface Props {
     entries: CalculatorSearchEntry[];
-}
-
-function formatCategoryLabel(category: string) {
-    return category.replace(/-/g, " ");
 }
 
 export default function GlobalSearch({ entries }: Props) {
@@ -100,7 +97,7 @@ export default function GlobalSearch({ entries }: Props) {
                                     {calc.shortDescription.tr}
                                 </p>
                                 <p className="mt-2 text-[11px] text-slate-500 uppercase tracking-wide truncate">
-                                    {formatCategoryLabel(calc.category)}
+                                    {getCategoryName(calc.category, "tr")}
                                 </p>
                             </div>
                             <span className="shrink-0 text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md font-medium">Hesapla</span>
