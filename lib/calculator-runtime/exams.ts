@@ -239,21 +239,21 @@ export const formulas: CalculatorRuntimeMap = {
             const din_net = v.din_muaf ? 0 : getNet(v.din_d, v.din_y, 10);
             const dil_net = v.dil_muaf ? 0 : getNet(v.dil_d, v.dil_y, 10);
 
-            // Technical Requirements: TR:4, MAT:4, FEN:4, others:1
-            const t_coef = 4.0;
-            const m_coef = 4.0;
-            const f_coef = 4.0;
-            const i_coef = 1.0;
-            const din_coef = 1.0;
-            const dil_coef = 1.0;
-            const base_point = 194.707;
+            // 2024/2025 MEB Katsayıları (Gerçek sınav standart sapmalarına göre)
+            const t_coef = 3.8072;
+            const m_coef = 5.3670;
+            const f_coef = 4.1179;
+            const i_coef = 1.9351;
+            const din_coef = 1.9859;
+            const dil_coef = 1.6898;
+            const base_point = 174.471;
 
             let c_din = v.din_muaf ? 0 : din_coef;
             let c_dil = v.dil_muaf ? 0 : dil_coef;
 
-            // Normalization for exemptions: Scales the score up to maintain the 500 max range
-            const max_possible_weighted = 270; // (20*4)*3 + (10*1)*3
-            const current_max_possible = (20 * 4) * 3 + (10 * 1) + (v.din_muaf ? 0 : 10) + (v.dil_muaf ? 0 : 10);
+            // Muafiyet durumunda (oransal tamamlama)
+            const max_possible_weighted = (20 * t_coef) + (20 * m_coef) + (20 * f_coef) + (10 * i_coef) + (10 * din_coef) + (10 * dil_coef);
+            const current_max_possible = (20 * t_coef) + (20 * m_coef) + (20 * f_coef) + (10 * i_coef) + (v.din_muaf ? 0 : 10 * din_coef) + (v.dil_muaf ? 0 : 10 * dil_coef);
             const multiplier = max_possible_weighted / current_max_possible;
 
             const weighted_score = (
@@ -265,10 +265,7 @@ export const formulas: CalculatorRuntimeMap = {
                 (dil_net * c_dil)
             ) * multiplier;
 
-            // Conversion to 500 scale
-            // (500 - 194.707) / 270 = 1.1307148
-            const scaling_factor = 1.1307148;
-            let total_puan = base_point + (weighted_score * scaling_factor);
+            let total_puan = base_point + weighted_score;
 
             const total_net = t_net + m_net + f_net + i_net + din_net + dil_net;
             if (total_net === 0) total_puan = 0;
