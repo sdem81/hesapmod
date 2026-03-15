@@ -37,9 +37,10 @@ const categoryTrustContent: Record<string, CalculatorTrustEntry> = {
     },
     "finansal-hesaplamalar": {
         methodology:
-            "Finans araçlarında kullanılan hesaplar matematiksel formüller, kullanıcı girdileri ve gerektiğinde resmi ekonomik veri kaynakları üzerinden kurulmuştur. Banka teklifi, yatırım tavsiyesi veya resmi fiyat teyidi yerine geçmez.",
+            "Finans araçlarında kullanılan hesaplar matematiksel formüller, kullanıcı girdileri ve gerektiğinde resmi ekonomik veri kaynakları üzerinden kurulmuştur. Kur, kıymetli maden, vergi ve enflasyon referansları editoryal olarak gözden geçirilir; sonuçlar banka teklifi, yatırım tavsiyesi veya resmi fiyat teyidi yerine geçmez.",
         sources: [
             { label: "TCMB", href: "https://www.tcmb.gov.tr/", note: "kur, para politikası ve ekonomik veri referansları" },
+            { label: "Borsa İstanbul Kıymetli Madenler Piyasası", href: "https://www.borsaistanbul.com/", note: "altın ve kıymetli maden piyasası yapısı için referans çerçeve" },
             { label: "Gelir İdaresi Başkanlığı", href: "https://www.gib.gov.tr/", note: "vergi ve stopaj uygulamaları" },
             { label: "Resmi Gazete", href: "https://www.resmigazete.gov.tr/", note: "mevzuat ve oran değişiklikleri" },
             { label: "TÜİK", href: "https://www.tuik.gov.tr/", note: "enflasyon ve resmi istatistik verileri" },

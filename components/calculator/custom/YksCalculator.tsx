@@ -279,9 +279,9 @@ export default function YksCalculator({ lang }: { lang: "tr" | "en" }) {
             <section className="overflow-hidden rounded-[32px] border border-blue-100 bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.18),_transparent_42%),linear-gradient(135deg,#eff6ff_0%,#ffffff_45%,#f8fafc_100%)] p-5 shadow-sm sm:p-7">
                 <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.85fr)] lg:items-end">
                     <div>
-                        <h2 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">YKS puanını daha hızlı, daha doğru, daha okunabilir hesapla</h2>
+                        <h2 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">YKS puanını 2026 için hızlı, şeffaf ve okunabilir biçimde simüle et</h2>
                         <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-                            TYT, AYT, YDT ve OBP etkisini ayrı ayrı gör. Sadece hedeflediğin puan türüne ait alanları doldurarak daha kısa bir akışla ilerle.
+                            20-21 Haziran 2026 YKS öncesinde TYT, AYT, YDT ve OBP etkisini ayrı ayrı gör. Hedeflediğin puan türüne ait alanları doldurarak daha kısa bir akışla ilerle ve kullanılan katsayı setini net biçimde takip et.
                         </p>
                     </div>
                     <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
@@ -295,7 +295,7 @@ export default function YksCalculator({ lang }: { lang: "tr" | "en" }) {
                         </div>
                         <div className="rounded-2xl border border-white/80 bg-white/80 p-4 backdrop-blur">
                             <div className="flex items-center gap-2 text-sm font-semibold text-slate-900"><BookOpenCheck size={16} className="text-blue-600" /> Katsayı seti seçimi</div>
-                            <p className="mt-2 text-xs leading-6 text-slate-500">2025 güncel simülasyon seti, 2024 doğrulanmış seti ve 2023 karşılaştırması sunulur.</p>
+                            <p className="mt-2 text-xs leading-6 text-slate-500">2026 ön izlemede 2025 güncel set, 2024 doğrulanmış set ve 2023 karşılaştırması birlikte sunulur.</p>
                         </div>
                     </div>
                 </div>

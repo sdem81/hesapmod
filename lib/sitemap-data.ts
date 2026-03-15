@@ -33,6 +33,19 @@ export type SitemapEntry = {
     priority: number;
 };
 
+function toDateOrFallback(value: string | Date | undefined, fallback: Date) {
+    if (!value) {
+        return fallback;
+    }
+
+    const parsed = value instanceof Date ? value : new Date(value);
+    return Number.isNaN(parsed.getTime()) ? fallback : parsed;
+}
+
+function getCalculatorEntryLastModified(calculator: { slug: string; updatedAt?: string | Date }) {
+    return toDateOrFallback(calculator.updatedAt, getCalculatorLastModified(calculator.slug));
+}
+
 export function buildSitemapEntries(): SitemapEntry[] {
     const latestArticleModified = articles.reduce((latest, article) => {
         const current = new Date(article.updatedAt ?? article.publishedAt);
@@ -40,7 +53,7 @@ export function buildSitemapEntries(): SitemapEntry[] {
     }, new Date(0));
     const latestCalculatorModified =
         calculators.length > 0
-            ? getLatestDate(...calculators.map((calc) => getCalculatorLastModified(calc.slug)))
+            ? getLatestDate(...calculators.map((calc) => getCalculatorEntryLastModified(calc)))
             : CALCULATOR_CONTENT_LAST_MODIFIED;
     const homePageLastModified = getLatestDate(
         HOME_PAGE_LAST_MODIFIED,
@@ -65,7 +78,7 @@ export function buildSitemapEntries(): SitemapEntry[] {
             url: `${SITE_URL}/tum-araclar`,
             lastModified: allToolsPageLastModified,
             changeFrequency: "weekly",
-            priority: 0.9,
+            priority: 0.8,
         },
         {
             url: `${SITE_URL}/hakkimizda`,
@@ -125,7 +138,7 @@ export function buildSitemapEntries(): SitemapEntry[] {
             url: `${SITE_URL}/kategori/${cat.slug}`,
             lastModified,
             changeFrequency: "weekly",
-            priority: 0.85,
+            priority: 0.8,
         };
     });
 
@@ -133,9 +146,9 @@ export function buildSitemapEntries(): SitemapEntry[] {
         const canonicalCategory = normalizeCategorySlug(calc.category);
         return {
             url: `${SITE_URL}/${canonicalCategory}/${calc.slug}`,
-            lastModified: getCalculatorLastModified(calc.slug),
+            lastModified: getCalculatorEntryLastModified(calc),
             changeFrequency: "weekly",
-            priority: isHealthCategory(canonicalCategory) ? 0.84 : 0.78,
+            priority: 0.8,
         };
     });
 
@@ -144,15 +157,15 @@ export function buildSitemapEntries(): SitemapEntry[] {
             url: `${SITE_URL}/rehber`,
             lastModified: guidesLandingLastModified,
             changeFrequency: "weekly",
-            priority: 0.85,
+            priority: 0.5,
         },
     ];
 
     const articlePages: SitemapEntry[] = articles.map((article) => ({
         url: `${SITE_URL}/rehber/${article.slug}`,
         lastModified: new Date(article.updatedAt ?? article.publishedAt),
-        changeFrequency: "monthly",
-        priority: 0.8,
+        changeFrequency: "weekly",
+        priority: 0.5,
     }));
 
     return [

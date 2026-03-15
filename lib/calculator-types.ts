@@ -80,6 +80,7 @@ export interface CalculatorCatalogEntry {
     id: string;
     slug: string;
     category: string;
+    updatedAt?: string;
     name: LocalizedText;
     h1?: LocalizedText;
     description: LocalizedText;

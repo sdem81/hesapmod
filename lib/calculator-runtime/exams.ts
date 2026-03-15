@@ -239,21 +239,21 @@ export const formulas: CalculatorRuntimeMap = {
             const din_net = v.din_muaf ? 0 : getNet(v.din_d, v.din_y, 10);
             const dil_net = v.dil_muaf ? 0 : getNet(v.dil_d, v.dil_y, 10);
 
-            // 2024/2025 MEB Katsayıları (Gerçek sınav standart sapmalarına göre)
-            const t_coef = 3.8072;
-            const m_coef = 5.3670;
-            const f_coef = 4.1179;
-            const i_coef = 1.9351;
-            const din_coef = 1.9859;
-            const dil_coef = 1.6898;
-            const base_point = 174.471;
+            // Technical Requirements: TR:4, MAT:4, FEN:4, others:1
+            const t_coef = 4.0;
+            const m_coef = 4.0;
+            const f_coef = 4.0;
+            const i_coef = 1.0;
+            const din_coef = 1.0;
+            const dil_coef = 1.0;
+            const base_point = 194.707;
 
             let c_din = v.din_muaf ? 0 : din_coef;
             let c_dil = v.dil_muaf ? 0 : dil_coef;
 
-            // Muafiyet durumunda (oransal tamamlama)
-            const max_possible_weighted = (20 * t_coef) + (20 * m_coef) + (20 * f_coef) + (10 * i_coef) + (10 * din_coef) + (10 * dil_coef);
-            const current_max_possible = (20 * t_coef) + (20 * m_coef) + (20 * f_coef) + (10 * i_coef) + (v.din_muaf ? 0 : 10 * din_coef) + (v.dil_muaf ? 0 : 10 * dil_coef);
+            // Normalization for exemptions: Scales the score up to maintain the 500 max range
+            const max_possible_weighted = 270; // (20*4)*3 + (10*1)*3
+            const current_max_possible = (20 * 4) * 3 + (10 * 1) + (v.din_muaf ? 0 : 10) + (v.dil_muaf ? 0 : 10);
             const multiplier = max_possible_weighted / current_max_possible;
 
             const weighted_score = (
@@ -265,7 +265,10 @@ export const formulas: CalculatorRuntimeMap = {
                 (dil_net * c_dil)
             ) * multiplier;
 
-            let total_puan = base_point + weighted_score;
+            // Conversion to 500 scale
+            // (500 - 194.707) / 270 = 1.1307148
+            const scaling_factor = 1.1307148;
+            let total_puan = base_point + (weighted_score * scaling_factor);
 
             const total_net = t_net + m_net + f_net + i_net + din_net + dil_net;
             if (total_net === 0) total_puan = 0;
@@ -525,10 +528,10 @@ export const formulas: CalculatorRuntimeMap = {
 
             // YDS (P3)
             if (alani === "YDS") {
-                const ydsNet = getNet(v.yds_d, v.yds_y, 80);
-                if (ydsNet >= 1) {
+                const ydsCorrect = Math.min(Math.max(parseFloat(v.yds_d) || 0, 0), 80);
+                if (ydsCorrect >= 1) {
                     // YDS %50
-                    const ydsPart = (ydsNet / 80) * 50;
+                    const ydsPart = (ydsCorrect / 80) * 50;
                     p3Puani = p1Base * 0.5 + p2BasePart + ydsPart * 0.8;
                 }
             }
@@ -596,15 +599,20 @@ export const formulas: CalculatorRuntimeMap = {
             return { obp, yerlestirmeEtkisi };
         },
     "yds-puan-hesaplama": (v) => {
-            const d = parseFloat(v.dogru) || 0, y = parseFloat(v.yanlis) || 0;
-            const net = d - y / 4;
-            const puan = (net / 80) * 100;
-            let cefr = { tr: "A1 (Başlangıç)", en: "A1 (Beginner)" };
-            if (puan >= 90) cefr = { tr: "C2 (Ustalık)", en: "C2 (Mastery)" };
-            else if (puan >= 80) cefr = { tr: "C1 (Etkin Kullanım)", en: "C1 (Effective)" };
-            else if (puan >= 70) cefr = { tr: "B2 (Bağımsız Üst)", en: "B2 (Upper Independent)" };
-            else if (puan >= 60) cefr = { tr: "B1 (Bağımsız Alt)", en: "B1 (Lower Independent)" };
-            else if (puan >= 50) cefr = { tr: "A2 (Temel Üst)", en: "A2 (Upper Basic)" };
+            const dogru = Math.min(Math.max(parseFloat(v.dogru) || 0, 0), 80);
+            let yanlis = Math.max(parseFloat(v.yanlis) || 0, 0);
+            if (dogru + yanlis > 80) {
+                yanlis = Math.max(0, 80 - dogru);
+            }
+
+            const net = dogru;
+            const puan = (dogru / 80) * 100;
+            let cefr = { tr: "50 Altı", en: "Below 50" };
+            if (puan >= 90) cefr = { tr: "A Seviyesi (90-100)", en: "Level A (90-100)" };
+            else if (puan >= 80) cefr = { tr: "B Seviyesi (80-89)", en: "Level B (80-89)" };
+            else if (puan >= 70) cefr = { tr: "C Seviyesi (70-79)", en: "Level C (70-79)" };
+            else if (puan >= 60) cefr = { tr: "D Seviyesi (60-69)", en: "Level D (60-69)" };
+            else if (puan >= 50) cefr = { tr: "E Seviyesi (50-59)", en: "Level E (50-59)" };
             return { net, puan, cefr };
         },
     "universite-taban-puanlari": (v) => {
@@ -685,8 +693,8 @@ export const formulas: CalculatorRuntimeMap = {
             const gpa = parseFloat(v.lisanNot) || 0;
             const gpa100 = (gpa / 4) * 100;
             const alesAgirliki = ales * 0.50;
-            const ydsAgirliki = yds * 0.20;
-            const notAgirliki = gpa100 * 0.30;
+            const ydsAgirliki = yds * 0.15;
+            const notAgirliki = gpa100 * 0.35;
             const toplamPuan = alesAgirliki + ydsAgirliki + notAgirliki;
             return { alesAgirliki, ydsAgirliki, notAgirliki, toplamPuan };
         },
@@ -704,7 +712,7 @@ export const formulas: CalculatorRuntimeMap = {
         },
     "isg-puan-hesaplama": (v) => {
             const net = (parseFloat(v.dogru) || 0) - (parseFloat(v.yanlis) || 0) / 4;
-            return { net, puan: net };
+            return { net, puan: (Math.max(0, net) / 50) * 100 };
         },
     "tus-puan-hesaplama": (v) => {
             const temelNet = (parseFloat(v.temel_d) || 0) - (parseFloat(v.temel_y) || 0) / 4;

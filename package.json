@@ -8,8 +8,9 @@
     "mobile:android:no-clear": "powershell -ExecutionPolicy Bypass -File ./mobile/scripts/start-android-simulator.ps1",
     "analyze:coverage": "tsx scripts/analyze-calculator-coverage.ts",
     "export:index-priority": "tsx scripts/generate-index-priority.ts",
+    "prepare:indexnow": "npx -y tsx scripts/prepare-indexnow.ts",
     "generate:runtimes": "tsx scripts/generate-runtime-modules.ts",
-    "build": "npm run generate:runtimes && next build",
+    "build": "npm run prepare:indexnow && npm run generate:runtimes && next build",
     "postbuild": "npx -y tsx scripts/submit-indexing.ts",
     "start": "next start",
     "lint": "next lint"

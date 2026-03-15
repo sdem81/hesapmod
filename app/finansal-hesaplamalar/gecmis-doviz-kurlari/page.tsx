@@ -2,9 +2,15 @@
 import React from "react";
 import { Metadata } from "next";
 
+const PAGE_URL = "https://www.hesapmod.com/finansal-hesaplamalar/gecmis-doviz-kurlari";
+const DATE_MODIFIED = "2026-03-14";
+
 export const metadata: Metadata = {
-  title: "Geçmiş Döviz Kurları Hesaplama (2010–2026) — Yıllara Göre Dolar Kuru",
-  description: "2010'dan 2026'ya TCMB verileriyle yıllık ortalama dolar, euro ve sterlin kurlarına ulaşın. Yıllara göre değişimi görün, geçmiş döviz işlemlerinizin bugünkü değerini analiz edin.",
+  title: "Geçmiş Döviz Kurları 2010–2026 — Dolar, Euro ve Sterlin Ortalama Kurları",
+  description: "Geçmiş döviz kurları sayfasında 2010–2026 USD, EUR ve GBP/TL ortalamalarını inceleyin. Döviz yatırımının nominal ve reel etkisini tarihsel kur verisiyle karşılaştırın.",
+  alternates: {
+    canonical: PAGE_URL,
+  },
 };
 
 const DATA: Record<string, [number, number, number]> = {
@@ -43,7 +49,7 @@ function calcYoY(year: string) {
 export default function Page() {
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-slate-900">Geçmiş Döviz Kurları Hesaplama (2010–2026) — Yıllara Göre Dolar, Euro ve Sterlin Kuru (TCMB)</h1>
+      <h1 className="text-3xl font-bold mb-6 text-slate-900">Geçmiş Döviz Kurları 2010–2026 — Dolar, Euro ve Sterlin Ortalama Kurları</h1>
       <section className="mb-8 text-slate-700 space-y-4 leading-relaxed">
         <p>
           Türkiye ekonomisinde döviz kurları ve yıllara göre dolar kuru, alım gücünü ve enflasyonist eğilimleri anlamak için en temel göstergelerden biridir. Türk Lirası, 2010 yılında yalnızca <strong>1.50 USD/TL</strong> seviyesinden işlem görürken, 2026 yılı projeksiyonlarında <strong>43.98 TL</strong> ortalamalarına yaklaşmıştır. Bu durum, aradan geçen yıllar içerisinde dolar karşısında muazzam bir tarihsel değer kaybını işaret etmektedir.
@@ -180,6 +186,50 @@ export default function Page() {
           </details>
         </div>
       </section>
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "name": "Geçmiş Döviz Kurları 2010–2026 — Dolar, Euro ve Sterlin Ortalama Kurları",
+              "description": "Geçmiş döviz kurları sayfasında 2010–2026 USD, EUR ve GBP/TL ortalamalarını inceleyin. Döviz yatırımının nominal ve reel etkisini tarihsel kur verisiyle karşılaştırın.",
+              "url": PAGE_URL,
+              "dateModified": DATE_MODIFIED,
+              "inLanguage": "tr-TR",
+              "isPartOf": {
+                "@type": "WebSite",
+                "name": "HesapMod",
+                "url": "https://www.hesapmod.com"
+              }
+            },
+            {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Ana Sayfa",
+                  "item": "https://www.hesapmod.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Finansal Hesaplamalar",
+                  "item": "https://www.hesapmod.com/finansal-hesaplamalar"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": "Geçmiş Döviz Kurları",
+                  "item": PAGE_URL
+                }
+              ]
+            }
+          ]
+        })
+      }} />
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{
         __html: JSON.stringify({

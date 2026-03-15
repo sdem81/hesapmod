@@ -34,10 +34,10 @@ type YksYearConfig = {
 
 export const yksYearConfigs: Record<string, YksYearConfig> = {
     "2025": {
-        label: { tr: "2025 (Güncel simülasyon seti)", en: "2025 (Current simulation set)" },
+        label: { tr: "2025 (2026 ön izleme için güncel set)", en: "2025 (Current set for 2026 preview)" },
         helperText: {
-            tr: "2025 seçeneği, resmi 2025 sonuç yılı için son doğrulanmış 2024 katsayı yapısını baz alan güncel simülasyon setidir.",
-            en: "The 2025 option is a current simulation set for the official 2025 result year, based on the latest verified 2024 coefficient structure.",
+            tr: "2026 YKS için en yakın senaryoyu üretmek üzere 2025 güncel simülasyon seti kullanılır. Bu set doğrulanmış 2024 katsayı yapısını temel alır ve tercih planlaması için ön izleme sağlar.",
+            en: "For 2026 YKS planning, the 2025 current simulation set is used as the closest scenario. It is built on the verified 2024 coefficient structure and serves as a planning preview.",
         },
         isApproximate: false,
         tKatTurk: 2.91,

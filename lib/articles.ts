@@ -318,6 +318,43 @@ export const articles: Article[] = [
 <p>Detaylı nakit akışı ve döviz/TL görünümü için <strong>Eurobond Hesaplama</strong>, hızlı kupon ve yaklaşık getiri için <strong>Eurobond Getiri Hesaplama</strong> kullanılabilir. Benzer sabit getirili enstrüman mantığını kıyaslamak için <strong>Tahvil</strong> ve <strong>Bono</strong> araçları da yararlı olur.</p>`,
   },
   {
+    slug: "eurobond-vergi-hesaplama-2026",
+    title: "2026 Eurobond Vergi Hesaplama Rehberi: Hazine Eurobondu, Stopaj ve Özel Sektör Kesintileri",
+    description:
+      "Eurobond vergisi nasıl hesaplanır? Hazine eurobondlarında %0 stopajı, tam mükellef kurumların yurt dışı ihraçlarında görülen vade bazlı oranları ve diğer özel sektör tahvillerindeki kesinti mantığını öğrenin.",
+    category: "Finans",
+    categorySlug: "finansal-hesaplamalar",
+    publishedAt: "2026-03-15",
+    updatedAt: "2026-03-15",
+    readingTime: 7,
+    relatedCalculators: ["eurobond-getiri-hesaplama", "eurobond-hesaplama", "tahvil-hesaplama", "mevduat-faiz-hesaplama"],
+    keywords: ["eurobond vergi hesaplama", "eurobond vergisi 2026", "hazine eurobond stopaj", "özel sektör eurobond vergisi", "eurobond stopaj oranı"],
+    content: `<h2>Eurobond Vergi Hesaplama Neden Ayrı Okunmalı?</h2>
+<p>Eurobond yatırımında kullanıcı çoğu zaman yalnız kupon oranına veya vadeye kadar getiriye odaklanır. Oysa <strong>net getiri</strong> açısından vergi yapısı da en az fiyat ve kur kadar önemlidir. Üstelik piyasada sık tekrar edilen “özel sektör eurobondlarında stopaj hep %10’dur” cümlesi her durumda doğru değildir. Bu yüzden eurobond vergi hesaplama başlığını ayrı okumak gerekir.</p>
+<h2>2026 İçin Temel Çerçeve</h2>
+<table>
+  <thead>
+    <tr><th>İhraç tipi</th><th>Stopaj çerçevesi</th><th>Kısa not</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Türkiye Hazinesi eurobondları</td><td>%0</td><td>GVK 94/7-b kapsamında stopaj muafiyeti</td></tr>
+    <tr><td>Tam mükellef kurumların yurt dışı ihraçları</td><td>Vadeye göre %0 / %3 / %7</td><td>GİB rehberinde 31.01.2025 tarihli 9487 sayılı karar çerçevesiyle açıklanır</td></tr>
+    <tr><td>Bu grup dışında kalan özel sektör tahvilleri</td><td>%10</td><td>Geçici 67 kapsamında standart kesinti mantığı öne çıkar</td></tr>
+  </tbody>
+</table>
+<h2>Hazine Eurobondlarında Vergi Durumu</h2>
+<p>Türkiye Hazinesi tarafından ihraç edilen eurobondlarda faiz geliri tarafında <strong>%0 stopaj</strong> uygulanır. Bu, özellikle TL mevduat veya bazı özel sektör borçlanma araçlarıyla kıyaslandığında net getiri açısından önemli bir avantaj yaratır. Ancak stopajın sıfır olması, yatırım kararının risksiz olduğu anlamına gelmez; fiyat oynaklığı ve kur hareketi yine sonucu ciddi biçimde etkiler.</p>
+<h2>Özel Sektör Eurobondlarında Oran Tek Değildir</h2>
+<p>GİB’in Menkul Sermaye İradı rehberinde, <strong>tam mükellef kurumların yurt dışında ihraç ettiği tahvil ve kira sertifikalarında</strong> vadelere göre <strong>%0, %3 veya %7</strong> tevkifat görülebileceği belirtilir. Buna karşılık bu grubun dışında kalan özel sektör tahvillerinde <strong>%10</strong> oranı öne çıkar. Dolayısıyla yatırımcı önce ihraççının niteliğini, sonra aracın hangi vergi kategorisine girdiğini kontrol etmelidir.</p>
+<h2>Vergi Net Getiriyi Nasıl Değiştirir?</h2>
+<p>Aynı kupon oranına sahip iki eurobond düşünün: biri Hazine ihraçlı, diğeri özel sektör ihraçlı olsun. Brüt kupon geliri eşit görünse bile stopaj farkı nedeniyle yatırımcının eline geçen <strong>net kupon</strong> farklılaşabilir. Bu nedenle yalnız kupon oranına değil, <strong>net kupon geliri + alım fiyatı + vadeye kadar getiri + kur etkisi</strong> bileşimine bakmak gerekir.</p>
+<h2>Beyan Sınırı Her Yıl Ayrı Kontrol Edilmelidir</h2>
+<p>Stopaj oranı kadar <strong>beyan yükümlülüğü</strong> de önemlidir. Ancak beyan hadleri ve uygulama detayları yıllara göre değişebilir. Bu yüzden kesin işlem öncesinde ilgili yılın Hazır Beyan özetini ve güncel GİB rehberini kontrol etmek gerekir; eski yıl eşikleriyle karar vermek hatalı sonuç doğurabilir.</p>
+<h2>Hangi Araçlar Birlikte Kullanılmalı?</h2>
+<p>Önce <strong>Eurobond Getiri Hesaplama</strong> aracıyla kupon, toplam getiri ve yaklaşık YTM görün. Ardından <strong>Eurobond Hesaplama</strong> ekranında daha detaylı kur/TL senaryosu kurun. Sabit getirili alternatifleri kıyaslamak için <strong>Tahvil</strong>, vergi sonrası net faiz farkını görmek için <strong>Mevduat Faiz Hesaplama</strong> aracı birlikte okunabilir.</p>
+<p><em>Resmi kontrol:</em> Güncel mevzuat için <a href="https://intvrg.gib.gov.tr/hazirbeyan/assets/pdf/menkulsermaye2025.pdf" target="_blank" rel="noopener noreferrer">GİB Menkul Sermaye İradı Rehberi</a> ve <a href="https://intvrg.gib.gov.tr/hazirbeyan/menkulOzet.html" target="_blank" rel="noopener noreferrer">Hazır Beyan menkul özeti</a> incelenmelidir.</p>`,
+  },
+  {
     slug: "kredi-karti-faizi-asgari-odeme-ve-yapilandirma-rehberi",
     title: "Kredi Kartı Faizi, Asgari Ödeme ve Yapılandırma Rehberi: Borcu Büyütmeden Ne Yapmalı?",
     description:

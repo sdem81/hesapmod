@@ -50,6 +50,7 @@ export interface CalculatorConfig {
     id: string;
     slug: string;
     category: string;
+    updatedAt?: string;
     name: { tr: string; en: string };
     /** SEO-optimized H1 başlığı (yoksa name.tr kullanılır) */
     h1?: { tr: string; en: string };
@@ -141,6 +142,7 @@ export const financeCalculators: CalculatorConfig[] = [
     {
         id: "early-loan-closure-fee",
         slug: "kredi-erken-kapatma-cezasi-hesaplama",
+        updatedAt: "2026-03-14",
         category: "finansal-hesaplamalar",
         name: { tr: "Kredi Erken Kapatma Cezası Hesaplama", en: "Early Loan Closure Fee Calculator" },
         h1: { tr: "Kredi Erken Kapatma Cezası Hesaplama", en: "Early Loan Closure Fee Calculator" },
@@ -327,6 +329,7 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
     {
         id: "vat-kdv",
         slug: "kdv-hesaplama",
+        updatedAt: "2026-03-14",
         category: "finansal-hesaplamalar",
         name: { tr: `KDV Hesaplama`, en: `VAT Calculator` },
         h1: { tr: `KDV Hesaplama Aracı 2026 — KDV Dahil, Hariç ve Tevkifatlı Tutar`, en: `Online VAT Calculator — Inclusive & Exclusive` },
@@ -420,6 +423,7 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
     {
         id: "simple-interest",
         slug: "basit-faiz-hesaplama",
+        updatedAt: "2026-03-14",
         category: "finansal-hesaplamalar",
         name: { tr: `Basit Faiz Hesaplama`, en: `Simple Interest Calculator` },
         h1: { tr: `Basit Faiz Hesaplama — Anapara, Oran ve Vadeye Göre`, en: `Simple Interest Calculator — Principal, Rate & Term` },
@@ -493,10 +497,11 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
         id: "loan-payment",
         slug: "kredi-taksit-hesaplama",
         category: "finansal-hesaplamalar",
+        updatedAt: "2026-03-15",
         name: { tr: `Kredi Taksit Hesaplama`, en: `Loan Payment Calculator` },
-        h1: { tr: `Kredi Taksit Hesaplama — Aylık Taksit ve Toplam Maliyet`, en: `Loan Payment Calculator — Monthly Installment & Total Cost` },
-        description: { tr: `Aylık taksit tutarını, toplam geri ödemeyi ve faiz maliyetini hesaplayın.`, en: `Calculate monthly installment, total repayment and interest cost.` },
-        shortDescription: { tr: `Kredi tutarı, faiz ve vadeyi girerek aylık taksitinizi ve toplam geri ödemenizi öğrenin.`, en: `Enter loan amount, rate and term to see your monthly payment and total cost.` },
+        h1: { tr: `Kredi Taksit Hesaplama — Aylık Ödeme Planı ve Toplam Geri Ödeme`, en: `Loan Payment Calculator — Monthly Payment Plan & Total Repayment` },
+        description: { tr: `Aylık kredi taksitini, toplam geri ödemeyi, toplam faizi ve ödeme planını hesaplayın.`, en: `Calculate monthly installment, total repayment, total interest, and the payment schedule.` },
+        shortDescription: { tr: `Kredi tutarı, faiz ve vadeyi girerek aylık taksit, toplam faiz yükü ve kredi ödeme planını tek ekranda görün.`, en: `Enter loan amount, rate, and term to see monthly payment, total interest burden, and the full payment schedule.` },
         relatedCalculators: ["basit-faiz-hesaplama", "bilesik-faiz-hesaplama", "kira-artis-hesaplama"],
         inputs: [
             {
@@ -530,7 +535,6 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
                 termMonths: v.months,
             });
             const principalAmount = Math.max(0, Number.parseFloat(String(v.amount ?? 0).replace(",", ".")) || 0);
-            const numericRate = Math.max(0, Number.parseFloat(String(v.rate ?? 0).replace(",", ".")) || 0);
 
             // Generate dummy but realistic rates based on loan type
             let bankRatesList: any[] = [];
@@ -557,55 +561,45 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
                 ];
             }
 
-            if (numericRate === 0) {
-                return {
-                    monthly: monthlyPayment, totalPayment, totalInterest, bankRatesList,
-                    chart: {
-                        segments: [
-                            { label: { tr: "Anapara", en: "Principal" }, value: principalAmount, colorClass: "bg-white", colorHex: "#ffffff" },
-                            { label: { tr: "Toplam Faiz", en: "Total Interest" }, value: 0, colorClass: "bg-destructive", colorHex: "hsl(var(--destructive))" }
-                        ]
-                    },
-                    amortizationSchedule
-                };
-            }
-
             return {
-                monthly: monthlyPayment, totalPayment, totalInterest, bankRatesList,
+                monthly: monthlyPayment,
+                totalPayment,
+                totalInterest,
+                bankRatesList,
+                amortizationSchedule,
                 chart: {
                     segments: [
                         { label: { tr: "Anapara", en: "Principal" }, value: principalAmount, colorClass: "bg-white", colorHex: "#ffffff" },
                         { label: { tr: "Toplam Faiz", en: "Total Interest" }, value: totalInterest, colorClass: "bg-destructive", colorHex: "hsl(var(--destructive))" }
                     ]
-                },
-                amortizationSchedule
+                }
             };
         },
         seo: {
-            title: { tr: `Kredi Taksit Hesaplama 2026`, en: `Loan Payment Calculator 2026` },
-            metaDescription: { tr: `Kredi tutarı, aylık faiz oranı ve vade bilgisiyle aylık taksiti, toplam geri ödemeyi, faiz maliyetini ve örnek ödeme planını hesaplayın.`, en: `Calculate monthly payment, total repayment, interest cost, and a sample amortization plan using the loan amount, monthly rate, and term.` },
-            content: { tr: `Kredi taksit hesaplaması, bankaların eşit taksitli kredi modelinde kullandığı anüite formülüne dayanır. Aylık taksit sabit görünse de ilk aylarda faiz payı yüksek, son aylarda ise anapara payı daha yüksektir. Bu araç; ihtiyaç, taşıt ve konut kredilerinde aylık taksidi, toplam geri ödemeyi, toplam faiz yükünü ve örnek amortisman planını aynı ekranda vererek kredi tekliflerini daha sağlıklı kıyaslamanızı sağlar.`, en: `Loan installment calculation is based on the annuity formula used in fixed-payment banking products. While the monthly payment remains constant, the interest share is higher in the early months and the principal share rises later. This tool presents the monthly payment, total repayment, interest burden, and a sample amortization schedule together for personal, auto, and mortgage loans.` },
+            title: { tr: "Kredi Taksit Hesaplama 2026 — Aylık Taksit, Ödeme Planı ve Toplam Maliyet", en: "Loan Payment Calculator 2026 — Monthly Payment Plan and Total Cost" },
+            metaDescription: { tr: "Kredi taksit hesaplama aracıyla aylık taksit, toplam geri ödeme, toplam faiz ve kredi ödeme planını anında görün. İhtiyaç, taşıt ve konut senaryolarını kıyaslayın.", en: "Use the loan payment calculator to instantly see monthly payment, total repayment, total interest, and the full payment plan across personal, vehicle, and mortgage scenarios." },
+            content: { tr: "Kredi taksit hesaplama aramalarında kullanıcıların büyük bölümü önce aylık ödemeyi görmek ister; ancak doğru karar için toplam geri ödeme, toplam faiz yükü ve ay ay ödeme planı birlikte okunmalıdır. Bu araç anapara, aylık faiz oranı ve vade süresini kullanarak standart anüite formülüyle eşit taksitli kredi planı üretir. İhtiyaç, taşıt ve konut kredilerinde aynı nominal faiz oranı bile farklı masraf, vergi ve vade yapılarıyla farklı sonuç verebildiği için senaryoyu kredi türüyle birlikte değerlendirmek daha sağlıklıdır.", en: "Most users searching for loan installments want the monthly number first, but a sound decision also depends on total repayment, total interest burden, and the month-by-month payment plan. This tool applies the standard annuity formula to principal, monthly rate, and term to produce an equal-installment schedule. Even the same nominal rate can lead to different outcomes across personal, vehicle, and mortgage loans because fees, taxes, and maturity structures differ." },
             faq: [
-                { q: { tr: `Kredi taksidini nasıl düşürebilirim?`, en: `How can I lower my loan payment?` }, a: { tr: `Vadeyi uzatarak veya daha düşük faiz oranı bularak aylık taksidini düşürebilirsiniz.`, en: `You can lower your monthly payment by extending the term or finding a lower interest rate.` } },
-                { q: { tr: `Vade uzarsa toplam maliyet neden artar?`, en: `Why does the total cost rise when the term gets longer?` }, a: { tr: `Vade uzadıkça aylık taksit düşer ama anapara daha uzun süre faiz üretir. Bu yüzden toplam geri ödeme genellikle yükselir.`, en: `A longer term lowers the monthly payment, but the principal generates interest for a longer time. That usually increases total repayment.` } },
-                { q: { tr: `Aylık faiz oranı ile yıllık maliyet aynı şey mi?`, en: `Is the monthly rate the same as the annual cost?` }, a: { tr: `Hayır. Aylık faiz oranı sadece nominal borçlanma maliyetini gösterir; dosya masrafı, sigorta ve vergiler yıllık maliyet oranını yükseltebilir.`, en: `No. The monthly rate shows only the nominal borrowing cost; fees, insurance, and taxes can push the annual cost much higher.` } }
+                { q: { tr: "Kredi taksiti nasıl hesaplanır?", en: "How is a loan installment calculated?" }, a: { tr: "Kredi taksiti, anapara, aylık faiz oranı ve vade süresinin anüite formülüne yerleştirilmesiyle hesaplanır. Araç, tüm vadeye yayılan eşit taksit yapısını esas alır.", en: "It is calculated by plugging principal, monthly interest rate, and term into the annuity formula, assuming equal installments across the term." } },
+                { q: { tr: "Vade uzadıkça neden toplam maliyet artar?", en: "Why does total cost rise when the term gets longer?" }, a: { tr: "Vade uzadıkça aylık taksit düşebilir; ancak kredi daha uzun süre faiz ürettiği için toplam geri ödeme ve toplam faiz yükü yükselir.", en: "Monthly payment may fall as the term extends, but total repayment and interest burden rise because the debt accrues interest for longer." } },
+                { q: { tr: "Kredi erken kapatılırsa ceza olur mu?", en: "Is there a penalty for early loan repayment?" }, a: { tr: "Tüketici ve taşıt kredilerinde genelde faiz indirimi avantajı öne çıkar. Konut kredilerinde ise kalan vadeye göre erken ödeme tazminatı uygulanabilen senaryolar olabilir; sözleşme ve banka koşulları ayrıca kontrol edilmelidir.", en: "Consumer and vehicle loans usually mainly benefit from waived future interest. Mortgages may have early repayment compensation depending on the remaining term, so the contract and lender terms should be checked." } }
             ],
             richContent: {
                 howItWorks: {
-                    tr: `Kredi taksit hesaplama aracı, belirlenen anaparanın faiz oranı ve vade boyunca her ay eşit taksitler halinde nasıl geri ödeneceğini belirlemek için kullanılır.`,
-                    en: `The loan calculator calculates monthly fixed installments (annuity) over a given period at a set interest rate.`
+                    tr: "Araç, belirlenen anapara için aylık faiz ve vade bilgisini kullanarak her ay ödenecek eşit taksiti bulur. Sonrasında toplam geri ödeme, faiz maliyeti ve ay ay anapara-faiz dağılımını çıkararak ödeme planını görünür hale getirir.",
+                    en: "The tool uses principal, monthly rate, and term to find the fixed monthly installment, then derives total repayment, interest cost, and the month-by-month principal-interest breakdown."
                 },
                 formulaText: {
-                    tr: `Taksit = [Anapara x Faiz x (1 + Faiz)^Vade] / [(1 + Faiz)^Vade - 1].`,
-                    en: `Payment = P x [r(1+r)^n] / [(1+r)^n - 1].`
+                    tr: "Aylık Taksit = P × [r × (1+r)^n] / [(1+r)^n - 1]. Burada P anapara, r aylık faiz oranı, n ise toplam ay sayısıdır.",
+                    en: "Monthly Payment = P × [r × (1+r)^n] / [(1+r)^n - 1], where P is principal, r is monthly rate, and n is total months."
                 },
                 exampleCalculation: {
-                    tr: `Örneğin; 100.000 TL krediyi %3,50 aylık faizle 12 ay vadeyle çektiğinizde aylık taksit 10.327,33 TL olur.`,
-                    en: `Example: 100,000 TL loan at 3.5% monthly rate for 12 months results in 10,327.33 TL monthly payment.`
+                    tr: "Örnek: 100.000 TL kredi, aylık %3,50 faiz ve 12 ay vade için aylık taksit yaklaşık 10.532 TL olur. Toplam geri ödeme yaklaşık 126.384 TL, toplam faiz yükü ise yaklaşık 26.384 TL seviyesindedir.",
+                    en: "Example: A 100,000 TL loan at 3.50% monthly interest over 12 months yields a monthly payment of about 10,532 TL, with roughly 126,384 TL total repayment and 26,384 TL total interest."
                 },
                 miniGuide: {
-                    tr: `Kredi çekerken Yıllık Maliyet Oranına odaklanın. <ul><li><b>Vade Seçimi:</b> Vade uzadıkça toplam faiz yükü artar.</li><li><b>Erken Kapama:</b> Erken kapama faiz tasarrufu sağlar.</li></ul>`,
-                    en: `Focus on the Annual Percentage Rate (APR) when taking a loan.`
+                    tr: "<ul><li><b>Aylık taksite değil toplam yüke bakın:</b> Düşük taksit her zaman daha avantajlı kredi anlamına gelmez.</li><li><b>Vade etkisini karşılaştırın:</b> Aynı tutarı kısa ve uzun vadede ayrı ayrı deneyerek faiz farkını görün.</li><li><b>Kredi türünü dikkate alın:</b> Tüketici, taşıt ve konut kredilerinde vergi ve maliyet yapısı farklı olabilir.</li><li><b>Ek masrafları ayrıca değerlendirin:</b> Tahsis ücreti, sigorta ve erken kapama ihtimali toplam kararı etkiler.</li></ul>",
+                    en: "Compare total cost, test different maturities, account for loan type, and review fees or early closure scenarios in addition to the monthly payment."
                 }
             }
         }
@@ -613,6 +607,7 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
     {
         id: "compound-interest",
         slug: "bilesik-faiz-hesaplama",
+        updatedAt: "2026-03-14",
         category: "finansal-hesaplamalar",
         name: { tr: "Bileşik Faiz Hesaplama", en: "Compound Interest Calculator" },
         h1: { tr: "Bileşik Faiz Hesaplama — Faizin Faizini Hesaplayın", en: "Compound Interest Calculator — See Your Investment Grow" },
@@ -761,6 +756,7 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
         h1: { tr: "Kâr Marjı ve Satış Fiyatı Hesaplama (Otomatik Çevrim)", en: "Profit Margin Calculator — Instant Results from Cost & Price" },
         description: { tr: "Maliyet üzerinden kâr oranı (markup) bulma, brüt ve net kâr marjı hesaplamaları ve otomatik satış fiyatı belirleme aracı.", en: "Calculate profit amount and margin based on cost and selling price." },
         shortDescription: { tr: "Ürününüzün maliyet ve satış fiyatını girerek kâr tutarını, kâr marjını ve maliyet üzerinden kâr oranını (markup) anında hesaplayın.", en: "Enter cost and selling price to calculate profit amount, margin and markup rate." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["kdv-hesaplama", "yuzde-hesaplama", "basit-faiz-hesaplama"],
         inputs: [
             {
@@ -870,6 +866,7 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
         h1: { tr: "Maaş Hesaplama 2026 — Brüt Net Maaş Hesaplayıcı", en: "Salary Calculator 2026 — Gross to Net" },
         description: { tr: "2026 yılı vergi ve SGK oranlarına göre brüt-net maaş hesaplama yapın.", en: "Calculate gross-to-net salary based on 2026 tax and SGK rates." },
         shortDescription: { tr: "Brüt maaşınızı girin; SGK, gelir vergisi ve damga vergisi kesintilerini ve net maaşınızı anında görün.", en: "Enter gross salary to instantly see SGK, income tax and stamp duty deductions and your net pay." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["kdv-hesaplama", "basit-faiz-hesaplama", "kira-artis-hesaplama"],
         inputs: [
             {
@@ -1117,6 +1114,7 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
     {
         id: "how-much-loan",
         slug: "ne-kadar-kredi-alabilirim-hesaplama",
+        updatedAt: "2026-03-14",
         category: "finansal-hesaplamalar",
         name: { tr: "Ne Kadar Kredi Alabilirim?", en: "How Much Loan Can I Get?" },
         h1: { tr: "Ne Kadar Kredi Çekebilirim Hesaplama", en: "Maximum Loan Capacity Calculator" },
@@ -1189,6 +1187,7 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
     {
         id: "loan-allocation-fee",
         slug: "kredi-dosya-masrafi-hesaplama",
+        updatedAt: "2026-03-14",
         category: "finansal-hesaplamalar",
         name: { tr: "Kredi Dosya Masrafı Hesaplama", en: "Loan Allocation Fee" },
         h1: { tr: "Kredi Dosya Masrafı / Tahsis Ücreti Hesaplama", en: "Loan Allocation Fee Calculator" },
@@ -1289,6 +1288,7 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
     {
         id: "cc-minimum-payment",
         slug: "kredi-karti-asgari-odeme-tutari-hesaplama",
+        updatedAt: "2026-03-14",
         category: "finansal-hesaplamalar",
         name: { tr: "Kredi Kartı Asgari Tutarı", en: "CC Min. Payment" },
         h1: { tr: "Kredi Kartı Asgari Ödeme Tutarı Hesaplama (2026 Sınırlarıyla)", en: "Credit Card Minimum Payment Calculator" },
@@ -1355,6 +1355,7 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
     {
         id: "commercial-loan",
         slug: "is-yeri-ve-ticari-kredi-hesaplama",
+        updatedAt: "2026-03-14",
         category: "finansal-hesaplamalar",
         name: { tr: "Ticari Kredi Hesaplama", en: "Commercial Loan Calculator" },
         h1: { tr: "İş Yeri, Ticari Araç ve KOBİ Kredisi Hesaplama", en: "Commercial & Business Loan Calculator" },
@@ -1428,39 +1429,40 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
         id: "cc-installment-cash-advance",
         slug: "kredi-karti-taksitli-nakit-avans-hesaplama",
         category: "finansal-hesaplamalar",
+        updatedAt: "2026-03-15",
         name: { tr: "Taksitli Nakit Avans", en: "Credit Card Installment Cash" },
-        h1: { tr: "Kredi Kartı Taksitli Nakit Avans Hesaplama", en: "Credit Card Installment Cash Advance Calculator" },
-        description: { tr: "Kredi kartınızın limitinden nakit olarak çekeceğiniz tutarın güncel avans faizi ile kaç taksitle ne kadara mal olacağını görün.", en: "Calculate the exact monthly installments and total repayment for a cash advance withdrawn from your credit card based on current cash interest rates." },
-        shortDescription: { tr: "Kredi kartından avans çekerseniz faizinin ne kadar yansıyacağını hemen hesaplayın.", en: "Find out exactly how much interest will reflect when you take a cash advance from your card." },
-        relatedCalculators: ["cc-minimum-payment", "kredi-hesaplama"],
+        h1: { tr: "Nakit Avans Hesaplama - Kredi Kartı Taksitli Nakit Avans", en: "Cash Advance Calculator - Credit Card Installment Cash Advance" },
+        description: { tr: "Nakit avans hesaplama aracında kredi kartı taksitli nakit avansının aylık taksidini, toplam geri ödemesini, net ele geçen tutarı ve efektif maliyetini görün.", en: "Use this cash advance calculator to estimate the monthly installment, total repayment, net cash received, and effective cost of a credit-card installment cash advance." },
+        shortDescription: { tr: "Nakit avans ve taksitli nakit avans maliyetini birkaç saniyede karşılaştırın.", en: "Compare cash advance and installment cash advance costs in seconds." },
+        relatedCalculators: ["cc-minimum-payment", "kredi-karti-ek-taksit-hesaplama", "ihtiyac-kredisi-hesaplama"],
         inputs: [
             { id: "advanceAmount", name: { tr: "Çekilecek Nakit Avans Tutarı", en: "Cash Advance Amount" }, type: "number", defaultValue: 20000, suffix: "TL", required: true },
             { id: "term", name: { tr: "Vade Sayısı (Taksit)", en: "Installment Term" }, type: "number", defaultValue: 6, max: 12, required: true },
-            { id: "interestRate", name: { tr: "Aylık Akdi Faiz (%)", en: "Monthly Interest Rate (%)" }, type: "number", defaultValue: 5, required: true },
+            { id: "interestRate", name: { tr: "Aylık Nakit Avans Faizi (%)", en: "Monthly Cash Advance Rate (%)" }, type: "number", defaultValue: 4.25, required: true },
             {
-                id: "taxMode", name: { tr: "Vergi Profili", en: "Tax Profile" }, type: "select", defaultValue: "standard", options: [
-                    { value: "standard", label: { tr: "Standart (%30 vergi etkisi)", en: "Standard (30% tax effect)" } },
-                    { value: "campaign", label: { tr: "Kampanya / vergisiz", en: "Campaign / no tax" } },
-                    { value: "custom", label: { tr: "Özel vergi oranı gir", en: "Enter custom tax rate" } },
+                id: "taxMode", name: { tr: "Ek Maliyet Profili", en: "Extra Cost Profile" }, type: "select", defaultValue: "standard", options: [
+                    { value: "standard", label: { tr: "Varsayılan maliyet etkisi (%30)", en: "Default cost effect (30%)" } },
+                    { value: "campaign", label: { tr: "Kampanya / ek maliyet yok", en: "Campaign / no extra cost" } },
+                    { value: "custom", label: { tr: "Özel oran gir", en: "Enter custom rate" } },
                 ]
             },
-            { id: "customTaxRate", name: { tr: "Özel Vergi Yükü (%)", en: "Custom Tax Load (%)" }, type: "number", defaultValue: 30, suffix: "%", required: true, showWhen: { field: "taxMode", value: "custom" } },
+            { id: "customTaxRate", name: { tr: "Özel Ek Maliyet Oranı (%)", en: "Custom Extra Cost Rate (%)" }, type: "number", defaultValue: 30, suffix: "%", required: true, showWhen: { field: "taxMode", value: "custom" } },
             {
-                id: "hasFee", name: { tr: "Nakde Çevirme Ücreti Durumu", en: "Upfront Cash Fee" }, type: "select", options: [
-                    { value: "yes", label: { tr: "Evet (\u00251 + 50TL Ücret)", en: "Yes (1% + 50TL Fee)" } },
-                    { value: "no", label: { tr: "Hayır (Ücretsiz)", en: "No (Free promo)" } }
-                ], defaultValue: "yes"
+                id: "hasFee", name: { tr: "Standart Nakit Çekim Komisyonu", en: "Standard Cash Withdrawal Fee" }, type: "select", options: [
+                    { value: "yes", label: { tr: "Evet (%1 komisyon)", en: "Yes (1% fee)" } },
+                    { value: "no", label: { tr: "Hayır (taksitli avans varsayımı)", en: "No (installment cash assumption)" } }
+                ], defaultValue: "no"
             },
-            { id: "extraFixedFee", name: { tr: "Ek Sabit Servis Ücreti", en: "Extra Fixed Service Fee" }, type: "number", defaultValue: 0, suffix: "TL", required: true }
+            { id: "extraFixedFee", name: { tr: "Ek ATM / Servis Ücreti", en: "Extra ATM / Service Fee" }, type: "number", defaultValue: 0, suffix: "TL", required: true }
         ],
         results: [
             { id: "installment", label: { tr: "Aylık Taksit Tutarı", en: "Monthly Installment" }, suffix: " TL", decimalPlaces: 2 },
             { id: "netCashReceived", label: { tr: "Ele Geçen Net Nakit", en: "Net Cash Received" }, suffix: " TL", decimalPlaces: 2 },
-            { id: "upfrontFee", label: { tr: "Peşin İşlem Ücreti", en: "Upfront Withdrawal Fee" }, suffix: " TL", decimalPlaces: 2 },
+            { id: "upfrontFee", label: { tr: "Toplam Peşin Ücret / Masraf", en: "Total Upfront Fee / Charge" }, suffix: " TL", decimalPlaces: 2 },
             { id: "totalInterest", label: { tr: "Toplam Faiz Yükü", en: "Total Interest Cost" }, suffix: " TL", decimalPlaces: 2 },
             { id: "totalFinanceCost", label: { tr: "Toplam Finansman Maliyeti", en: "Total Financing Cost" }, suffix: " TL", decimalPlaces: 2 },
-            { id: "effectiveMonthlyRate", label: { tr: "Vergili Efektif Aylık Oran", en: "Effective Monthly Rate" }, suffix: " %", decimalPlaces: 3 },
-            { id: "effectiveYearlyRate", label: { tr: "Vergili Yıllık Bileşik Oran", en: "Effective Annualized Rate" }, suffix: " %", decimalPlaces: 2 },
+            { id: "effectiveMonthlyRate", label: { tr: "Efektif Aylık Oran", en: "Effective Monthly Rate" }, suffix: " %", decimalPlaces: 3 },
+            { id: "effectiveYearlyRate", label: { tr: "Efektif Yıllık Bileşik Oran", en: "Effective Annualized Rate" }, suffix: " %", decimalPlaces: 2 },
             { id: "totalRepayment", label: { tr: "Toplam Geri Ödeme", en: "Total Repayment" }, suffix: " TL", decimalPlaces: 2 },
             { id: "amortizationSchedule", label: { tr: "Aylık Ödeme Akışı", en: "Monthly Payment Flow" }, type: "schedule" },
             { id: "summary", label: { tr: "Nakit Avans Özeti", en: "Cash Advance Summary" }, type: "text" },
@@ -1488,8 +1490,7 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
             }
 
             if (hasFee) {
-                const pureFee = (amount * 0.01) + 50;
-                upfrontFee = pureFee * 1.15; // BSMV
+                upfrontFee = amount * 0.01;
             }
 
             upfrontFee += extraFixedFee;
@@ -1528,10 +1529,10 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
             }
 
             const taxLabel = taxMode === "campaign"
-                ? { tr: "kampanya/vergisiz", en: "campaign/no-tax" }
+                ? { tr: "ek maliyet yok/kampanya", en: "campaign/no extra cost" }
                 : taxMode === "custom"
-                    ? { tr: `özel vergi yükü %${(taxRate * 100).toFixed(1)}`, en: `custom tax load ${(taxRate * 100).toFixed(1)}%` }
-                    : { tr: "standart %30 vergi etkisi", en: "standard 30% tax effect" };
+                    ? { tr: `özel ek maliyet %${(taxRate * 100).toFixed(1)}`, en: `custom extra cost ${(taxRate * 100).toFixed(1)}%` }
+                    : { tr: "varsayılan %30 maliyet etkisi", en: "default 30% cost effect" };
 
             const summary = {
                 tr: `${amount.toLocaleString("tr-TR", { maximumFractionDigits: 2 })} TL nakit avans çekiminde peşin kesinti sonrası elinize net ${netCashReceived.toLocaleString("tr-TR", { maximumFractionDigits: 2 })} TL geçer. ${taxLabel.tr} ile aylık taksit ${installment.toLocaleString("tr-TR", { maximumFractionDigits: 2 })} TL olur ve toplam finansman maliyeti ${totalFinanceCost.toLocaleString("tr-TR", { maximumFractionDigits: 2 })} TL seviyesine çıkar.`,
@@ -1552,18 +1553,18 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
             };
         },
         seo: {
-            title: { tr: "Kredi Kartı Taksitli Nakit Avans Hesaplama 2026", en: "Credit Card Installment Cash Advance Calculator" },
-            metaDescription: { tr: "Taksitli nakit avansta aylık taksit, peşin komisyon, net ele geçen para, efektif oran ve toplam finansman maliyetini birlikte hesaplayın.", en: "Calculate the installment, upfront commission, net cash received, effective rate, and total financing cost of a card cash advance." },
-            content: { tr: "Kredi kartıyla taksitli nakit avans, acil nakit ihtiyacını karşılamak için hızlıdır; ancak çoğu zaman sadece aylık faizden ibaret değildir. Vergi etkisi, %1 + sabit komisyon tarzı çekim ücretleri ve ek servis bedelleri, gerçekten elinize geçen nakit ile toplam geri ödeme arasındaki farkı büyütür. Bu araç, avansın aylık taksitini, net nakit tutarını, toplam finansman maliyetini ve ödeme planını aynı ekranda toplar.", en: "Installment cash advances on a credit card are fast, but the cost is rarely just the stated monthly rate. Tax effects, percentage-based withdrawal fees, and extra service charges widen the gap between the cash you receive and the amount you repay. This calculator puts the installment, net cash, total financing cost, and payment flow on one screen." },
+            title: { tr: "Nakit Avans Hesaplama 2026 — Kredi Kartı Taksitli Nakit Avans", en: "Cash Advance Calculator 2026 — Credit Card Installment Cash Advance" },
+            metaDescription: { tr: "Nakit avans hesaplama aracında taksitli kredi kartı nakit avansının aylık taksidini, net ele geçen tutarı, efektif oranını ve toplam geri ödemesini görün.", en: "Estimate the installment, net cash received, effective rate, and total repayment of a credit-card installment cash advance." },
+            content: { tr: "Nakit avans aramalarında kullanıcıların bir bölümü standart ATM çekimini, bir bölümü ise taksitli kredi kartı nakit avansını kasteder. Bu sayfa özellikle taksitli senaryoya odaklanır: aylık taksit, toplam geri ödeme, efektif maliyet ve net ele geçen tutarı birlikte gösterir. Dilerseniz standart nakit çekim komisyonu ve ek kanal masrafı varsayımı ekleyerek iki kullanım biçimini karşılaştırabilirsiniz.", en: "Some users searching for cash advance mean a standard ATM withdrawal, while others mean the installment cash feature on a credit card. This page focuses on the installment scenario and brings the monthly payment, total repayment, effective cost, and net cash received into one view. You can optionally add a standard cash-withdrawal fee and extra channel charge to compare the two usage types." },
             faq: [
-                { q: { tr: "Nakit avans faizi ile alışveriş faizi aynı mıdır?", en: "Is cash advance interest the same as shopping interest?" }, a: { tr: "Hayır. Genellikle Nakit Avans (Çekim) faiz oranı, standart alışveriş (Akdi) faiz oranından daha yüksektir.", en: "No. Usually, under central bank directives, cash advance rates are higher by .5 - 1 percentage points compared to regular shopping (contractual) interest." } },
-                { q: { tr: "Peşin komisyonu (ücreti) nasıl olur?", en: "How does the upfront withdrawal fee work?" }, a: { tr: "Birçok banka, avans tutarının ekstrenize yansımasına %1 komisyon + 50-100 TL arası bir işlem vergi ücretini en başta yansıtır.", en: "Many banks immediately charge 1% of the drawn principal plus a fixed service fee right onto your first statement." } }
+                { q: { tr: "Nakit avans faizi ile alışveriş faizi aynı mıdır?", en: "Is cash advance interest the same as shopping interest?" }, a: { tr: "Hayır. TCMB'nin kredi kartı azami faiz tablosunda nakit çekim/kullanım işlemleri ayrı izlenir ve çoğu kart segmentinde alışveriş faizinden daha yüksek ya da en az onun kadar yüksek bir tavan uygulanır.", en: "No. In the CBRT maximum-rate table, cash withdrawal/use transactions are tracked separately and usually carry a ceiling that is as high as or higher than standard purchase interest." } },
+                { q: { tr: "Taksitli nakit avansta işlem ücreti alınır mı?", en: "Can a fee be charged on installment cash advance?" }, a: { tr: "TCMB'nin finansal tüketici ücretleri talimatında taksitli nakit avans ve taksitlendirme işlemlerinden ücret alınamayacağı belirtilir. Standart nakit avans işleminde ise ayrıca komisyon olabilir; bu nedenle sayfadaki komisyon alanı karşılaştırma amaçlı opsiyoneldir.", en: "The CBRT instruction on consumer financial fees says installment cash advances and installment-conversion transactions cannot be charged a fee. A standard cash advance may still involve a separate fee, so the fee field here is optional and mainly for comparison." } }
             ],
             richContent: {
-                howItWorks: { tr: "Araç, taksitli nakit avans oranını seçtiğiniz vergi profiline göre dönüştürür; sonra anüite formülü ile aylık taksidi hesaplar. Peşin çekim komisyonu ve ek servis bedelleri net ele geçen tutardan düşülür, böylece gerçek nakit-maliyet farkı ortaya çıkar. Ayrıca ay ay faiz ve anapara dağılımı da gösterilir.", en: "The calculator converts the cash-advance quote according to the selected tax profile, then uses annuity math to compute the installment. Upfront withdrawal commission and service fees are deducted from the cash you actually receive, making the true cash-versus-cost gap visible. A month-by-month interest and principal flow is also shown." },
-                formulaText: { tr: "Nakit Efektif Faiz = Nakit Avans Faizi × %130. Çekim Ücreti = (Anapara × %1) + 50 TL. Taksit = Anapara × (EfektifFaiz × (1+EfektifFaiz)^Vade) / ((1+EfektifFaiz)^Vade - 1)", en: "Effective Cash Rate = Rate × 130% (with taxes). Withdrawal Fee = (Principal × 1%) + Fixed Cost." },
-                exampleCalculation: { tr: "20.000 TL nakit avans 6 ay ve aylık %5 oranla çekildiğinde standart vergi etkisiyle efektif oran %6,5 seviyesine çıkar. Eğer banka ayrıca %1 + 50 TL komisyon ve 100 TL servis ücreti alıyorsa, cebinize giren para 20.000 TL'den anlamlı şekilde düşük kalırken toplam geri ödeme çok daha yukarı taşınır.", en: "With a 20,000 TL cash advance over 6 months at 5% monthly, the standard tax effect lifts the effective rate to about 6.5%. If the bank also charges a 1% + 50 TL commission plus a 100 TL service fee, the net cash you receive falls meaningfully below 20,000 TL while the total repayment rises much higher." },
-                miniGuide: { tr: "<ul><li><b>Net geçen parayı izleyin:</b> Aynı avans tutarında komisyonlu teklif çoğu zaman beklenenden pahalıdır.</li><li><b>Vade kısa görünse de maliyet yüksek olabilir:</b> 3-6 aylık avanslarda bile yıllıklandırılmış oran agresif seviyelere çıkabilir.</li></ul>", en: "Watch the net cash received, because the same headline advance can become expensive once commissions apply. Even short 3-6 month advances can translate into very aggressive annualized costs." }
+                howItWorks: { tr: "Araç, aylık nakit avans faizini seçtiğiniz ek maliyet profiline göre efektif orana çevirir ve anüite formülüyle taksidi hesaplar. Varsayılan faiz alanı 1 Mart 2026 itibarıyla TCMB'nin kredi kartı nakit çekim/kullanım işlemleri için açıkladığı azami akdi oran olan %4,25 ile gelir; bankanızın teklifine göre değiştirebilirsiniz. Standart nakit çekim komisyonunu açarsanız ayrıca %1 komisyon varsayımı da eklenir.", en: "The calculator converts the monthly cash-advance rate into an effective rate using the extra-cost profile you choose and then applies annuity math. The default rate is prefilled with the CBRT maximum contractual rate for credit-card cash withdrawal/use transactions effective March 1, 2026, which is 4.25%, but you can change it to your bank's offer. If you enable the standard withdrawal fee, the tool also adds a 1% fee assumption." },
+                formulaText: { tr: "Efektif Oran = Nakit Avans Faizi × (1 + Seçilen Ek Maliyet Oranı). Standart Nakit Çekim Komisyonu = Anapara × %1. Taksit = Anapara × (Efektif Oran × (1+Efektif Oran)^Vade) / ((1+Efektif Oran)^Vade - 1)", en: "Effective Rate = Cash Advance Rate × (1 + Selected Extra Cost Rate). Standard Cash Withdrawal Fee = Principal × 1%. Installment = Principal × (Effective Rate × (1+Effective Rate)^n) / ((1+Effective Rate)^n - 1)." },
+                exampleCalculation: { tr: "20.000 TL taksitli nakit avans 6 ay ve aylık %4,25 oranla kullanıldığında, ek maliyet varsayımı yoksa aylık taksit yaklaşık 3.846 TL olur. Aynı senaryoda standart nakit çekim komisyonu ve ek servis masrafı eklendiğinde elinize geçen net tutar düşer ve toplam finansman maliyeti yükselir.", en: "If a 20,000 TL installment cash advance is used for 6 months at 4.25% per month, the monthly payment is about 3,846 TL when no extra-cost effect is added. If a standard withdrawal fee and extra service charge are layered on top, the net cash received falls and the total financing cost rises." },
+                miniGuide: { tr: "<ul><li><b>Taksitli ve standart çekimi ayırın:</b> Taksitli nakit avans ile tek seferlik nakit çekim aynı maliyet yapısına sahip değildir.</li><li><b>İhtiyaç kredisiyle kıyaslayın:</b> Aynı tutarın aylık ödemesi ve toplam geri ödemesi ayrıca test edilmelidir.</li></ul>", en: "Separate installment cash advance from one-off cash withdrawal, because they do not share the same fee structure. Also compare the same amount against a personal-loan scenario to understand the full repayment trade-off." }
             }
         }
     },
@@ -1803,6 +1804,7 @@ Google’da “kredi erken kapatma cezası hesaplama”, “konut kredisi erken 
     {
         id: "loan-structuring",
         slug: "kredi-yapilandirma-hesaplama",
+        updatedAt: "2026-03-14",
         category: "finansal-hesaplamalar",
         name: { tr: "Kredi Yapılandırma", en: "Loan Restructure" },
         h1: { tr: "Kredi Yapılandırma ve Erken Kapama İle Yenileme Hesabı", en: "Loan Restructuring & Refinancing Calculator" },
@@ -3463,6 +3465,7 @@ export const mathCalculators: CalculatorConfig[] = [
     {
         id: "percentage",
         slug: "yuzde-hesaplama",
+        updatedAt: "2026-03-14",
         category: "matematik-hesaplama",
         name: { tr: `Yüzde Hesaplama`, en: `Percentage Calculator` },
         h1: { tr: `Yüzde Hesaplama — Artış, Azalış ve Oran Hesabı`, en: `Percentage Calculator — Increase, Decrease & Ratio` },
@@ -3735,11 +3738,12 @@ export const dailyCalculators: CalculatorConfig[] = [
         id: "date-difference",
         slug: "iki-tarih-arasi-fark-gun-hesaplama",
         category: "zaman-hesaplama",
+        updatedAt: "2026-03-15",
         name: { tr: "Tarih Farkı (Gün) Hesaplama", en: "Date Difference Calculator" },
-        h1: { tr: "İki Tarih Arası Fark / Gün Hesaplama — Şafak ve Geri Sayım", en: "Date Difference & Day Counter Calculator" },
-        description: { tr: "İki tarih arasındaki tam süreyi gün, hafta, ay ve yıl olarak milisaniye kesinliğinde hesaplayın.", en: "Calculate the exact duration between two dates in days, weeks, months, and years." },
-        shortDescription: { tr: "Başlangıç ve bitiş tarihlerini girerek aradaki net günü ve aradan geçen süreyi hesaplayın.", en: "Enter start and end dates to calculate the exact days and duration passing between them." },
-        relatedCalculators: ["yas-hesaplama", "doguma-kalan-gun", "hamilelik-haftasi-hesaplama"],
+        h1: { tr: "Tarih Farkı Hesaplama — İki Tarih Arası Yıl, Ay, Gün Farkı", en: "Date Difference Calculator — Exact Year, Month, Day Difference" },
+        description: { tr: "İki tarih arası farkı toplam gün ve tam formatta yıl, ay, gün olarak hesaplayın. Exact duration ihtiyacı için net takvim farkını görün.", en: "Calculate the exact difference between two dates in total days and in full year-month-day format." },
+        shortDescription: { tr: "İki tarih arasındaki net takvim farkını yıl, ay, gün formatında anında görün.", en: "Instantly see the exact calendar difference between two dates in year-month-day format." },
+        relatedCalculators: ["iki-tarih-arasindaki-gun-sayisi-hesaplama", "tarih-hesaplama", "kac-gun-kaldi-hesaplama", "kac-gun-oldu-hesaplama"],
         inputs: [
             { id: "startDate", name: { tr: "Başlangıç Tarihi", en: "Start Date" }, type: "date", defaultValue: "2024-01-01", required: true },
             { id: "endDate", name: { tr: "Bitiş Tarihi", en: "End Date" }, type: "date", defaultValue: "2026-01-01", required: true },
@@ -3792,18 +3796,19 @@ export const dailyCalculators: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "İki Tarih Arası Fark (Gün) Hesaplama 2026", en: "Date Difference & Days Between Calculator" },
-            metaDescription: { tr: "Geçmişteki bir olaya kaç gün oldu veya gelecekteki bir hedefe kaç gün kaldı? İki tarih arasındaki toplam gün, ay ve yılı saniyeler içinde ölçün.", en: "How many days left until a future event or how many days passed since? Calculate exactly in days, months and years." },
-            content: { tr: "İki tarih arası gün hesaplama amacı; sözleşme bitiş tarihleri, askerlik şafağı, sınava kalan gün veya evlilik yıldönümleri gibi spesifik süreçleri yönetebilmenizi sağlamaktır. Sistem, 4 yılda bir gelen Şubat ayındaki artık yılları da hesaba katarak en doğru milisaniyelik karşılığı sunar.", en: "Date calculation helps manage specific periods like contract ends, exam countdowns or anniversaries. It calculates leap years for exact accuracy." },
+            title: { tr: "Tarih Farkı Hesaplama 2026 — İki Tarih Arası Yıl, Ay, Gün Farkı", en: "Date Difference Calculator 2026 — Exact Year, Month, Day Difference" },
+            metaDescription: { tr: "Tarih farkı hesaplama aracında iki tarih arası toplam gün ve exact duration sonucunu görün. Yıl, ay, gün formatında net takvim farkı tek sayfada.", en: "See the exact difference between two dates in total days and full year-month-day duration." },
+            content: { tr: "Tarih farkı hesaplama sayfalarında kullanıcıların beklediği çıktı çoğu zaman yalnızca <strong>kaç gün</strong> bilgisi değildir. Özellikle resmi başvurular, sözleşmeler, kıdem süresi, proje periyotları ve ilişki yıldönümleri gibi durumlarda ihtiyaç duyulan sonuç <strong>iki tarih arası exact duration</strong>, yani farkın <strong>yıl, ay, gün</strong> biçiminde görülmesidir. Bu sayfa tam olarak bu niyete odaklanır: başlangıç ve bitiş tarihlerini alır, toplam günü hesaplar ve ardından farkı takvim mantığıyla yıl-ay-gün formatında üretir. Eğer ihtiyacınız yalnızca iki tarih arasındaki toplam günü görmekse <a href=\"/zaman-hesaplama/iki-tarih-arasindaki-gun-sayisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">iki tarih arası gün hesaplama</a>; bugünden ileri bir tarihe geri sayım yapmaksa <a href=\"/zaman-hesaplama/kac-gun-kaldi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kaç gün kaldı hesaplama</a> sayfası daha uygun olur.", en: "Users searching for date difference often need more than just the total number of days. In contracts, seniority calculations, official applications, project periods, and anniversaries, the real need is an exact duration shown as years, months, and days. This page is positioned for that exact-duration intent: it takes a start and end date, calculates total days, and then expresses the difference using calendar logic in year-month-day format. If you only need the raw day count between two dates, use the dedicated days-between-dates calculator; if you need a countdown from today to a future date, use the days-left page." },
             faq: [
-                { q: { tr: "Şu tarihe kaç gün kaldı nasıl hesaplanır?", en: "How to calculate days left?" }, a: { tr: "Başlangıç tarihine bugünü, bitiş tarihine ise hedef tarihinizi (tatil, sınav, evlilik vb.) girerek toplam kaç gün kaldığını görebilirsiniz.", en: "Enter today as start and your target as end date to see exactly how many days are left." } },
-                { q: { tr: "Hesaplamada başlangıç günü sayıya dahil mi?", en: "Is the start day included?" }, a: { tr: "Hayır. Matematiksel tarih farkı hesaplamalarında iki uçtan (start veya end) yalnızca biri tam gün döngüsü olarak alınarak net 'geçen süre' hesaplanır.", en: "No. In exact date difference maths block, typically the boundary creates a standard passed-time span natively." } }
+                { q: { tr: "Tarih farkı hesaplama ile iki tarih arası gün hesabı aynı mı?", en: "Is date difference the same as a days-between-dates calculation?" }, a: { tr: "Benzer görünür ama aynı niyet değildir. Bu sayfa farkı özellikle yıl, ay, gün biçiminde exact duration olarak sunar; iki tarih arası gün aracı ise daha çok toplam gün, hafta ve yaklaşık ay farkına odaklanır.", en: "They are similar but not identical in intent. This page emphasizes exact duration in years, months, and days, while a standard days-between-dates page focuses more on total days, weeks, and approximate months." } },
+                { q: { tr: "Hesaplamada başlangıç günü sayıya dahil mi?", en: "Is the start day included?" }, a: { tr: "Matematiksel tarih farkı hesaplamalarında iki tarih arasındaki net geçen süre ölçülür. Bu nedenle sonuç, takvimde tamamlanmış gün döngülerine göre okunur.", en: "Date-difference calculations measure the net elapsed time between two dates, so the result is read according to completed calendar-day cycles." } },
+                { q: { tr: "Artık yıllar ve ay uzunlukları hesaba katılıyor mu?", en: "Are leap years and month lengths included?" }, a: { tr: "Evet. Şubat'ın 28 veya 29 çekmesi, 30 ve 31 günlük aylar ve yıl geçişleri takvim mantığıyla otomatik hesaba katılır.", en: "Yes. Leap years, February having 28 or 29 days, 30/31-day months, and year transitions are all handled automatically." } }
             ],
             richContent: {
-                howItWorks: { tr: "Araç, tarayıcınızın Date (tarih) API'si yardımıyla sizin girdiğiniz tarihleri 1 Ocak 1970'den itibaren milisaniyelere (Timestamp) çevirir. Büyük tarihin milisaniyesinden küçüğü çıkartılıp matematiksel olarak gün ve haftalara bölünür.", en: "Uses the browser's Date API to convert your dates to Timestamps (ms since 1970) and subtracts them to derive pure difference." },
-                formulaText: { tr: "Toplam Gün = Math.abs(Bitiş_Zamanı - Başlangıç_Zamanı) / 86.400.000 (Bir gündeki milisaniye). Yıl ve Ay farkı takvim kaymaları baz alınarak hesaplanır.", en: "Total Days = Abs(End - Start ms) / 86,400,000. Year and Month logic adjusts for calendar leap shifts." },
-                exampleCalculation: { tr: "Örnek: Başlangıç: 1 Ocak 2024, Bitiş: 1 Mart 2024. 2024 Artık yıl olduğundan şubat 29 çeker. Aradaki fark 60 Net gündür (2 ay).", en: "Example: Start Jan 1, 2024 to Mar 1, 2024. 2024 is leap year, Feb has 29 days. Difference is exactly 60 days." },
-                miniGuide: { tr: "<ul><li><b>Resmi İşlemler:</b> Dilekçe, vize veya yasal itiraz sürelerindeki iş günlerini belirlemek için ilk adımı bu araçla tam gün olarak atıp haftasonlarını çıkartabilirsiniz.</li><li><b>Geri Sayımlar:</b> Hamilelik veya Diyet takibinde 'geçen gün' hesaplamaları motivasyonu artırır.</li></ul>", en: "Aids in visa appeals, diet tracking, or exam prep motivation by quantifying your timeline." }
+                howItWorks: { tr: "Araç önce iki tarihi JavaScript Date API ile takvim nesnesine çevirir, toplam gün farkını milisaniye üzerinden bulur ve ardından aynı farkı takvim mantığıyla yıl, ay, gün bileşenlerine ayırır. Böylece hem ham gün sayısı hem de okunabilir exact duration aynı ekranda görülür.", en: "The tool first converts both dates into calendar objects, computes the raw day difference in milliseconds, and then splits the same gap into years, months, and days using calendar logic." },
+                formulaText: { tr: "Toplam Gün = |Bitiş Zamanı − Başlangıç Zamanı| / 86.400.000. Exact Duration = Takvim farkının Yıl + Ay + Gün bileşenlerine ayrılması.", en: "Total Days = |End Time − Start Time| / 86,400,000. Exact Duration = splitting the calendar gap into year + month + day components." },
+                exampleCalculation: { tr: "Örnek: 1 Ocak 2024 ile 1 Mart 2024 arasındaki fark 2024 artık yıl olduğu için 60 gündür; exact duration sonucu ise 2 ay 0 gün olarak okunabilir.", en: "Example: The gap between January 1, 2024 and March 1, 2024 is 60 days because 2024 is a leap year; the exact duration can also be read as 2 months and 0 days." },
+                miniGuide: { tr: "<ul><li><b>Resmi Süreler:</b> Başvuru, sözleşme ve kıdem hesaplarında yalnız gün değil, yıl-ay-gün formatı da önemlidir.</li><li><b>Doğru Araç Seçimi:</b> Geri sayım için 'kaç gün kaldı', geçmiş sayaç için 'kaç gün oldu', toplam gün farkı için ise iki tarih arası gün aracına geçin.</li></ul>", en: "Use this page when year-month-day formatting matters, and switch to days-left, days-since, or raw days-between tools when that intent is a better fit." }
             }
         }
     },
@@ -4058,6 +4063,7 @@ export const phase1Calculators: CalculatorConfig[] = [
         h1: { tr: "Gelir Vergisi Hesaplama 2026 — Yıllık & Aylık", en: "Income Tax Calculator 2026 — Annual & Monthly" },
         description: { tr: "2026 gelir vergisi dilimlerine göre yıllık ve aylık vergi tutarınızı hesaplayın.", en: "Calculate annual and monthly income tax based on 2026 tax brackets." },
         shortDescription: { tr: "Yıllık gelirinizi girin; kümülatif dilim hesabıyla 2026 gelir vergisi tutarınızı ve efektif vergi oranınızı anında öğrenin.", en: "Enter annual income to instantly get 2026 income tax and effective tax rate." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["maas-hesaplama", "damga-vergisi-hesaplama", "kidem-tazminati-hesaplama"],
         inputs: [
             { id: "annualIncome", name: { tr: "Yıllık Gelir (₺)", en: "Annual Income (₺)" }, type: "number", defaultValue: 600000, suffix: "₺", required: true, min: 0 },
@@ -4363,6 +4369,7 @@ export const phase1Calculators: CalculatorConfig[] = [
         id: "inflation",
         slug: "enflasyon-hesaplama",
         category: "finansal-hesaplamalar",
+        updatedAt: "2026-03-14",
         name: { tr: "Enflasyon Hesaplama Aracı", en: "Inflation Calculator" },
         h1: { tr: "Enflasyon Hesaplama Aracı — TÜFE ve CPI Değer Kaybı Hesaplayıcı", en: "Inflation Calculator — CPI Real Value Calculator" },
         description: { tr: "TÜİK ve ABD CPI verileriyle mal sepetinizin yıllara göre değer değişimini hesaplayın.", en: "Calculate the value change of a goods basket over the years using CPI data." },
@@ -4469,12 +4476,15 @@ export const phase1Calculators: CalculatorConfig[] = [
         },
         seo: {
             title: { tr: "Enflasyon Hesaplama 2026 — TÜFE ve CPI ile Değer Kaybı", en: "Inflation Calculator 2026 — Real Value with CPI" },
-            metaDescription: { tr: "Türkiye için TÜFE, Yİ-ÜFE veya ortalama endeks; ABD için CPI verileriyle sepet tutarınızın güncel karşılığını, yıllıklandırılmış enflasyonu ve kalan alım gücünü hesaplayın.", en: "Use Turkey CPI, PPI, or blended indexes and US CPI data to calculate current basket value, annualized inflation, and remaining purchasing power." },
-            content: { tr: "Enflasyon, genel fiyat düzeyinin zaman içinde artması ve paranın satın alma gücünün aşınmasıdır. Bu araç, varsayımsal oranlar yerine resmi aylık endeks verilerini kullanır; Türkiye için TÜFE, Yİ-ÜFE veya bu iki serinin ortalamasını; ABD için CPI verisini dikkate alır. Böylece sadece toplam artışı değil, seçtiğiniz dönem boyunca yıllıklandırılmış ortalama enflasyonu ve aynı nominal tutarın geride kalan alım gücünü de görebilirsiniz.", en: "Inflation raises prices over time and erodes purchasing power. This calculator uses official monthly index series instead of assumed percentages: CPI, PPI, or a blended Turkish series for Turkey, and CPI for the US. It shows not only total inflation, but also annualized inflation and how much purchasing power the same nominal amount has left." },
+            metaDescription: { tr: "Enflasyon hesaplama aracı ile TÜFE ve Yİ-ÜFE verilerini kullanarak paranızın değer kaybını hesaplayın. Şubat 2026 yıllık enflasyon %31,53. Kira artış oranı, maaş reel değer ve yatırım analizi için ücretsiz araç.", en: "Use CPI and PPI data to calculate purchasing-power loss. February 2026 annual inflation is 31.53% in Turkey, with tools for rent, wage, and real-value analysis." },
+            content: { tr: `<p>Enflasyon hesaplama aracı, nominal para tutarını resmi endeks serileriyle karşılaştırarak geçmişteki bir tutarın bugünkü alım gücü karşılığını bulur. Bu sayfada Türkiye için TÜFE, Yİ-ÜFE ve iki serinin ortalaması; ABD için CPI verisi kullanılır. Böylece yalnızca fiyat artışını değil, aynı zamanda reel değer kaybını, yıllıklandırılmış ortalama enflasyonu ve aynı nominal tutarın bugünkü satın alma gücünü görebilirsiniz. Özellikle 2026 TÜFE görünümü, maaş artışlarının reel etkisi, kira güncellemesi ve yatırım performansının enflasyona karşı durumu gibi yan sorgular için araç tek ekranda analitik bir çerçeve sunar. Kullanıcı, başlangıç ve bitiş dönemi seçerek belirli bir fiyatın bugün kaç lira etmesi gerektiğini, aynı nominal paranın ne kadar alım gücü kaybettiğini ve enflasyonun yıllık ortalamada nasıl bir baskı ürettiğini birlikte değerlendirebilir.</p><h3>Enflasyon Kira ve Maaşı Nasıl Etkiler?</h3><p>Türkiye'de kira artış tavanı, <strong>Türk Borçlar Kanunu'nun 344. maddesi</strong> uyarınca TÜFE'nin 12 aylık ortalamasına göre değerlendirilir. Mart 2026 dönemi için bu üst sınır <strong>%33,39</strong> seviyesindedir ve hem konut hem işyeri kiralarında yasal referans niteliği taşır. Bu nedenle yalnızca yıllık TÜFE oranına bakmak yeterli olmaz; kira artış oranı 2026 hesaplarında özellikle 12 aylık ortalamanın dikkate alınması gerekir. Benzer biçimde maaş artışı yıllık enflasyonun altında kalıyorsa çalışanın nominal geliri artsa bile reel ücreti düşer. Bu araçla belirli bir maaş veya kira tutarının enflasyona göre ne kadar aşındığını test edebilir, sonucu <a href="/finansal-hesaplamalar/kira-artis-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kira artış hesaplama</a> aracıyla birlikte okuyarak teklif edilen artışın makul olup olmadığını analiz edebilirsiniz. Böylece özellikle maaş enflasyon kıyaslarında, ücret zammının günlük hayat maliyetini gerçekten karşılayıp karşılamadığı daha somut biçimde görülebilir.</p><h3>TÜFE Baz Yılı Değişikliği 2026</h3><p>TÜİK, 2026 yılında fiyat endeksi sunumunda baz yılını <strong>2003=100</strong> yapısından <strong>2025=100</strong> yapısına taşıdı. Bu güncelleme, endeks seviyesinin yeni bir referans noktasına normalize edilmesi anlamına gelir; aylık enflasyon, yıllık enflasyon ve oranların ekonomik yorumu değişmez. Başka bir deyişle Şubat 2026 TÜFE %31,53 ise baz yılı değişse de bu oran aynı kalır; yalnızca endeks puanının başlangıç seviyesi yeniden tanımlanır. Bu hesaplayıcı seri geçişini otomatik olarak yönetir, bu nedenle kullanıcıların eski ve yeni baz yılı arasında ayrıca dönüşüm yapmasına gerek kalmaz. Bu yüzden 2025 sonu ile 2026 başı arasında endeks puanındaki düzey farkı teknik bir yeniden bazlama olarak okunmalı, fiyatların ani şekilde düştüğü ya da yükseldiği şeklinde yorumlanmamalıdır.</p><h3>Reel Getiri ve Enflasyon İlişkisi</h3><p>Nominal faiz veya yatırım getirisi, enflasyon oranını aşmadığı sürece yatırımcı reel olarak zenginleşmez. Örneğin mevduat faizi yüksek görünse bile aynı dönemde fiyatlar daha hızlı yükseliyorsa satın alma gücü gerileyebilir. Bu yüzden nominal sonuçları enflasyonla karşılaştırmak gerekir. Uzun dönem yatırımlarda CAGR yani bileşik büyüme oranı ile enflasyonun yıllıklandırılmış ortalamasını yan yana okumak daha doğru bir analiz sağlar. Bu araçla geçmişten bugüne bir sermayenin reel eşdeğerini hesapladıktan sonra sonucu <a href="/finansal-hesaplamalar/bilesik-buyume-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">bileşik büyüme hesaplama</a> ve <a href="/finansal-hesaplamalar/mevduat-faiz-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">mevduat faiz hesaplama</a> sayfalarıyla karşılaştırabilir, yatırımınızın gerçekten değer kazanıp kazanmadığını test edebilirsiniz. Özellikle uzun vadeli bir birikim planında nominal büyüme ile reel büyüme arasındaki fark açıldıkça, enflasyon düzeltmesi yapılmadan verilen kararların yanıltıcı olma ihtimali artar.</p>`, en: "Inflation erodes purchasing power over time. This calculator compares official index series to show current value equivalents, real-value loss, annualized inflation, and remaining purchasing power." },
             faq: [
                 { q: { tr: "TÜFE ve Yİ-ÜFE arasında fark nedir?", en: "What is the difference between CPI and PPI?" }, a: { tr: "TÜFE tüketicinin karşılaştığı nihai fiyatları, Yİ-ÜFE ise üretici tarafındaki maliyet baskısını izler. Kira, maaş ve bireysel satın alma gücü analizlerinde genellikle TÜFE; ticari maliyet analizlerinde Yİ-ÜFE daha anlamlı olabilir.", en: "CPI tracks end-consumer prices, while PPI reflects producer-side cost pressure. CPI is usually better for rents, wages, and household purchasing power; PPI can be more relevant for business cost analysis." } },
                 { q: { tr: "Neden paradan 6 sıfır atılması (YTL) dikkate alınmalı?", en: "Why does 2005 currency redenomination matter?" }, a: { tr: "Türkiye'de 01.01.2005 tarihinde enflasyonla mücadele kapsamında paradan 6 sıfır atılmıştır. Bu nedenle eski yıllara ait (2005 öncesi) bir tutar girecekseniz, tutarın bugünkü karşılığı değil, o günkü bol sıfırlı halini (örn: 1 yerine 1.000.000) girmelisiniz.", en: "Turkey removed 6 zeros from its currency in 2005. Older calculations must account for this by using original prices." } },
                 { q: { tr: "Değer Kaybı hesaplaması nasıl çalışıyor?", en: "How does the loss calculation work?" }, a: { tr: "İki farklı dönemin enflasyon endeksleri birbirine bölünerek 'Enflasyon Çarpanı' bulunur. Girmiş olduğunuz tutar bu çarpan ile çarpılarak bugünkü eşdeğeri ortaya çıkarılır.", en: "The tool divides the two period index values to find the inflation factor, and multiplies your amount." } },
+                { q: { tr: "2026 enflasyon oranı ne kadar?", en: "What is Turkey's 2026 inflation rate?" }, a: { tr: "TÜİK verilerine göre Şubat 2026 yıllık TÜFE %31,53 olarak gerçekleşti. 12 aylık ortalama TÜFE ise %33,39 olup Mart 2026 kira artış tavanını bu oran belirliyor.", en: "According to official data, annual CPI for February 2026 is 31.53%, while the 12-month average is 33.39%." } },
+                { q: { tr: "Kira artış oranı enflasyonla nasıl hesaplanır?", en: "How is rent increase calculated with inflation?" }, a: { tr: "Türk Borçlar Kanunu'nun 344. maddesine göre kira artışında TÜFE'nin 12 aylık ortalaması esas alınır. Mart 2026 itibarıyla bu oran %33,39'dur. Yeni kira = Mevcut kira × (1 + 33,39 / 100) formülüyle hesaplanır.", en: "Under Turkish law, the 12-month average CPI is used for rent increases. For March 2026 the rate is 33.39%, so new rent = current rent × (1 + 33.39 / 100)." } },
+                { q: { tr: "TÜFE baz yılı 2026'da değişti mi?", en: "Did the CPI base year change in 2026?" }, a: { tr: "Evet. TÜİK, Ocak 2026'dan itibaren baz yılını '2003=100'den '2025=100'e güncelledi. Aylık ve yıllık enflasyon oranları değişmedi; yalnızca endeks seviyesi normalize edildi.", en: "Yes. Starting in January 2026, the CPI base year changed from 2003=100 to 2025=100. Monthly and annual inflation rates did not change; only index levels were rebased." } },
             ],
             richContent: {
                 howItWorks: {
@@ -4507,17 +4517,18 @@ export const phase2Calculators: CalculatorConfig[] = [
     {
         id: "yks-score",
         slug: "yks-puan-hesaplama",
+        updatedAt: "2026-03-14",
         category: "sinav-hesaplamalari",
         name: { tr: "YKS Puan Hesaplama", en: "YKS Score Calculator" },
-        h1: { tr: "YKS Puan Hesaplama 2026 — TYT, AYT, YDT ve OBP Simülasyonu", en: "YKS Score Calculator 2026 — TYT, AYT, YDT & OBP" },
-        description: { tr: "TYT, AYT ve YDT netlerinize göre YKS ham ve yerleştirme puanlarınızı; 2025 güncel simülasyon seti, doğrulanmış 2024 katsayıları ve karşılaştırmalı 2023 modu ile hesaplayın.", en: "Calculate your YKS raw and placement scores using the 2025 current simulation set, verified 2024 coefficients, and a 2023 comparison mode." },
-        shortDescription: { tr: "TYT, AYT, YDT ve OBP etkisini ayrı ayrı görün; 2025 güncel simülasyon seti ve doğrulanmış geçmiş katsayılarla YKS puan simülasyonu yapın.", en: "See the separate impact of TYT, AYT, YDT, and OBP and simulate YKS scores with the 2025 current simulation set and verified prior coefficients." },
+        h1: { tr: "YKS Puan Hesaplama 2026 — TYT, AYT, YDT ve OBP Ön İzleme", en: "YKS Score Calculator 2026 — TYT, AYT, YDT & OBP Preview" },
+        description: { tr: "2026 YKS için TYT, AYT ve YDT netlerinize göre tahmini ham ve yerleştirme puanınızı hesaplayın. Araç, 2025 güncel simülasyon seti, doğrulanmış 2024 katsayıları ve 2023 karşılaştırma modunu birlikte sunar.", en: "Estimate your 2026 YKS raw and placement score from TYT, AYT, and YDT nets with the 2025 current simulation set, verified 2024 coefficients, and a 2023 comparison mode." },
+        shortDescription: { tr: "TYT, AYT, YDT ve OBP etkisini ayrı ayrı görün; 2026 adayı için 2025 güncel set ve doğrulanmış geçmiş katsayılarla YKS puan ön izlemesi yapın.", en: "See the separate impact of TYT, AYT, YDT, and OBP, and preview YKS scores for 2026 using the current 2025 set and verified prior coefficients." },
         relatedCalculators: ["tyt-puan-hesaplama", "kpss-puan-hesaplama", "ortalama-hesaplama"],
         inputs: [
             // SINAV YILI SEÇİMİ
             {
                 id: "sinav_yili",
-                name: { tr: "Sınav Yılı:", en: "Exam Year:" },
+                name: { tr: "Katsayı / Simülasyon Seti:", en: "Coefficient / Simulation Set:" },
                 type: "select",
                 defaultValue: "2025",
                 options: [
@@ -4593,9 +4604,9 @@ export const phase2Calculators: CalculatorConfig[] = [
         ],
         formula: (v) => calculateYksScores(v),
         seo: {
-            title: { tr: "YKS Puan Hesaplama 2026 — TYT, AYT, YDT ve OBP", en: "YKS Score Calculator 2026 — TYT, AYT, YDT & OBP" },
-            metaDescription: { tr: "YKS puanınızı mobil uyumlu arayüzle hesaplayın. TYT, AYT, YDT ve OBP etkisini ayrı görün; doğrulanmış 2024 katsayıları ve 2023 karşılaştırma modu ile en yakın simülasyonu alın.", en: "Calculate your YKS score with a mobile-friendly interface. See TYT, AYT, YDT, and OBP impact separately using verified 2024 coefficients and a 2023 comparison mode." },
-            content: { tr: "YKS puanı; TYT, AYT veya YDT netleri ile Ortaöğretim Başarı Puanı'nın (OBP) birlikte değerlendirilmesiyle oluşur. Bu araçta 4 yanlış 1 doğruyu götürür kuralı uygulanır, TYT için Türkçe veya Matematik testinden en az 0,5 net şartı dikkate alınır ve alan puanlarında ilgili AYT ya da YDT testlerinden yeterli net yoksa anlamsız ham puan üretilmez. Böylece mobilde hızlı kullanılabilen ama sonuç mantığı daha tutarlı bir YKS simülasyonu sunulur. 2024 modu doğrulanmış ÖSYM katsayılarını, 2023 modu ise karşılaştırma amaçlı yaklaşık katsayıları temel alır.", en: "YKS score combines TYT, AYT or YDT nets with the secondary school achievement score (OBP). This tool applies the 4-wrong-1-correct rule, checks the TYT minimum net condition, and avoids producing misleading raw scores when there is not enough field-test data. The 2024 mode uses verified ÖSYM coefficients while the 2023 mode is an approximate comparison." },
+            title: { tr: "YKS Puan Hesaplama 2026 — TYT, AYT, YDT ve OBP Ön İzleme", en: "YKS Score Calculator 2026 — TYT, AYT, YDT & OBP Preview" },
+            metaDescription: { tr: "20-21 Haziran 2026 YKS için TYT, AYT ve YDT netlerinizden tahmini yerleştirme puanını hesaplayın. 2025 güncel simülasyon seti, doğrulanmış 2024 katsayıları ve OBP etkisi birlikte gösterilir.", en: "Estimate your 2026 YKS placement score for the June 20-21, 2026 exam using TYT, AYT, YDT nets, the 2025 current simulation set, verified 2024 coefficients, and OBP impact." },
+            content: { tr: "YKS puanı; TYT, AYT veya YDT netleri ile Ortaöğretim Başarı Puanı'nın (OBP) birlikte değerlendirilmesiyle oluşur. ÖSYM'nin 20-21 Haziran 2026 takvimine göre hazırlanan bu araç, 2026 adayı için hızlı bir planlama ekranı sunar. 4 yanlış 1 doğruyu götürür kuralı uygulanır, TYT için Türkçe veya Matematik testinden en az 0,5 net şartı dikkate alınır ve alan puanlarında ilgili AYT ya da YDT testlerinden yeterli net yoksa anlamsız ham puan üretilmez. 2025 seçeneği güncel ön izleme seti, 2024 seçeneği doğrulanmış ÖSYM katsayıları, 2023 seçeneği ise karşılaştırma amaçlı yaklaşık mod olarak okunmalıdır.", en: "YKS score combines TYT, AYT or YDT nets with OBP. Prepared in line with ÖSYM's June 20-21, 2026 exam calendar, this tool offers a fast planning view for 2026 candidates. It applies the 4-wrong-1-correct rule, checks the TYT minimum net condition, and avoids producing misleading raw scores when there is not enough field-test data. The 2025 option should be read as the current preview set, 2024 as verified ÖSYM coefficients, and 2023 as an approximate comparison mode." },
             faq: [
                 { q: { tr: "OBP puanı nasıl hesaplanır?", en: "How is OBP calculated?" }, a: { tr: "Diploma notu 5 ile çarpılarak OBP elde edilir. Yerleştirme puanına eklenirken bu puanın 0.12'si (kırılmamışsa) alınır.", en: "Diploma grade multiplied by 5 gives OBP. 0.12 of this is added to placement score." } },
                 { q: { tr: "AYT ya da YDT netim yoksa neden bazı puan türleri 0 görünüyor?", en: "Why do some score types show 0 if I have no AYT or YDT net?" }, a: { tr: "Bu araç, alanda hiç net yokken yapay biçimde 100 taban puanı göstermemek için ilgili puan türünü 0 olarak bırakır. Böylece hangi puan türü için gerçekten veri girdiğiniz net biçimde anlaşılır.", en: "To avoid misleading base scores when there are no field-test nets, the tool keeps that score type at 0 until relevant AYT or YDT data is entered." } },
@@ -4614,11 +4625,12 @@ export const phase2Calculators: CalculatorConfig[] = [
     {
         id: "kpss-score",
         slug: "kpss-puan-hesaplama",
+        updatedAt: "2026-03-14",
         category: "sinav-hesaplamalari",
         name: { tr: "KPSS Puan Hesaplama", en: "KPSS Score Calculator" },
-        h1: { tr: "KPSS Puan Hesaplama — Genel Yetenek ve Genel Kültür", en: "KPSS Score Calculator" },
-        description: { tr: "KPSS GY-GK doğru yanlış sayılarından KPSS-P1/P2/P3 puanlarınızı hesaplayın.", en: "Calculate KPSS-P1/P2/P3 scores from GY-GK correct/wrong counts." },
-        shortDescription: { tr: "Genel Yetenek ve Genel Kültür soru sayılarını girin; KPSS puanınızı anında öğrenin.", en: "Enter GY and GK correct/wrong counts to calculate your KPSS score." },
+        h1: { tr: "KPSS Puan Hesaplama 2026 — GY/GK ile Yaklaşık P1 Simülasyonu", en: "KPSS Score Calculator 2026 — Approximate P1 Simulation" },
+        description: { tr: "KPSS GY-GK doğru yanlış sayılarından planlama amaçlı yaklaşık KPSS-P1 ve tahmini P2 bandını hesaplayın.", en: "Estimate your KPSS-P1 and an indicative P2 band from GY-GK correct and wrong counts for planning purposes." },
+        shortDescription: { tr: "Genel Yetenek ve Genel Kültür netlerinizi girin; resmi sonuç yerine geçmeyen yaklaşık KPSS puan simülasyonunu anında görün.", en: "Enter your General Ability and General Culture nets to instantly view an approximate KPSS score simulation that does not replace official results." },
         relatedCalculators: ["yks-puan-hesaplama", "ortalama-hesaplama"],
         inputs: [
             { id: "gyDogru", name: { tr: "GY Doğru (60 Soru)", en: "GY Correct" }, type: "number", defaultValue: 50, required: true, min: 0, max: 60 },
@@ -4657,9 +4669,9 @@ export const phase2Calculators: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "KPSS Puan Hesaplama 2026 — GY GK Net Hesaplayıcı", en: "KPSS Score Calculator 2026" },
-            metaDescription: { tr: "KPSS Genel Yetenek ve Genel Kültür doğru-yanlış sayılarından KPSS-P1 puanınızı hesaplayın. 2026 ÖSYM güncel katsayılarına göre.", en: "Calculate KPSS-P1 score from GY and GK correct/wrong counts using 2026 ÖSYM coefficients." },
-            content: { tr: "KPSS puanı Genel Yetenek (GY) ve Genel Kültür (GK) netlerinden ÖSYM katsayılarıyla hesaplanır. P1 puan türünde GY %52.5, GK %22.5 ağırlığıyla standart puanlara aktarılır. P2 ve P3 puan türleri ek olarak Eğitim Bilimleri ve alan testlerini içermektedir.", en: "KPSS score is derived from GY and GK nets. In P1, GY has 52.5% and GK 22.5% weight. P2 and P3 additionally require Education Sciences and field test results." },
+            title: { tr: "KPSS Puan Hesaplama 2026 — GY GK ile Yaklaşık P1", en: "KPSS Score Calculator 2026 — Approximate P1" },
+            metaDescription: { tr: "KPSS Genel Yetenek ve Genel Kültür netlerinizden yaklaşık KPSS-P1 puan simülasyonu yapın. Bu araç standart sapma verisi olmadan planlama amaçlı tahmini sonuç üretir; resmi ÖSYM sonucu yerine geçmez.", en: "Estimate KPSS-P1 from your General Ability and General Culture nets. This tool produces a planning-oriented approximation without official standard-deviation data and does not replace ÖSYM results." },
+            content: { tr: "KPSS puanı Genel Yetenek (GY) ve Genel Kültür (GK) netlerinden türetilir; ancak ÖSYM nihai puanı aday kitlesinin ortalama ve standart sapma verileriyle standartlaştırır. Bu sayfada sunulan sonuç bu yüzden resmi puanın birebir kopyası değil, planlama amaçlı yaklaşık simülasyondur. P1 puan türü GY ve GK performansını öne çıkarırken, P2 ve P3 gibi puan türleri Eğitim Bilimleri ve alan testleri nedeniyle farklı veri gerektirir.", en: "KPSS score is derived from General Ability and General Culture nets, but ÖSYM standardizes the final score using candidate averages and standard deviation data. The result on this page is therefore a planning-oriented approximation, not an exact replica of the official score. While P1 mainly reflects GY and GK performance, P2 and P3 require additional Education Sciences or field-test data." },
             faq: [
                 { q: { tr: "KPSS P1 P2 P3 farkı nedir?", en: "What is the difference between P1 P2 P3?" }, a: { tr: "KPSS-P1: Yalnızca GY+GK. Lisans mezunları KPSS-P3, önlisans KPSS-P93/P94 puan türlerini kullanır. KPSS-P2 eğitim bilimleri testini içerir.", en: "KPSS-P1: GY+GK only. Bachelor graduates use P3, associate degree holders use P93/P94. KPSS-P2 includes Education Sciences tests." } },
                 { q: { tr: "GY ve GK'dan kaç net yapılmalı?", en: "How many nets needed in GY and GK?" }, a: { tr: "Her iki testten en az 1 net zoru koşulu arandığı bilinmektedir. P1 =111–113 üzeri sınıflama için ortalama 85+ net tavsiye edilir.", en: "At least 1 net is required in each test. For P1 above 111-113, around 85+ total nets are recommended." } },
@@ -4825,10 +4837,11 @@ export const phase2Calculators: CalculatorConfig[] = [
         id: "deposit",
         slug: "mevduat-faiz-hesaplama",
         category: "finansal-hesaplamalar",
+        updatedAt: "2026-03-14",
         name: { tr: "Mevduat Faiz Hesaplama", en: "Deposit Interest Calculator" },
-        h1: { tr: "Mevduat Faiz Hesaplama — Vadeli Mevduat Getirisi", en: "Deposit Interest Calculator — Term Deposit Return" },
-        description: { tr: "Vadeli mevduat faiz getirinizi stopaj sonrası net olarak hesaplayın.", en: "Calculate your term deposit interest return net of withholding tax." },
-        shortDescription: { tr: "Tek dönem veya otomatik yenilenen vadede brüt faiz, stopaj, net kazanç ve bileşik vade sonu tutarını görün.", en: "See gross interest, tax, net earnings, and rolled-over maturity value for single or renewing term deposits." },
+        h1: { tr: "Mevduat Faiz Hesaplama — Net Faiz ve Vadeli Mevduat Getirisi", en: "Deposit Interest Calculator — Net Interest and Term Deposit Return" },
+        description: { tr: "Net faiz hesaplama ve vadeli mevduat getirinizi stopaj sonrası hesaplayın.", en: "Calculate net interest and term-deposit return after withholding tax." },
+        shortDescription: { tr: "Mevduat faiz hesaplama formülüyle brüt faiz, stopaj, net kazanç, efektif oran ve otomatik yenileme sonucunu görün.", en: "Use the deposit-interest formula to see gross interest, tax, net earnings, effective rate, and rollover results." },
         relatedCalculators: ["bilesik-faiz-hesaplama", "basit-faiz-hesaplama", "enflasyon-hesaplama"],
         inputs: [
             { id: "principal", name: { tr: "Ana Para (₺)", en: "Principal (₺)" }, type: "number", defaultValue: 100000, suffix: "₺", required: true, min: 0 },
@@ -4836,14 +4849,13 @@ export const phase2Calculators: CalculatorConfig[] = [
             { id: "days", name: { tr: "Vade (Gün)", en: "Term (Days)" }, type: "number", defaultValue: 90, suffix: "gün", required: true, min: 1 },
             {
                 id: "taxRate",
-                name: { tr: "Stopaj Oranı", en: "Withholding Rate" },
+                name: { tr: "Stopaj Oranı (2026)", en: "Withholding Rate (2026)" },
                 type: "select",
-                defaultValue: "15",
+                defaultValue: "17.5",
                 options: [
-                    { value: "15", label: { tr: "%15", en: "15%" } },
-                    { value: "10", label: { tr: "%10", en: "10%" } },
-                    { value: "5", label: { tr: "%5", en: "5%" } },
-                    { value: "0", label: { tr: "%0", en: "0%" } },
+                    { value: "17.5", label: { tr: "%17,5 (1 yıl dahil standart TL mevduat)", en: "17.5% (up to 1 year, standard TRY deposit)" } },
+                    { value: "10", label: { tr: "%10 (1 yıldan uzun)", en: "10% (longer than 1 year)" } },
+                    { value: "0", label: { tr: "%0 (istisna / özel ürün)", en: "0% (exempt / special product)" } },
                 ]
             },
             {
@@ -4934,18 +4946,18 @@ export const phase2Calculators: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "Mevduat Faiz Hesaplama 2026 — Net Getiri ve Yenileme Senaryosu", en: "Deposit Interest Calculator 2026 — Net Return and Rollover Scenario" },
-            metaDescription: { tr: "Vadeli mevduatın tek vade ve otomatik yenileme senaryolarında net getirisini, stopajı ve vade sonu toplamını hesaplayın.", en: "Calculate net return, tax withholding, and ending balance for single-term and rolled-over deposits." },
-            content: { tr: "Vadeli mevduat hesabında asıl önemli konu yalnızca brüt faiz oranı değildir. Stopaj kesintisi, vade süresi ve faiz gelirinin yeniden anaparaya eklenip eklenmemesi gerçek net sonucu belirler. Bu araç tek vade getirisi yanında otomatik yenilemeli senaryoyu da görmenizi sağlar; böylece 32 gün, 92 gün veya benzeri vadelerde mevduatınızı çevirdiğinizde toplam net büyümenin nereye ulaştığını daha gerçekçi kıyaslayabilirsiniz.", en: "In term deposits, the headline rate is only part of the story. Tax withholding, the length of the term, and whether earned interest is rolled back into principal determine the real net outcome. This tool shows both a single-term result and an auto-rollover scenario so you can compare realistic deposit growth over repeated maturities." },
+            title: { tr: "Mevduat Faiz Hesaplama 2026 — Net Faiz, Stopaj ve Vadeli Getiri", en: "Deposit Interest Calculator 2026 — Net Interest, Tax and Term Yield" },
+            metaDescription: { tr: "Net faiz hesaplama ve vadeli mevduat getiri hesaplama aracı. Mevduat faiz hesaplama formülü, stopaj sonrası net kazanç ve 14 Mart 2026 itibarıyla geçerli %17,5 / %10 TL mevduat stopaj oranları tek sayfada.", en: "Net interest and term-deposit yield calculator with formula, after-tax return, and current 2026 TRY deposit withholding rates." },
+            content: { tr: "Mevduat faiz hesaplama sürecinde bankanın ilan ettiği brüt oran tek başına yeterli değildir. Net faiz hesaplama için anapara, yıllık faiz oranı, vade günü ve uygulanacak stopaj birlikte okunmalıdır. Bu araç mevduat faiz hesaplama formülünü tek vade ve otomatik yenileme senaryolarında çalıştırır; böylece vadeli mevduat getiri hesaplama, net vade sonu tutarını görme ve farklı bankaların tekliflerini efektif net oran üzerinden kıyaslama ihtiyacını tek sayfada karşılar.", en: "The headline deposit rate is not enough on its own. Net-interest calculation requires principal, annual rate, maturity days, and applicable withholding to be read together. This tool runs the deposit formula for both single-term and rollover scenarios so you can compare true after-tax results." },
             faq: [
-                { q: { tr: "Mevduat faizinden stopaj kesilir mi?", en: "Is withholding tax applied to deposit interest?" }, a: { tr: "Evet. Uygulanan oran ürün tipine ve güncel mevzuata göre değişebilir. Bu yüzden araçta stopaj oranını seçilebilir yaptık.", en: "Yes. The applicable rate can vary by product type and regulation, which is why the calculator lets you choose the withholding rate." } },
+                { q: { tr: "Mevduat faizinden stopaj kesilir mi?", en: "Is withholding tax applied to deposit interest?" }, a: { tr: "Evet. 14 Mart 2026 itibarıyla standart TL vadeli mevduatta 1 yıl dahil vadelerde %17,5, 1 yıldan uzun vadelerde %10 stopaj uygulanır. Özel ürünler veya istisnalar farklılaşabileceği için araçta stopaj oranı seçilebilir tutulmuştur.", en: "Yes. As of March 14, 2026, standard TRY term deposits are taxed at 17.5% up to one year and 10% beyond one year. Special products or exemptions may differ, so the rate remains selectable." } },
                 { q: { tr: "Otomatik yenileme neden ayrı gösteriliyor?", en: "Why is auto rollover shown separately?" }, a: { tr: "Her vade sonunda net faiz yeniden anaparaya eklenirse sonraki dönemde faiz daha yüksek tutar üzerinden işler. Bu da toplam getiriyi tek vade hesabından farklılaştırır.", en: "If net interest is added back to principal at each maturity, the next term earns interest on a larger base, so total return differs from a simple single-term calculation." } },
             ],
             richContent: {
-                howItWorks: { tr: "Önce tek vade için brüt faiz, stopaj ve net faiz hesaplanır. Otomatik yenileme seçilmişse her vade sonunda oluşan net tutar yeni dönem anaparası kabul edilir ve süreç seçilen tekrar sayısı kadar sürdürülür.", en: "The calculator first computes gross, tax, and net interest for one term. If auto rollover is selected, the net maturity amount becomes the next period's principal and the process repeats for the chosen number of renewals." },
-                formulaText: { tr: "Brüt Faiz = P × r × (gün/365). Net Faiz = Brüt × (1 − stopaj). Yenilemede Yeni Anapara = Eski Anapara + Net Faiz.", en: "Gross Interest = P × r × (days/365). Net Interest = Gross × (1 − tax). In rollover mode, New Principal = Old Principal + Net Interest." },
-                exampleCalculation: { tr: "100.000 TL ana para, yıllık %45 faiz, 92 gün vade ve %15 stopajla tek vadede net faiz bulunur. Aynı hesap 4 kez yenilenirse her dönemde büyüyen anapara nedeniyle plan sonu tutar tek vade hesabından daha yüksek olur.", en: "With 100,000 TL principal, 45% annual rate, a 92-day term, and 15% tax, the tool finds the single-term net interest. If the same deposit is rolled four times, the ending balance becomes higher because each new term starts from a larger principal." },
-                miniGuide: { tr: "<ul><li><b>Net Orana Bakın:</b> Banka faizi yerine stopaj sonrası efektif yıllık net oranı kıyaslamak daha doğru olur.</li><li><b>Vade Kurgusu:</b> Sadece yüksek oran değil, paranın kaç gün bağlı kalacağı ve çevrim sayısı da sonucu belirler.</li></ul>", en: "<ul><li><b>Focus on Net Yield:</b> Comparing the effective annual net rate is more useful than looking at the gross bank rate alone.</li><li><b>Term Design Matters:</b> Not just the headline rate, but also how long your cash is locked and how many times it rolls affects the result.</li></ul>" }
+                howItWorks: { tr: "Araç önce tek vade için brüt faiz, stopaj ve net faiz hesabını yapar; ardından net vade sonu tutarını ve efektif yıllık net oranı çıkarır. Otomatik yenileme seçilmişse her vade sonunda oluşan net tutar yeni dönem anaparası kabul edilir ve süreç seçilen tekrar sayısı kadar sürdürülür. Böylece yalnızca tek dönem net faiz değil, vadeli mevduat getiri hesaplama açısından birden çok çevrimin bileşik etkisi de görülebilir.", en: "The calculator first computes gross interest, withholding, net interest, and the effective annual net rate for one term. In auto-rollover mode, each net maturity value becomes the next principal, allowing you to see the compounding effect across repeated maturities." },
+                formulaText: { tr: "Brüt Faiz = P × r × (gün/365); Stopaj = Brüt Faiz × s; Net Faiz = Brüt Faiz × (1 − s). Net Efektif Yıllık Oran = (Net Faiz / Anapara) × (365 / Gün) × 100.", en: "Gross Interest = P × r × (days/365); Tax = Gross Interest × s; Net Interest = Gross Interest × (1 − s). Effective Annual Net Rate = (Net Interest / Principal) × (365 / Days) × 100." },
+                exampleCalculation: { tr: "100.000 TL ana para, yıllık %45 faiz, 92 gün vade ve %17,5 stopajda brüt faiz yaklaşık 11.342,47 TL, stopaj 1.984,93 TL, net faiz 9.357,53 TL ve vade sonu net tutar 109.357,53 TL olur. Aynı tutar 4 kez otomatik yenilenirse plan sonu toplam yaklaşık 143.019,36 TL'ye çıkar.", en: "With 100,000 TL principal, a 45% annual rate, a 92-day term, and 17.5% tax, gross interest is about 11,342.47 TL, tax is 1,984.93 TL, net interest is 9,357.53 TL, and maturity value is 109,357.53 TL. Rolled four times, the ending balance reaches roughly 143,019.36 TL." },
+                miniGuide: { tr: "<ul><li><b>Net Orana Bakın:</b> Banka faizi yerine stopaj sonrası efektif yıllık net oranı kıyaslamak daha doğru olur.</li><li><b>2026 Stopaj Bandı:</b> 14 Mart 2026 itibarıyla standart TL vadeli mevduatta 1 yıl dahil vadelerde %17,5, 1 yıldan uzun vadelerde %10 stopaj referans alınır.</li><li><b>Yenileme Riski:</b> Otomatik yenilemede toplam getiri yalnızca bugünkü oranla değil, sonraki vadelerde bankanın sunacağı yeni faizlerle de değişebilir.</li></ul>", en: "<ul><li><b>Focus on Net Yield:</b> Comparing the effective annual net rate is more useful than looking at the gross bank rate alone.</li><li><b>2026 Tax Band:</b> As of March 14, 2026, standard TRY deposits are taxed at 17.5% up to one year and 10% beyond one year.</li><li><b>Rollover Risk:</b> Auto-renewal results also depend on the bank's future renewal rates, not only today's quoted rate.</li></ul>" }
             }
         }
     },
@@ -5146,6 +5158,7 @@ export const phase3Calculators: CalculatorConfig[] = [
         h1: { tr: "Asgari Ücret 2026 — Brüt ve Net Tutarlar", en: "Minimum Wage 2026 — Gross and Net" },
         description: { tr: "2026 yılı asgari ücret brüt, net ve işverene maliyetini görün.", en: "See 2026 minimum wage gross, net and employer cost." },
         shortDescription: { tr: "2026 Ocak ve Temmuz asgari ücret tutarlarını, kesintileri ve işverene toplam maliyeti anında görün.", en: "Instantly see 2026 minimum wage amounts, deductions and total employer cost." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["maas-hesaplama", "gelir-vergisi-hesaplama", "kidem-tazminati-hesaplama"],
         inputs: [
             {
@@ -5166,7 +5179,7 @@ export const phase3Calculators: CalculatorConfig[] = [
         ],
         formula: (v) => {
             const DATA: Record<string, { gross: number; net: number }> = {
-                jan2026: { gross: 33028.00, net: 28075.20 },
+                jan2026: { gross: 33030.00, net: 28075.50 },
                 jul2026: { gross: 36000.00, net: 30600.00 }, // tahmini
             };
             const d = DATA[v.period] ?? DATA.jan2026;
@@ -5178,16 +5191,16 @@ export const phase3Calculators: CalculatorConfig[] = [
         },
         seo: {
             title: { tr: "Asgari Ücret 2026 — Brüt Net ve İşveren Maliyeti", en: "Minimum Wage 2026 — Gross Net Employer Cost" },
-            metaDescription: { tr: "2026 Ocak asgari ücreti brüt 33.028 TL, net 28.075,20 TL. SGK ve işveren malliyetini görün.", en: "2026 January minimum wage: gross 33,028 TL, net 28,075.20 TL. See SGK and employer cost." },
-            content: { tr: "Türkiye'de asgari ücret yılda iki kez (Ocak ve Temmuz) güncellenir. 2026 Ocak brüt asgari ücret 33.028 TL, net 28.075,20 TL olarak belirlenmiştir.", en: "Turkey's minimum wage is updated twice yearly. Jan 2026: gross 33,028 TL, net 28,075.20 TL." },
+            metaDescription: { tr: "2026 Ocak asgari ücreti brüt 33.030 TL, net 28.075,50 TL. SGK kesintileri ve işveren maliyetini birlikte görün.", en: "2026 January minimum wage: gross 33,030 TL, net 28,075.50 TL. See deductions and employer cost." },
+            content: { tr: "Türkiye'de asgari ücret yılda iki kez güncellenebilmekle birlikte, bu ekranda 2026 yılı için resmi açıklanan brüt ve net asgari ücret tutarları ile işverene maliyet senaryosu özetlenir.", en: "While minimum wage can be updated during the year in Turkey, this screen summarizes the officially announced 2026 gross and net minimum wage figures together with an employer-cost scenario." },
             faq: [
-                { q: { tr: "2026 asgari ücret ne kadar?", en: "What is the 2026 minimum wage?" }, a: { tr: "Ocak 2026 itibarıyla brüt asgari ücret 33.028 TL, net 28.075,20 TL'dir. Gelir vergisi istisnası ve damga vergisi muafiyeti uygulanmaktadır.", en: "As of January 2026: gross 33,028 TL, net 28,075.20 TL. Income tax exemption and stamp duty waiver apply." } },
-                { q: { tr: "İşverene maliyeti nedir?", en: "What is the employer cost?" }, a: { tr: "Brüt ücret + %15,5 SGK işveren payı = yaklaşık 38.171 TL/ay.", en: "Gross + 15.5% employer SGK ≈ 38,171 TL/month." } },
+                { q: { tr: "2026 asgari ücret ne kadar?", en: "What is the 2026 minimum wage?" }, a: { tr: "Ocak 2026 itibarıyla brüt asgari ücret 33.030 TL, net 28.075,50 TL'dir. Gelir vergisi istisnası ve damga vergisi muafiyeti uygulanmaktadır.", en: "As of January 2026: gross 33,030 TL, net 28,075.50 TL. Income tax exemption and stamp duty waiver apply." } },
+                { q: { tr: "İşverene maliyeti sabit midir?", en: "Is employer cost fixed?" }, a: { tr: "Hayır. İşveren maliyeti SGK prim indirimi, sektör ve teşvik durumuna göre değişebilir. Bu ekran hızlı bir planlama çıktısı sunar; kesin bordro yükü için resmi tabloya bakılmalıdır.", en: "No. Employer cost can vary by SGK premium incentive, sector, and other support items. This screen provides a planning estimate; the official table should be checked for exact payroll burden." } },
             ],
             richContent: {
                 howItWorks: { tr: "Brüt asgari ücretten %14 SGK işçi payı ve %1 işsizlik sigortası düşülür. Gelir vergisi ve damga vergisi 2026'da asgari ücret için uygulanmaz.", en: "14% SGK employee and 1% unemployment deducted from gross. Income tax and stamp duty not applied for minimum wage in 2026." },
                 formulaText: { tr: "Net = Brüt − SGK(%14) − İşsiz.Sig.(%1). İşveren Toplam = Brüt + SGK.İşveren(%15,5).", en: "Net = Gross − SGK(14%) − Unemp(1%). Employer Total = Gross + SGK.Employer(15.5%)." },
-                exampleCalculation: { tr: "33.028 − 4.623,92 − 330,28 = 28.073,80 ≈ 28.075,20 TL net (resmi tebliğ değeri).", en: "33,028 − 4,623.92 − 330.28 ≈ 28,073.80 TL net (official value: 28,075.20 TL)." },
+                exampleCalculation: { tr: "33.030 − 4.624,20 − 330,30 = 28.075,50 TL net.", en: "33,030 − 4,624.20 − 330.30 = 28,075.50 TL net." },
                 miniGuide: { tr: "<ul><li>Temmuz tutarı tahminidir, resmi tebliğle güncellenir.</li><li>Asgari ücretlilerde kıdem tazminatı tavanı ayrıca belirlenir.</li></ul>", en: "July amount is estimated. Official ceiling for severance pay is set separately." }
             }
         }
@@ -5199,9 +5212,10 @@ export const phase3Calculators: CalculatorConfig[] = [
         slug: "ozel-guvenlik-sinav-hesaplama",
         category: "sinav-hesaplamalari",
         name: { tr: "Özel Güvenlik Sınavı Puan Hesaplama", en: "Private Security Exam Score" },
-        h1: { tr: "Özel Güvenlik Sınavı Puan Hesaplama", en: "Private Security Exam Score Calculator" },
-        description: { tr: "Özel güvenlik sınavı doğru yanlış sayılarından puanınızı hesaplayın.", en: "Calculate your private security exam score from correct and wrong answers." },
-        shortDescription: { tr: "Temel Hukuk ve Özel Güvenlik Mevzuatı bölüm doğrularını girin; geçme notunu ve toplam puanı görün.", en: "Enter section correct counts to see pass score and total." },
+        h1: { tr: "Özel Güvenlik Sınavı Puan Hesaplama 2026 — 100 Soruluk Yazılı Ön İzleme", en: "Private Security Exam Score Calculator 2026 — 100-Question Written Preview" },
+        description: { tr: "Özel güvenlik yazılı sınavındaki bölüm doğrularınızdan toplam puanı ve 70 geçme barajını hızlıca görün.", en: "Quickly see the total score and 70-point passing threshold from your private security written exam section correct answers." },
+        shortDescription: { tr: "100 soruluk özel güvenlik yazılı sınavı için toplam puan ve geçme barajını görün.", en: "See the total score and passing threshold for the 100-question private security written exam." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["kpss-puan-hesaplama", "ortalama-hesaplama"],
         inputs: [
             { id: "bolum1", name: { tr: "Bölüm 1 Doğru (Hukuk - 30 soru)", en: "Section 1 Correct (30Q)" }, type: "number", defaultValue: 22, required: true, min: 0, max: 30 },
@@ -5225,9 +5239,9 @@ export const phase3Calculators: CalculatorConfig[] = [
             return { toplam, puan, gecti };
         },
         seo: {
-            title: { tr: "Özel Güvenlik Sınavı Puan Hesaplama", en: "Private Security Exam Score Calculator" },
-            metaDescription: { tr: "Özel güvenlik sınavı bölüm doğrularından toplam puanınızı ve geçip geçmediğinizi hesaplayın.", en: "Calculate your private security exam total score and pass/fail status." },
-            content: { tr: "Özel güvenlik sınavı 100 sorudan oluşur. Geçme notu 70'tir. Her doğru yanıt 1 puan, yanlış yanıtlar ise puanı düşürmez.", en: "Private security exam has 100 questions. Pass mark is 70. Each correct = 1 point, no penalty for wrong." },
+            title: { tr: "Özel Güvenlik Sınavı Puan Hesaplama 2026 — 100 Soruluk Yazılı Ön İzleme", en: "Private Security Exam Score Calculator 2026 — 100-Question Written Preview" },
+            metaDescription: { tr: "Özel güvenlik yazılı sınavındaki bölüm doğrularınızdan toplam puanı ve 70 geçme barajını hızlıca görün. Kesin sertifika süreci için resmi kurs ve emniyet duyuruları esas alınır.", en: "Quickly see the total score and 70-point passing threshold from your private security written exam sections. Official course and police announcements remain the final reference for certification." },
+            content: { tr: "Özel güvenlik yazılı sınavında adaylar çoğu zaman 100 soruluk yapı üzerinden toplam puanı ve 70 geçme barajını hızlıca görmek ister. Bu ekran, bölüm bazlı doğru sayılarını toplayarak net bir yazılı ön izleme verir. Silahlı veya silahsız özel güvenlik sürecinde ek eğitim, atış veya kurs şartları varsa bunlar ilgili resmi duyurularla ayrıca değerlendirilmelidir.", en: "Candidates in the private security written exam often want to quickly see the total score and the 70-point passing threshold on the 100-question structure. This screen provides a clear written preview by summing section-level correct answers. If there are extra training, shooting, or course requirements in armed or unarmed processes, they should be evaluated separately through the relevant official announcements." },
             faq: [{ q: { tr: "Özel güvenlik sınavı geçme notu kaç?", en: "What is the pass score?" }, a: { tr: "70 puan ve üzeri geçer.", en: "70 and above is passing." } }],
             richContent: {
                 howItWorks: { tr: "100 soruluk sınavda her doğru cevap 1 puandır. Yanlış cevaplar puan kesmez. 70 ve üzeri geçer.", en: "100-question exam. Each correct = 1 point. No penalty. 70+ passes." },
@@ -5248,7 +5262,7 @@ export const phase3Calculators: CalculatorConfig[] = [
         h1: { tr: "Doğuma Kalan Gün Sayısı — Yıl Dönümü Geri Sayımı", en: "Days Until Next Birthday Countdown" },
         description: { tr: "Bir sonraki doğum gününüze kaç gün kaldığını hesaplayın.", en: "Calculate how many days remain until the next birthday." },
         shortDescription: { tr: "Doğum tarihinizi girin; bir sonraki yıl dönümüne kaç gün kaldığını ve kaçıncı yaşınıza gireceğinizi anında görün.", en: "Enter birthdate to see days until next birthday and which age you'll turn." },
-        relatedCalculators: ["yas-hesaplama", "gun-hesaplama", "hamilelik-haftasi-hesaplama"],
+        relatedCalculators: ["yas-hesaplama", "iki-tarih-arasindaki-gun-sayisi-hesaplama", "hamilelik-haftasi-hesaplama"],
         inputs: [
             { id: "birthDate", name: { tr: "Doğum Tarihi", en: "Birth Date" }, type: "date", defaultValue: "1990-06-15", required: true },
         ],
@@ -5403,11 +5417,12 @@ export const phase3Calculators: CalculatorConfig[] = [
         id: "eurobond",
         slug: "eurobond-getiri-hesaplama",
         category: "finansal-hesaplamalar",
+        updatedAt: "2026-03-15",
         name: { tr: "Eurobond Getiri Hesaplama (Temel)", en: "Eurobond Return Calculator (Basic)" },
-        h1: { tr: "Eurobond Getiri Hesaplama — Temel Kupon ve Vade Analizi", en: "Eurobond Yield Calculator — Basic Coupon and Maturity Analysis" },
-        description: { tr: "Eurobond kuponu, vadesi ve alım fiyatından getiri oranını hesaplayın.", en: "Calculate eurobond yield from coupon, maturity and purchase price." },
-        shortDescription: { tr: "Temel sürüm: nominal değer, kupon oranı, alım fiyatı ve vade ile yıllık kupon gelirini ve yaklaşık vadeye kadar getiriyi görün.", en: "Basic version: enter face value, coupon, price, and maturity to see annual coupon income and approximate yield to maturity." },
-        relatedCalculators: ["mevduat-faiz-hesaplama", "bilesik-faiz-hesaplama", "enflasyon-hesaplama"],
+        h1: { tr: "Eurobond Vergi ve Getiri Hesaplama — Kupon, YTM ve Stopaj", en: "Eurobond Tax and Yield Calculator — Coupon, YTM and Withholding" },
+        description: { tr: "Eurobond vergisi, kuponu, vadesi ve alım fiyatından getiri oranını hesaplayın.", en: "Calculate eurobond tax context, coupon income, maturity yield, and purchase-price impact." },
+        shortDescription: { tr: "Hazine eurobondu ve özel sektör ihraçlarında stopaj farkını, kupon gelirini ve yaklaşık YTM'yi tek ekranda görün.", en: "See withholding differences, coupon income, and approximate YTM for treasury and private-sector eurobonds on one screen." },
+        relatedCalculators: ["eurobond-hesaplama", "tahvil-hesaplama", "bono-hesaplama", "doviz-hesaplama"],
         inputs: [
             { id: "faceValue", name: { tr: "Nominal Değer ($)", en: "Face Value ($)" }, type: "number", defaultValue: 1000, suffix: "$", required: true, min: 0 },
             { id: "couponRate", name: { tr: "Kupon Oranı (% yıllık)", en: "Coupon Rate (% pa)" }, type: "number", defaultValue: 8.5, suffix: "%", required: true, min: 0 },
@@ -5818,11 +5833,12 @@ export const phase4Calculators: CalculatorConfig[] = [
     {
         id: "lgs-score",
         slug: "lgs-puan-hesaplama",
+        updatedAt: "2026-03-14",
         category: "sinav-hesaplamalari",
         name: { tr: "LGS Puan Hesaplama", en: "LGS Score Calculator" },
-        h1: { tr: "LGS Puan Hesaplama 2026 — Liselere Geçiş Sınavı", en: "LGS High School Entrance Score Calculator 2026" },
-        description: { tr: "2026 LGS netlerinize göre tahmini yerleştirme puanı simülasyonunuzu hesaplayın.", en: "Calculate your estimated 2026 LGS placement score simulation from your nets." },
-        shortDescription: { tr: "Ders doğrularınızı ve yanlışlarınızı girin; 2026 LGS puan simülasyonunuzu güncel puanlama yapısına göre görün.", en: "Enter your correct and wrong counts to see your 2026 LGS score simulation with the current scoring structure." },
+        h1: { tr: "LGS Puan Hesaplama 2026 — 14 Haziran 2026 Ön İzleme", en: "LGS Score Calculator 2026 — June 14 Preview" },
+        description: { tr: "14 Haziran 2026 LGS için netlerinize göre tahmini puan simülasyonu yapın. Araç, güncel ders ağırlıkları ve 3 yanlış 1 doğru kuralıyla ön izleme sunar.", en: "Estimate your 2026 LGS score for the June 14 exam using current subject weights and the 3-wrong-1-correct rule." },
+        shortDescription: { tr: "Türkçe, Matematik, Fen ve diğer ders netlerinizi girin; 2026 LGS için güncel ağırlık yapısına göre tahmini puan ön izlemesi alın.", en: "Enter your Turkish, Math, Science, and other subject nets to preview your estimated 2026 LGS score with the current weighting structure." },
         relatedCalculators: ["yks-puan-hesaplama", "ortalama-hesaplama", "takdir-tessekur-hesaplama"],
         inputs: [
             { id: "din_muaf", name: { tr: "Din Kültürü Muafiyeti", en: "Religion Exempt" }, type: "checkbox", placeholder: { tr: "Din Kültürü dersi almıyorum", en: "Exempt from Religion" }, className: "w-full" },
@@ -5902,9 +5918,9 @@ export const phase4Calculators: CalculatorConfig[] = [
             return { toplam_net: total_net, puan: Math.min(500, Math.max(0, total_puan)) };
         },
         seo: {
-            title: { tr: "LGS Puan Hesaplama 2026 — Güncel Puanlama Yapısı", en: "LGS Score Calculator 2026 — Current Scoring Structure" },
-            metaDescription: { tr: "2026 LGS netlerinizi girin, tahmini puan simülasyonunuzu ve güncel puanlama yapısına göre en yakın sonucunuzu anında görün.", en: "Enter your 2026 LGS nets and instantly view your estimated score simulation based on the current scoring structure." },
-            content: { tr: "LGS puanı; Türkçe, Matematik ve Fen Bilimleri'nin ağırlıklı olduğu, İnkılap, Din ve Dil derslerinin ise daha düşük ağırlıkla değerlendirildiği puanlama yapısına göre hesaplanır. 3 yanlış 1 doğruyu götürür ve sonuç ekranı tahmini yerleştirme puanı simülasyonu sunar.", en: "LGS score is calculated with a scoring structure that gives more weight to Turkish, Math, and Science while Social Studies, Religion, and Language carry lower weights. Three wrong answers cancel one correct answer, and the result is presented as an estimated placement score simulation." },
+            title: { tr: "LGS Puan Hesaplama 2026 — 14 Haziran Öncesi Tahmini Puan", en: "LGS Score Calculator 2026 — Estimated Score Preview" },
+            metaDescription: { tr: "14 Haziran 2026 LGS için netlerinizi girin, güncel puanlama yapısına göre tahmini puanınızı anında görün. 3 yanlış 1 doğru kuralı ve ders ağırlıkları birlikte hesaplanır.", en: "Enter your nets for the June 14, 2026 LGS and instantly see your estimated score with the current weighting structure and the 3-wrong-1-correct rule." },
+            content: { tr: "LGS puanı; Türkçe, Matematik ve Fen Bilimleri'nin daha yüksek ağırlık taşıdığı, İnkılap, Din ve Yabancı Dil derslerinin ise daha sınırlı katkı verdiği puanlama yapısına göre hesaplanır. MEB'in 14 Haziran 2026 sınav takvimine göre hazırlanan bu sayfa, mevcut soru dağılımı ve ağırlık yapısıyla tahmini yerleştirme puanı ön izlemesi sunar. 3 yanlış 1 doğruyu götürür; muafiyet durumlarında ise puan, öğrenciyi dezavantajlı bırakmayacak biçimde normalize edilir.", en: "LGS score is calculated with a structure in which Turkish, Math, and Science carry higher weights, while Social Studies, Religion, and Foreign Language contribute less. Prepared in line with MEB's June 14, 2026 exam calendar, this page offers an estimated placement-score preview using the current question distribution and weighting structure. Three wrong answers cancel one correct answer, and exemption cases are normalized so the student is not disadvantaged." },
             faq: [
                 { q: { tr: "LGS'de 3 yanlış 1 doğruyu götürür mü?", en: "Does 3 wrong remove 1 correct in LGS?" }, a: { tr: "Evet, LGS'de her alt test için 3 yanlış cevap 1 doğru cevabı eksiltir.", en: "Yes, in LGS, 3 wrong answers in each subtest reduce 1 correct answer." } },
                 { q: { tr: "Din Kültürü muafiyeti puanı etkiler mi?", en: "Does religion exemption affect score?" }, a: { tr: "Muaf olan öğrenciler için puan, diğer testlerin ağırlığı orantılı olarak artırılarak hesaplanır, böylece aday dezavantajlı duruma düşmez.", en: "For exempt students, weights of other tests are increased proportionally so the candidate isn't disadvantaged." } }
@@ -6029,9 +6045,10 @@ export const schoolCalculators: CalculatorConfig[] = [
         slug: "dgs-puan-hesaplama",
         category: "sinav-hesaplamalari",
         name: { tr: "DGS Puan Hesaplama 2026", en: "DGS Score Calculator 2026" },
-        h1: { tr: "DGS Puan Hesaplama 2026 (ÖSYM Uyumlu)", en: "DGS Score Calculator 2026 (OSYM Compliant)" },
-        description: { tr: "DGS Sözel ve Sayısal netlerinizi ile ÖBP'nizi (Önlisans Başarı Puanı) girerek güncel ÖSYM katsayılarıyla tahmini DGS puanınızı anında hesaplayın.", en: "Calculate your estimated DGS score instantly with current OSYM coefficients by entering your Verbal and Numerical nets and OBP (Associate Degree Success Score)." },
-        shortDescription: { tr: "2026 ÖSYM güncel katsayılarına göre Sayısal, Sözel ve Eşit Ağırlık DGS puanlarınızı hatasız hesaplayın.", en: "Calculate your Numerical, Verbal, and Equal Weight DGS scores flawlessly according to 2026 OSYM current coefficients." },
+        h1: { tr: "DGS Puan Hesaplama 2026 — Sayısal, Sözel ve EA Ön İzleme", en: "DGS Score Calculator 2026 — Numerical, Verbal and EA Preview" },
+        description: { tr: "DGS Sözel ve Sayısal netleriniz ile ÖBP'nizi (Önlisans Başarı Puanı) girerek, ÖSYM mantığına yakın yaklaşık DGS puan ön izlemesini anında görün.", en: "Enter your verbal and numerical nets with your OBP to instantly see an approximate DGS score preview aligned with ÖSYM logic." },
+        shortDescription: { tr: "DGS Sayısal, Sözel ve Eşit Ağırlık puanlarınızı tercih planlaması için yaklaşık ön izleme olarak görün.", en: "Preview your DGS Numerical, Verbal and Equal Weight scores as an approximate planning view." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["yks-puan-hesaplama", "lgs-puan-hesaplama"],
         inputs: [
             // Sayısal Testi
@@ -6101,19 +6118,19 @@ export const schoolCalculators: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "DGS Puan Hesaplama 2026 — ÖSYM Uyumlu Simülasyon", en: "DGS Score Calculator 2026 — ÖSYM-Aligned Simulation" },
-            metaDescription: { tr: "Sayısal ve Sözel netlerinizi girerek 2026 DGS SAY, SÖZ ve EA puan simülasyonunuzu ÖSYM puanlama mantığına yakın şekilde saniyeler içinde hesaplayın.", en: "Enter your numerical and verbal nets to calculate your 2026 DGS SAY, SOZ, and EA score simulation in seconds with an ÖSYM-aligned scoring model." },
-            content: { tr: "DGS (Dikey Geçiş Sınavı) hesaplamasında Sayısal ve Sözel testlerinden elde edilen standart puanlara, Önlisans Başarı Puanınızın (ÖBP) katkısı eklenerek yerleştirme puanı simülasyonu üretilir. Sonuç ekranı resmi sonuç belgesi yerine geçmez; tercih öncesi planlama için kullanılır.", en: "In DGS, placement score simulation is produced by combining numerical and verbal test performance with your Associate Degree Success Score (OBP). The result does not replace the official score document and is intended for planning before preferences." },
+            title: { tr: "DGS Puan Hesaplama 2026 — Net ve ÖBP ile Yaklaşık Ön İzleme", en: "DGS Score Calculator 2026 — Approximate Preview with Nets and OBP" },
+            metaDescription: { tr: "Sayısal ve Sözel netlerinizi girerek 2026 DGS SAY, SÖZ ve EA puan ön izlemenizi saniyeler içinde hesaplayın. Sonuç, resmi ÖSYM belgesi yerine geçmeyen yaklaşık planlama çıktısıdır.", en: "Enter your numerical and verbal nets to preview your 2026 DGS SAY, SOZ and EA scores in seconds. The result is an approximate planning view and not an official ÖSYM result." },
+            content: { tr: "DGS (Dikey Geçiş Sınavı) hesabında Sayısal ve Sözel testlerinden elde edilen netler ile Önlisans Başarı Puanınızın (ÖBP) katkısı birlikte okunur. Bu sayfa, tercih öncesi çalışma temposunu ve hedef aralığını görmek için yaklaşık bir puan ön izlemesi üretir; kesin değerlendirme için ÖSYM sonuç belgesi ve DGS kılavuzu esas alınmalıdır.", en: "DGS combines your numerical and verbal test nets with the contribution of your Associate Degree Success Score (OBP). This page produces an approximate preview for study planning and target reading; the official ÖSYM result report and DGS guide remain the final reference." },
             faq: [
                 { q: { tr: "DGS puanı hesaplanırken 4 yanlış 1 doğruyu götürür mü?", en: "Do 4 wrong answers cancel 1 correct?" }, a: { tr: "Evet, DGS'de 4 yanlış cevap 1 doğru cevabı götürmektedir.", en: "Yes, 4 wrong answers cancel 1 correct answer. Our system automatically relies on this when calculating your nets." } },
                 { q: { tr: "DGS ÖBP (Önlisans Başarı Puanı) nasıl hesaplanır?", en: "How is DGS OBP calculated?" }, a: { tr: "Önlisans mezuniyet notunuz (100 üzerinden) 0.8 ile çarpılır. Çıkan değer ÖBP'nizdir. En düşük 40, en yüksek 80 olabilir.", en: "Your associate degree graduation grade (out of 100) is multiplied by 0.8. Lowest becomes 40, highest 80." } },
                 { q: { tr: "Önceki yıl DGS ile yerleştim, puanım düşer mi?", en: "Placed previous year, will my score drop?" }, a: { tr: "Evet. Önceki yıl DGS ile bir yükseköğretim programına yerleştirilen (kayıt yaptırmasa dahi) adayların ÖBP katsayısı %25 kesintili olarak hesaplanır.", en: "Yes. Candidates placed previous year face a ~25% penalty on their OBP coefficient." } }
             ],
             richContent: {
-                howItWorks: { tr: "Sayısal (50 soru) ve Sözel (50 soru) testlerindeki doğru ve yanlışlarınızdan netler çıkarılır. Ardından ÖSYM mantığına yakın ağırlıklandırma uygulanır ve ÖBP katkısı eklenerek tahmini DGS puan simülasyonu oluşturulur.", en: "Your nets are calculated from the 50-question numerical and 50-question verbal tests. An ÖSYM-aligned weighting model is then applied and the OBP contribution is added to produce an estimated DGS score simulation." },
-                formulaText: { tr: "Yerleştirme Puanı = [Sınav Standart Puanı + (ÖBP × 0.6)] formülü baz alınmaktadır.", en: "Placement Score = [Standard Test Score + (OBP × 0.6)] formula translates your results." },
-                exampleCalculation: { tr: "Örnek: 30 Sayısal, 25 Sözel neti olan ve 60 ÖBP'ye sahip bir öğrencinin SAY puanı tahmini: (30×3.1) + (25×0.5) + (60×0.6) + 105 Taban = 246.50", en: "Example: 30 Num Net, 25 Ver Net, 60 OBP => Estimated NUM Score: (30*3.1) + (25*0.5) + (60*0.6) + 105 = 246.50" },
-                miniGuide: { tr: "<ul><li><b>Puan Türü Kapsamı:</b> Öğrenciler mezun oldukları alanın devamı niteliğindeki lisans programlarını tercih edebilirler. Sayısal çıkışlı bir öğrenci Sözel puanıyla yerleşemez.</li><li><b>1 Net Kuralı:</b> Puanınızın hesaplanması için her iki testten de (Sayısal ve Sözel) en az 1'er net yapmış olmanız gerektiği kuralına dikkat edin.</li></ul>", en: "Students can only choose bachelor programs strictly related to their associate degree fields. Ensure you score at least 1 net in each test to get scored." }
+                howItWorks: { tr: "Sayısal (50 soru) ve Sözel (50 soru) testlerindeki doğru ve yanlışlarınızdan netler çıkarılır. Ardından ÖSYM puanlama mantığına yakın bir ağırlıklandırma modeli uygulanır ve ÖBP katkısı eklenerek yaklaşık DGS puan ön izlemesi üretilir.", en: "Your nets are calculated from the 50-question numerical and 50-question verbal tests. An approximation aligned with ÖSYM scoring logic is then applied, and the OBP contribution is added to produce a DGS score preview." },
+                formulaText: { tr: "Yaklaşık Yerleştirme Puanı = Model Standart Puanı + ÖBP katkısı. Bu ekran resmi puan belgesi yerine geçmez.", en: "Approximate Placement Score = Model Standard Score + OBP contribution. This screen does not replace the official score report." },
+                exampleCalculation: { tr: "Örnek: 30 Sayısal net, 25 Sözel net ve 60 ÖBP için model SAY ön izlemesi yaklaşık 246,50 seviyesinde oluşur. Resmi sonuç, sınav sonrası ÖSYM değerlendirmesiyle kesinleşir.", en: "Example: with 30 numerical net, 25 verbal net and 60 OBP, the model SAY preview lands around 246.50. The official result is finalized only after ÖSYM evaluation." },
+                miniGuide: { tr: "<ul><li><b>Ön İzleme Mantığı:</b> Bu sonuç tercih öncesi hedef bandı okumak içindir; kesin taban puan ve yerleştirme kararında ÖSYM sonuç belgesini kullanın.</li><li><b>1 Net Kuralı:</b> Hesabın anlamlı olması için her iki testten de en az 1'er net yapmış olmanız gerekir.</li></ul>", en: "This result is for pre-preference target reading; use the official ÖSYM result report for final placement decisions. Aim for at least 1 net in both sections for a meaningful estimate." }
             }
         }
     },
@@ -6122,20 +6139,21 @@ export const schoolCalculators: CalculatorConfig[] = [
     {
         id: "tyt-calculator",
         slug: "tyt-puan-hesaplama",
+        updatedAt: "2026-03-14",
         category: "sinav-hesaplamalari",
         name: { tr: "TYT Puan Hesaplama 2026", en: "TYT Score Calculator 2026" },
-        h1: { tr: "TYT Puan Hesaplama 2026 (ÖSYM Uyumlu)", en: "TYT Score Calculator 2026 (OSYM Compliant)" },
-        description: { tr: "TYT netlerinizi ve okul puanınızı (OBP/Diploma Notu) girerek 2026 YKS-TYT puan simülasyonunuzu 2025 güncel seti ve doğrulanmış geçmiş katsayılarla hesaplayın.", en: "Calculate your 2026 YKS-TYT score simulation with the 2025 current set and verified prior coefficients by entering your TYT nets and school score (OBP/Diploma Grade)." },
-        shortDescription: { tr: "Türkçe, Sosyal, Matematik ve Fen netlerinizi girerek 2026 TYT puanınızı ve OBP eklenmiş yerleştirme puanınızı 2025 güncel simülasyon setiyle hesaplayın.", en: "Enter your Turkish, Social, Math, and Science nets to calculate your 2026 TYT score and placement score with the 2025 current simulation set." },
+        h1: { tr: "TYT Puan Hesaplama 2026 — 20 Haziran Ön İzleme", en: "TYT Score Calculator 2026 — June 20 Preview" },
+        description: { tr: "20 Haziran 2026 TYT için netlerinizi ve okul puanınızı girerek tahmini ham puan ve yerleştirme puanı simülasyonu yapın. 2025 güncel seti ve doğrulanmış geçmiş katsayılar birlikte sunulur.", en: "Estimate your raw and placement TYT score for the June 20, 2026 exam using your nets, school score, the current 2025 set, and verified prior coefficients." },
+        shortDescription: { tr: "Türkçe, Sosyal, Matematik ve Fen netlerinizi girin; 2026 TYT için 2025 güncel simülasyon setiyle ham puan ve OBP'li yerleştirme puanı ön izlemesi alın.", en: "Enter your Turkish, Social, Math, and Science nets to preview your 2026 TYT raw and placement score with the current 2025 simulation set." },
         relatedCalculators: ["yks-puan-hesaplama", "dgs-puan-hesaplama", "lgs-puan-hesaplama"],
         inputs: [
             {
                 id: "sinav_yili",
-                name: { tr: "Sınav Yılı:", en: "Exam Year:" },
+                name: { tr: "Katsayı / Simülasyon Seti:", en: "Coefficient / Simulation Set:" },
                 type: "select",
                 defaultValue: "2025",
                 options: [
-                    { value: "2025", label: { tr: "YKS-TYT 2025 (Güncel simülasyon seti)", en: "YKS-TYT 2025 (Current simulation set)" } },
+                    { value: "2025", label: { tr: "YKS-TYT 2025 (2026 ön izleme için güncel set)", en: "YKS-TYT 2025 (Current set for 2026 preview)" } },
                     { value: "2024", label: { tr: "YKS-TYT 2024 (Gerçek ÖSYM)", en: "YKS-TYT 2024 (Real ÖSYM)" } },
                     { value: "2023", label: { tr: "YKS-TYT 2023 (Yaklaşık)", en: "YKS-TYT 2023 (Approximate)" } },
                 ]
@@ -6246,9 +6264,9 @@ export const schoolCalculators: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "TYT Puan Hesaplama 2026 — 2025 Güncel Set ve Geçmiş Katsayılar", en: "TYT Score Calculator 2026 — 2025 Current Set and Prior Coefficients" },
-            metaDescription: { tr: "TYT netlerinizi ve okul puanınızı (OBP) girerek 2026 YKS-TYT puan simülasyonunuzu anında hesaplayın. 2025 güncel simülasyon seti, 2024 doğrulanmış katsayılar ve 2023 karşılaştırma modu desteklenir.", en: "Calculate your 2026 YKS-TYT score simulation instantly. The tool supports a 2025 current simulation set, verified 2024 coefficients, and a 2023 comparison mode." },
-            content: { tr: "YKS'nin ilk oturumu olan TYT (Temel Yeterlilik Testi) puan hesaplamasında Türkçe, Sosyal Bilimler, Temel Matematik ve Fen Bilimleri testlerindeki doğru ve yanlışlarınız üzerinden netler bulunur. Bu araç 2026 adayı için puan simülasyonu üretir; 2025 seçeneği güncel sonuç yılı simülasyon seti olarak sunulur, 2024 seçeneği doğrulanmış ÖSYM katsayılarını temsil eder ve 2023 seçeneği karşılaştırma amaçlı yaklaşık mod sağlar. Böylece kullanıcı hem güncel yıla yakın bir senaryo görür hem de kullanılan katsayı setinin niteliğini açıkça bilir.", en: "TYT score calculation is based on your Turkish, Social Sciences, Basic Math, and Science nets. For 2026 candidates, the tool offers a 2025 current simulation set, a verified 2024 coefficient set, and a 2023 approximate comparison mode." },
+            title: { tr: "TYT Puan Hesaplama 2026 — 20 Haziran İçin Ön İzleme", en: "TYT Score Calculator 2026 — June 20 Preview" },
+            metaDescription: { tr: "20 Haziran 2026 TYT için netlerinizi ve okul puanınızı girerek tahmini ham puan ve yerleştirme puanı hesaplayın. 2025 güncel set, 2024 doğrulanmış katsayılar ve OBP etkisi birlikte gösterilir.", en: "Estimate your raw and placement TYT score for the June 20, 2026 exam using your nets, school score, the current 2025 set, verified 2024 coefficients, and OBP impact." },
+            content: { tr: "YKS'nin ilk oturumu olan TYT (Temel Yeterlilik Testi) puan hesaplamasında Türkçe, Sosyal Bilimler, Temel Matematik ve Fen Bilimleri testlerindeki doğru ve yanlışlarınız üzerinden netler bulunur. ÖSYM'nin 20 Haziran 2026 takvimine göre hazırlanan bu araç, 2026 adayı için puan ön izlemesi üretir; 2025 seçeneği güncel simülasyon seti, 2024 seçeneği doğrulanmış ÖSYM katsayıları, 2023 seçeneği ise karşılaştırma amaçlı yaklaşık mod olarak sunulur. Böylece kullanıcı hem güncel yıla yakın bir senaryo görür hem de kullanılan katsayı setinin niteliğini açıkça bilir.", en: "TYT score calculation is based on your Turkish, Social Sciences, Basic Math, and Science nets. Prepared according to ÖSYM's June 20, 2026 calendar, the tool offers a 2026 preview: the 2025 option is the current simulation set, 2024 represents verified ÖSYM coefficients, and 2023 is an approximate comparison mode." },
             faq: [
                 { q: { tr: "TYT Puanı hesaplanabilmesi için baraj var mı?", en: "Is there a threshold to calculate TYT Score?" }, a: { tr: "Adayların TYT puanının hesaplanabilmesi için Temel Matematik veya Türkçe testlerinin en az birinden 0.5 (yarım) net oranına ulaşmış olması zorunludur. Aksi takdirde puanınız hesaplanmaz.", en: "Candidates must achieve at least 0.5 net in either the Basic Math or Turkish tests for their TYT score to be calculated." } },
                 { q: { tr: "OBP (Okul Başarı Puanı) TYT puanını nasıl etkiler?", en: "How does OBP affect TYT score?" }, a: { tr: "Diploma notunuzun (50-100) 5 ile çarpılmasıyla OBP (250-500) elde edilir. Ham puanınıza eklenirken OBP 0.12 ile çarpılır. Böylece yerleştirme puanınıza an az 30, en fazla 60 puan okul katkısı olarak yansır.", en: "Your diploma grade is multiplied by 5 to find OBP. OBP is multiplied by 0.12 to form the score addition (minimum 30, maximum 60)." } },
@@ -6269,9 +6287,10 @@ export const schoolCalculators: CalculatorConfig[] = [
         slug: "ags-puan-hesaplama",
         category: "sinav-hesaplamalari",
         name: { tr: "AGS Puan Hesaplama 2026", en: "AGS Score Calculator 2026" },
-        h1: { tr: "AGS Puan Hesaplama 2026 (Milli Eğitim Akademisi Giriş Sınavı)", en: "AGS Score Calculator 2026 (MEB Academy Entrance Exam)" },
-        description: { tr: "2025 ÖSYM verileriyle 2026 MEB Akademi Giriş Sınavı (AGS) P1, P2 ve P3 puanlarınızı hesaplayın.", en: "Calculate your 2026 MEB AGS P1, P2 and P3 scores using 2025 OSYM data." },
-        shortDescription: { tr: "80 Soruluk AGS ile ÖABT/YDS netlerinizi girerek P1, P2 ve P3 puanınızı anında öğrenin.", en: "Enter your 80-question AGS and OABT/YDS nets to instantly learn your P1, P2 and P3 scores." },
+        h1: { tr: "AGS Puan Hesaplama 2026 — P1, P2 ve P3 Ön İzleme", en: "AGS Score Calculator 2026 — P1, P2 and P3 Preview" },
+        description: { tr: "2025 doğrulanmış soru omurgası ve güncel AGS yapısına göre 2026 MEB Akademi Giriş Sınavı (AGS) P1, P2 ve P3 puan ön izlemenizi hesaplayın.", en: "Calculate your 2026 MEB AGS P1, P2 and P3 score preview using the verified 2025 structure and the current AGS setup." },
+        shortDescription: { tr: "80 soruluk AGS ile ÖABT/YDS sonuçlarınızı girerek P1, P2 ve P3 puan ön izlemenizi anında görün.", en: "Enter your 80-question AGS and OABT/YDS results to instantly preview your P1, P2 and P3 scores." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["kpss-puan-hesaplama", "yks-puan-hesaplama", "dgs-puan-hesaplama"],
         inputs: [
             {
@@ -6464,10 +6483,10 @@ export const schoolCalculators: CalculatorConfig[] = [
 
             // YDS (P3)
             if (alani === "YDS") {
-                const ydsNet = getNet(v.yds_d, v.yds_y, 80);
-                if (ydsNet >= 1) {
+                const ydsCorrect = Math.min(Math.max(parseFloat(v.yds_d) || 0, 0), 80);
+                if (ydsCorrect >= 1) {
                     // YDS %50
-                    const ydsPart = (ydsNet / 80) * 50;
+                    const ydsPart = (ydsCorrect / 80) * 50;
                     p3Puani = p1Base * 0.5 + p2BasePart + ydsPart * 0.8;
                 }
             }
@@ -6482,18 +6501,18 @@ export const schoolCalculators: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "AGS Puan Hesaplama 2026 — Akademi Giriş Sınavı", en: "AGS Score Calculator 2026" },
-            metaDescription: { tr: "2026 MEB Akademi Giriş Sınavı (AGS) netlerinizi girerek P1, P2 (ÖABT) ve P3 (YDS) puanlarınızı en güncel ÖSYM katsayı yaklaşımıyla saniyeler içinde hesaplayın.", en: "Calculate your AGS P1, P2, and P3 scores using MoNE guidelines with precision." },
-            content: { tr: "Milli Eğitim Akademisi Giriş Sınavı (AGS), MEB öğretmen atamalarında artık temel alınacak ve KPSS Eğitim Bilimleri ile Genel Kültür - Genel Yetenek testlerinin yerini alacak olan yeni sınav sistemidir. AGS puan hesaplama formülü; P1 (yalnız AGS), P2 (AGS + ÖABT) ve P3 (AGS + YDS) alt puan türleri üzerinden adayların branş bazında değerlendirilmesini sağlar. Hazırladığımız bu motor, 100 üzerinden yerleştirme puanına dönüştürülmüş en iyi simülasyonu sunar.", en: "The MEB AGS consists of multiple placement structures. P1 focuses on the main 80 queries. P2 includes specific branches like Science, Math etc via OABT, and P3 emphasizes foreign languages." },
+            title: { tr: "AGS Puan Hesaplama 2026 — P1, P2 ve P3 Ön İzleme", en: "AGS Score Calculator 2026 — P1, P2 and P3 Preview" },
+            metaDescription: { tr: "2026 MEB Akademi Giriş Sınavı (AGS) sonuçlarınızı girerek P1, P2 (ÖABT) ve P3 (YDS) puan ön izlemenizi saniyeler içinde hesaplayın. Bu ekran planlama amaçlı yaklaşık sonuç üretir.", en: "Enter your 2026 MEB Academy Entrance Exam results to preview your P1, P2 (OABT) and P3 (YDS) scores in seconds. This screen produces an approximate planning result." },
+            content: { tr: "Milli Eğitim Akademisi Giriş Sınavı (AGS), öğretmen adaylarının yeni atama yapısı içinde izleyeceği puan türlerini anlaması açısından kritik bir ekrandır. Bu sayfa; yalnız AGS testine dayanan P1, AGS ile ÖABT birleşimini kullanan P2 ve AGS ile YDS/e-YDS sonucunu birlikte okuyan P3 için yaklaşık bir puan ön izlemesi üretir. Nihai değerlendirme, resmi MEB ve ÖSYM açıklamalarıyla kesinleşeceği için sonuç ekranı tercih ve çalışma planlaması amacıyla okunmalıdır.", en: "The Academy Entrance Exam (AGS) page is designed to help teacher candidates read the score types used in the new appointment structure. It produces an approximate preview for P1 based only on AGS, P2 combining AGS with OABT, and P3 combining AGS with YDS/e-YDS. Since final evaluation is finalized by official MoNE and ÖSYM announcements, the result should be read for study and planning purposes." },
             faq: [
                 { q: { tr: "AGS (Akademi Giriş Sınavı) kaç sorudan oluşur?", en: "How many questions does AGS have?" }, a: { tr: "MEB Akademi Giriş Sınavı (AGS) toplam 80 sorudan oluşur. İçeriğinde; Sözel Yetenek (15), Sayısal Yetenek (15), Tarih (10), Türkiye Coğrafyası (8), Eğitim Temelleri & MEB Sistemi (24) ve Mevzuat (8) bölümleri yer almaktadır.", en: "AGS involves 80 total core questions across Maths, Turkish, History, Geography, Education and Legislations." } },
                 { q: { tr: "AGS Puan Türleri (P1, P2, P3) farkları nelerdir?", en: "What's the difference between P1, P2, y P3?" }, a: { tr: "MEB-AGS-P1: Özel eğitim, Bilişim vs. gibi ÖABT gerektirmeyen alanlarda %100 AGS testi üzerinden hesaplanır. MEB-AGS-P2: Çoğu öğretmenliğin branş ÖABT'sini yüzde 50 olarak hesaplamaya katar. MEB-AGS-P3: Yabancı Dil (YDS/e-YDS) testiyle birleştirilerek hesaplanan dil öğretmenliği puan türüdür.", en: "P1 acts as physical/special ed, P2 covers vast majority of OABT required subjects and P3 specifies languages." } },
                 { q: { tr: "Din Kültürü ve İHL Meslek Dersleri için ayrı 3 alan nedir?", en: "What are the Religion branch categories?" }, a: { tr: "Din Kültürü ve İHL atamaları için ÖABT kendi içerisinde; Ortak Alan Bilgisi, Temel İslam Bilimleri ve İslam Tarihi ile Felsefesi olarak 3 alt bölüme ayrılır. Bu grupların MEB-AGS-P2-16 ve P2-17 hesaplamasında farklı ağırlıklı katsayıları bulunmaktadır.", en: "Religion courses are internally divided into 3 sub branches rather than 1 general 50 question OABT test." } }
             ],
             richContent: {
-                howItWorks: { tr: "Yaptığınız doğruların sayısından yanlışlarınızın 4'te 1'i (çeyreği) çıkarılarak netiniz bulunur. (Örn: 24 Doğru 4 Yanlış = 23 Net). Ardından ÖSYM kılavuzlarında belirtilen alt ağırlıklar (%10, %20, %25 vb.) formülize edilerek final standart puanlar hesaplanır. Algoritmamız sınav yılındaki veritabanı katsayılarına güncel erişim sağlar.", en: "Nets are gathered subtracting wrongs' quarters off corrects, multiplied against precise OSYM percentages." },
-                formulaText: { tr: "MEB-AGS-P1 = Ağırlıklı Standart Net(AGS). MEB-AGS-P2 = P1 Skoru(%50) + ÖABT Skoru(%50).", en: "P1 relies totally on AGS. P2 brings 50% AGS combined with 50% OABT." },
-                exampleCalculation: { tr: "Örnek (MEB-AGS-P2 İçin): AGS'den 65 net yapan ve Lise Matematik branşında ÖABT sınavından 40 nete sahip olan bir aday; P1 hesaplamasında kendi standartlarını oluşturduğu gibi ÖABT testiyle yarı yarıya ağırlık kazanan P2 Puanını kullanacaktır.", en: "Candidates are required to participate into an OABT in order to unlock P2 calculations." },
+                howItWorks: { tr: "AGS testinde ve ÖABT tarafında 4 yanlış 1 doğruyu götürecek şekilde net hesaplanır. YDS/e-YDS kullanılan P3 tarafında ise yabancı dil sonucu, YDS'nin resmi değerlendirme mantığına uygun olarak doğru sayısı üzerinden okunur. Sonrasında AGS ana gövdesi ile alan bileşeni birleştirilerek yaklaşık P1, P2 ve P3 puan ön izlemesi üretilir.", en: "Nets are calculated with the 4-wrong-1-correct rule for AGS and OABT. On the P3 side, where YDS/e-YDS is used, the language result is read from the correct count in line with YDS evaluation logic. The AGS core result is then combined with the field component to produce approximate P1, P2 and P3 previews." },
+                formulaText: { tr: "MEB-AGS-P1 yalnız AGS bileşenini, MEB-AGS-P2 AGS + ÖABT birleşimini, MEB-AGS-P3 ise AGS + YDS/e-YDS sonucunu yaklaşık ağırlıklarla birlikte yorumlar.", en: "MEB-AGS-P1 reads the AGS core only, MEB-AGS-P2 combines AGS with OABT, and MEB-AGS-P3 combines AGS with YDS/e-YDS using approximate weights." },
+                exampleCalculation: { tr: "Örnek: AGS'de güçlü net yapan bir aday, branşına göre ÖABT veya YDS/e-YDS sonucunu eklediğinde P2 ya da P3 puan türünde farklı bir ön izleme görür. Bu fark, hangi alanla başvuru yapılacağını yorumlamak için kullanılır.", en: "Example: a candidate with strong AGS nets will see a different preview in P2 or P3 once the relevant OABT or YDS/e-YDS result is added. That difference helps interpret which field-based application path is more relevant." },
                 miniGuide: { tr: "<ul><li><b>1 Net Baraj Kuralı:</b> İlgili hesaplama formüllerinin çalışması için ilgili testten (Örn: Hem AGS hem de ÖABT'den) en az 1 net çıkarmış olmanız şarttır.</li><li><b>Tavan Puan 100:</b> Tüm MEB-AGS atama puan türleri 100 tam puan üzerinden listelenir ve sıralamalar bu puan üzerinden belirlenir.</li></ul>", en: "Ensure scoring minimum 1 net overall to trigger points computations across any P scores." }
             }
         }
@@ -6505,9 +6524,10 @@ export const schoolCalculators: CalculatorConfig[] = [
         slug: "aks-puan-hesaplama",
         category: "sinav-hesaplamalari",
         name: { tr: "AKS Puan Hesaplama", en: "AKS Score Calculator" },
-        h1: { tr: "AKS Puan Hesaplama 2026 — Akademik Kurul Sınavı Tahmini Puan", en: "AKS Score Calculator 2026 — Academic Board Exam Estimated Score" },
-        description: { tr: "AKS (Akademik Kurul Sınavı) doğru ve yanlış sayılarınızı girerek tahmini puanınızı hesaplayın.", en: "Calculate your estimated AKS score by entering correct and wrong answers." },
-        shortDescription: { tr: "AKS doğru-yanlış sayılarınızı girerek tahmini puanınızı saniyeler içinde öğrenin.", en: "Enter your AKS correct and wrong counts to get an estimated score instantly." },
+        h1: { tr: "AKS Puan Hesaplama 2026 — Net Bazlı Ön İzleme", en: "AKS Score Calculator 2026 — Net-Based Preview" },
+        description: { tr: "AKS doğru ve yanlış sayılarınızı girerek net bazlı yaklaşık puan ön izlemenizi hesaplayın.", en: "Enter your AKS correct and wrong answers to calculate a net-based approximate score preview." },
+        shortDescription: { tr: "AKS doğru-yanlış sayılarınızı girerek yaklaşık puan ön izlemenizi saniyeler içinde görün.", en: "Enter your AKS correct and wrong counts to see an approximate score preview in seconds." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["ales-puan-hesaplama", "yds-puan-hesaplama", "kpss-puan-hesaplama"],
         inputs: [
             { id: "dogru", name: { tr: "Doğru Sayısı (120 Soru)", en: "Correct (120 Questions)" }, type: "number", defaultValue: 80, min: 0, max: 120 },
@@ -6524,9 +6544,9 @@ export const schoolCalculators: CalculatorConfig[] = [
             return { net, puan };
         },
         seo: {
-            title: { tr: "AKS Puan Hesaplama 2026 — Akademik Kurul Sınavı", en: "AKS Score Calculator 2026 — Academic Board Exam" },
-            metaDescription: { tr: "AKS sınavında doğru ve yanlış sayınızı girerek tahmini puanınızı anında hesaplayın. 2026 güncel katsayılarla hesaplama.", en: "Instantly calculate your estimated AKS exam score by entering correct and wrong answers. Updated 2026 coefficients." },
-            content: { tr: "AKS (Akademik Kurul Sınavı), akademik personel istihdamında kullanılan merkezi bir sınavdır. Sınav 120 soru içermekte olup 4 yanlış 1 doğruyu götürmektedir. Bu araç, doğru ve yanlış sayılarınızdan net puanınızı ve tahmini AKS puanınızı hesaplamaktadır.", en: "AKS is a central exam for academic staff employment, containing 120 questions with a 4-wrong-cancels-1-right rule." },
+            title: { tr: "AKS Puan Hesaplama 2026 — Net Bazlı Ön İzleme", en: "AKS Score Calculator 2026 — Net-Based Preview" },
+            metaDescription: { tr: "AKS sınavında doğru ve yanlış sayınızı girerek net bazlı yaklaşık puan ön izlemenizi hesaplayın. Bu ekran çalışma planlaması için hızlı sonuç üretir.", en: "Enter your AKS correct and wrong answers to calculate a net-based approximate score preview. This screen offers a fast result for study planning." },
+            content: { tr: "AKS sayfası, doğru ve yanlış sayısından hareketle sınav performansınızı hızlıca yorumlayabilmeniz için yaklaşık bir puan ön izlemesi sunar. Sınav yapısı 120 soru ve net mantığı üzerinden okunur; ancak resmi değerlendirme ve ilan koşulları ilgili kurum duyurularıyla kesinleşir. Bu nedenle sonuç ekranı, başvuru kararı vermeden önce deneme analizi ve çalışma takibi amacıyla kullanılmalıdır.", en: "The AKS page provides an approximate score preview so you can quickly interpret your performance from correct and wrong answers. The exam is read through a 120-question net structure, but the official evaluation and vacancy conditions are finalized through institutional announcements. The result should therefore be used for mock-analysis and study tracking before any application decision." },
             faq: [
                 { q: { tr: "AKS sınavı ne zaman yapılır?", en: "When is the AKS exam held?" }, a: { tr: "AKS sınavı üniversitelerin ihtiyaçlarına göre belirlenmekte olup genellikle ÖSYM tarafından yılda birkaç kez ilan edilmektedir.", en: "The AKS exam is announced by ÖSYM several times a year based on university staffing needs." } },
                 { q: { tr: "AKS ve ALES farkı nedir?", en: "Difference between AKS and ALES?" }, a: { tr: "ALES lisansüstü eğitim için zorunlu, AKS ise akademik atamalar için kullanılan ayrı sınavlardır. İkisi ayrı süreçlerdir.", en: "ALES is required for postgraduate education; AKS is used for academic appointments. They are separate processes." } },
@@ -6546,9 +6566,10 @@ export const schoolCalculators: CalculatorConfig[] = [
         slug: "ales-puan-hesaplama",
         category: "sinav-hesaplamalari",
         name: { tr: "ALES Puan Hesaplama", en: "ALES Score Calculator" },
-        h1: { tr: "ALES Puan Hesaplama 2026 — Sayısal, Sözel ve Eşit Ağırlık Puan Tahmini", en: "ALES Score Calculator 2026 — Numerical, Verbal & Equal Weight" },
-        description: { tr: "ALES (Akademik Lisansüstü Eğitim Sınavı) Sayısal ve Sözel netlerinizi girerek SAY, SÖZ ve EA puanlarınızı 2026 güncel ÖSYM katsayılarına göre hesaplayın.", en: "Calculate your ALES SAY, SOZ and EA scores for 2026 using ÖSYM coefficients by entering your numerical and verbal nets." },
+        h1: { tr: "ALES Puan Hesaplama 2026 — Sayısal, Sözel ve EA Ön İzleme", en: "ALES Score Calculator 2026 — Numerical, Verbal and EA Preview" },
+        description: { tr: "ALES Sayısal ve Sözel netlerinizi girerek, 2025/3 dahil doğrulanmış son dönem katsayılarıyla SAY, SÖZ ve EA puanlarınızı hesaplayın.", en: "Enter your numerical and verbal nets to calculate SAY, SOZ and EA scores using verified recent period coefficients including 2025/3." },
         shortDescription: { tr: "ALES Sayısal ve Sözel netlerinizden SAY, SÖZ ve EA puanlarınızı hesaplayın.", en: "Calculate ALES SAY, SOZ and EA scores from your numerical and verbal nets." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["yds-puan-hesaplama", "kpss-puan-hesaplama", "dgs-puan-hesaplama"],
         inputs: [
             {
@@ -6605,9 +6626,9 @@ export const schoolCalculators: CalculatorConfig[] = [
             return { say_net, soz_net, ales_say, ales_soz, ales_ea };
         },
         seo: {
-            title: { tr: "ALES Puan Hesaplama 2026 — SAY SÖZ EA Puanları (ÖSYM Uyumlu)", en: "ALES Score Calculator 2026 — SAY SOZ EA (ÖSYM Compliant)" },
-            metaDescription: { tr: "ALES Sayısal ve Sözel netlerinizi girerek SAY, SÖZ ve EA puanlarınızı anında hesaplayın. 2025/3 dahil güncel ÖSYM dönem katsayıları kullanılmaktadır.", en: "Instantly calculate ALES SAY, SOZ and EA scores from your numerical and verbal nets. Current ÖSYM period coefficients including 2025/3 applied." },
-            content: { tr: "ALES (Akademik Lisansüstü Eğitim Sınavı), Türkiye'de yüksek lisans ve doktora programlarına giriş ile akademik personel atamalarında kullanılan ulusal bir sınavdır. Sınav 50 Sayısal + 50 Sözel olmak üzere toplam 100 sorudan oluşur. SAY, SÖZ ve EA olmak üzere üç farklı puan türü hesaplanır. ÖSYM her sınav dönemi için farklı standart sapma katsayıları kullanır; bu araç, dönem seçimine göre gerçek ÖSYM katsayılarını uygular ve her testtten en az 1 net yapılması şartını kontrol eder.", en: "ALES is the national exam for graduate program admissions and academic staff appointments in Turkey. It has 100 questions (50 numerical + 50 verbal) and calculates SAY, SOZ and EA scores. ÖSYM uses different coefficients for each exam period; this tool applies real ÖSYM coefficients per period and requires at least 1 net from each section." },
+            title: { tr: "ALES Puan Hesaplama 2026 — 2025/3 Dönem Katsayılarıyla Ön İzleme", en: "ALES Score Calculator 2026 — Preview with 2025/3 Period Coefficients" },
+            metaDescription: { tr: "ALES Sayısal ve Sözel netlerinizi girerek SAY, SÖZ ve EA puanlarınızı anında hesaplayın. 2025/3 dahil doğrulanmış ÖSYM dönem katsayıları kullanılmaktadır.", en: "Instantly calculate ALES SAY, SOZ and EA scores from your numerical and verbal nets using verified ÖSYM period coefficients including 2025/3." },
+            content: { tr: "ALES (Akademik Lisansüstü Eğitim Sınavı), yüksek lisans ve doktora başvuruları ile akademik personel süreçlerinde kullanılan merkezi sınavdır. Sınav 50 Sayısal ve 50 Sözel sorudan oluşur; SAY, SÖZ ve EA olmak üzere üç farklı puan türü üretilir. Bu sayfa, seçtiğiniz sınav dönemine göre doğrulanmış son ÖSYM katsayılarını uygular ve 2026 başvuru planlaması için güvenilir bir puan ön izlemesi sunar.", en: "ALES is the central exam used in graduate admissions and academic staff processes. It has 50 numerical and 50 verbal questions and produces SAY, SOZ and EA score types. This page applies verified recent ÖSYM coefficients for the selected period and offers a reliable preview for 2026 application planning." },
             faq: [
                 { q: { tr: "ALES puanı kaç yıl geçerlidir?", en: "How long is ALES valid?" }, a: { tr: "ALES puanı, sınav tarihinden itibaren 5 yıl süreyle geçerlidir.", en: "ALES scores are valid for 5 years from the exam date." } },
                 { q: { tr: "Lisansüstü başvurularda ALES ağırlığı ne kadar?", en: "What is ALES weight in graduate applications?" }, a: { tr: "Yükseköğretim Kurumu'nun belirlediği minimum standartlara göre yüksek lisans başvurularında ALES puanı %50–%60 ağırlık taşır.", en: "Per YÖK minimum standards, ALES carries 50–60% weight in master's applications." } },
@@ -6617,7 +6638,7 @@ export const schoolCalculators: CalculatorConfig[] = [
                 howItWorks: { tr: "Her testten 4 yanlış 1 doğruyu götürerek netler hesaplanır. ÖSYM'nin o sınav dönemine ait özgün sabit ve katsayılarıyla ağırlıklı net toplamı puana dönüştürülür. Her iki testten de en az 1 net zorunludur.", en: "4 wrong cancels 1 correct per section. Weighted net sum is converted to score using ÖSYM's period-specific constants and coefficients. Minimum 1 net required in each section." },
                 formulaText: { tr: "SAY = Sabit_SAY + (SAY_Net × Kat_SAY_s) + (SÖZ_Net × Kat_SAY_z). SÖZ = Sabit_SÖZ + (SAY_Net × Kat_SÖZ_s) + (SÖZ_Net × Kat_SÖZ_z). EA = Sabit_EA + (SAY_Net × Kat_EA_s) + (SÖZ_Net × Kat_EA_z). [2025/3: SAY = 47.487 + net×0.765 + net×0.316]", en: "SAY = Const_SAY + (SayNet × Coef_SAY_s) + (SozNet × Coef_SAY_z). SOZ = Const_SOZ + (SayNet × Coef_SOZ_s) + (SozNet × Coef_SOZ_z). EA = Const_EA + (SayNet × Coef_EA_s) + (SozNet × Coef_EA_z). [2025/3: SAY = 47.487 + net×0.765 + net×0.316]" },
                 exampleCalculation: { tr: "ALES 2025/3: 32 SAY Net + 32 SÖZ Net → SAY = 47.48692 + (32×0.76542) + (32×0.31649) = 82.108 | SÖZ = 44.29160 + (32×0.25121) + (32×0.93482) = 82.245 | EA = 46.78565 + (32×0.50146) + (32×0.62202) = 82.737", en: "ALES 2025/3: 32 Num Net + 32 Ver Net → SAY = 47.48692 + (32×0.76542) + (32×0.31649) = 82.108 | SOZ = 44.29160 + (32×0.25121) + (32×0.93482) = 82.245 | EA = 46.78565 + (32×0.50146) + (32×0.62202) = 82.737" },
-                miniGuide: { tr: "<ul><li><b>Alan Seçimi:</b> Sayısal alanlar (Mühendislik, Fen, Sağlık) için SAY, sosyal alanlar (Hukuk, Edebiyat) için SÖZ, karma alanlar (İşletme, Eğitim) için EA puanı geçerlidir.</li><li><b>1 Net Barajı:</b> Her iki testten de en az 1 net yapılmadıkça puan hesaplanmaz.</li><li><b>Dönem Seçimi:</b> Hesaplamada sınav döneminizi seçin; ÖSYM her dönem için farklı katsayılar kullanır.</li></ul>", en: "SAY for numerical fields (Engineering, Science), SOZ for social fields (Law, Literature), EA for mixed fields (Business, Education). Minimum 1 net required in both sections. Select your exam period — ÖSYM uses different coefficients per period." },
+                miniGuide: { tr: "<ul><li><b>Dönem Seçimi:</b> Hesaplamada sınav döneminizi seçin; ÖSYM her dönem için farklı katsayılar kullanır ve bu fark puanı anlamlı biçimde değiştirebilir.</li><li><b>1 Net Barajı:</b> Her iki testten de en az 1 net yapılmadıkça puan hesaplanmaz.</li><li><b>Başvuru Yorumu:</b> Nihai değerlendirmede üniversite veya ilan kılavuzundaki puan türü ve ek şartlar esas alınır.</li></ul>", en: "Select your exam period because ÖSYM uses different coefficients for each one and that difference can materially change your score. Minimum 1 net is required in both sections. Final evaluation should rely on the program or vacancy guide." },
             },
         },
     },
@@ -6628,9 +6649,10 @@ export const schoolCalculators: CalculatorConfig[] = [
         slug: "msu-puan-hesaplama",
         category: "sinav-hesaplamalari",
         name: { tr: "MSÜ Puan Hesaplama", en: "MSÜ Score Calculator" },
-        h1: { tr: "MSÜ Puan Hesaplama 2026 — Milli Savunma Üniversitesi Giriş Sınavı", en: "MSÜ Score Calculator 2026 — National Defense University Entrance" },
-        description: { tr: "MSÜ (Milli Savunma Üniversitesi) giriş sınavındaki Türkçe, Matematik, Fen Bilimleri ve Sosyal Bilimler netlerinizi girerek tahmini puanınızı hesaplayın.", en: "Calculate your MSÜ entry exam score by entering Turkish, Math, Science, and Social Studies nets." },
-        shortDescription: { tr: "MSÜ giriş sınavı için doğru-yanlış sayılarınızdan tahmini puanınızı öğrenin.", en: "Find your estimated MSÜ entry exam score from your correct and wrong answers." },
+        h1: { tr: "MSÜ Puan Hesaplama 2026 — Net Bazlı Ön İzleme", en: "MSÜ Score Calculator 2026 — Net-Based Preview" },
+        description: { tr: "MSÜ sınavındaki Türkçe, Matematik, Fen ve Sosyal netlerinize göre yaklaşık puan ön izlemesi alın. Kesin değerlendirme için resmi sonuç ve seçim aşamaları esas alınır.", en: "Get an approximate MSÜ score preview from your Turkish, Math, Science, and Social nets. Official results and later selection stages remain the final reference." },
+        shortDescription: { tr: "MSÜ netlerinizden yaklaşık puan ön izlemesini görün.", en: "Preview an approximate MSÜ score from your exam nets." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["tyt-puan-hesaplama", "yks-puan-hesaplama", "pmyo-puan-hesaplama"],
         inputs: [
             { id: "turk_d", name: { tr: "Türkçe Doğru (30 Soru)", en: "Turkish Correct (30 Q)" }, type: "number", defaultValue: 22, min: 0, max: 30 },
@@ -6644,7 +6666,7 @@ export const schoolCalculators: CalculatorConfig[] = [
         ],
         results: [
             { id: "toplamNet", label: { tr: "Toplam Net", en: "Total Net" }, decimalPlaces: 2 },
-            { id: "puan", label: { tr: "Tahmini MSÜ Puanı", en: "Estimated MSÜ Score" }, decimalPlaces: 3 },
+            { id: "puan", label: { tr: "Net Bazlı Tahmini MSÜ Puanı", en: "Net-Based Estimated MSÜ Score" }, decimalPlaces: 3 },
         ],
         formula: (v) => {
             const td = parseFloat(v.turk_d) || 0, ty = parseFloat(v.turk_y) || 0;
@@ -6658,18 +6680,18 @@ export const schoolCalculators: CalculatorConfig[] = [
             return { toplamNet, puan };
         },
         seo: {
-            title: { tr: "MSÜ Puan Hesaplama 2026 — Milli Savunma Üniversitesi Giriş Sınavı", en: "MSÜ Score Calculator 2026 — National Defense University Entrance" },
-            metaDescription: { tr: "MSÜ giriş sınavında Türkçe, Matematik, Fen ve Sosyal netlerinizi girerek tahmini puanınızı hesaplayın. 2026 sınav kılavuzuna uygun.", en: "Calculate your estimated MSÜ entrance exam score from Turkish, Math, Science and Social nets. Compliant with 2026 exam guide." },
-            content: { tr: "MSÜ (Milli Savunma Üniversitesi), Türk Silahlı Kuvvetleri bünyesinde askeri subay yetiştiren köklü bir eğitim kurumudur. MSÜ giriş sınavı 100 soru içerir (Türkçe 30, Matematik 30, Fen 20, Sosyal 20). Aynı zamanda fiziksel yeterlilik ve mülakat aşamaları da mevcuttur.", en: "MSÜ trains military officers within the Turkish Armed Forces. The entrance exam has 100 questions. Physical fitness and interview stages also apply." },
+            title: { tr: "MSÜ Puan Hesaplama 2026 — Net Bazlı Ön İzleme", en: "MSÜ Score Calculator 2026 — Net-Based Preview" },
+            metaDescription: { tr: "MSÜ Türkçe, Matematik, Fen ve Sosyal netlerinizden yaklaşık puan ön izlemesi alın. Nihai değerlendirme için resmi sonuç, fiziki yeterlilik ve seçim aşamaları ayrıca dikkate alınır.", en: "Preview an approximate MSÜ score from your Turkish, Math, Science, and Social nets. Official results, physical fitness, and later selection stages remain the final basis." },
+            content: { tr: "MSÜ (Milli Savunma Üniversitesi) sınavı 100 soruluk yazılı oturum üzerinden adayların temel akademik performansını ölçer. Ancak adayın süreci yalnız yazılı puanla tamamlanmaz; çağrı, fiziki yeterlilik, sağlık ve mülakat aşamaları da resmi değerlendirme zincirinin parçasıdır. Bu nedenle ekranda görülen sonuç, yazılı bölüm için net bazlı hızlı bir ön izleme olarak okunmalıdır.", en: "The MSÜ exam measures core academic performance through a 100-question written session. However, the candidate's process is not completed by the written score alone; call thresholds, physical fitness, health, and interview stages are also part of the official evaluation chain. The value shown here should therefore be read as a quick net-based preview for the written stage." },
             faq: [
                 { q: { tr: "MSÜ'ye kimler başvurabilir?", en: "Who can apply to MSÜ?" }, a: { tr: "MSÜ giriş sınavına, belirlenen yaş sınırı içindeki erkek ve kadın adaylar başvurabilir. Ayrıca boy-kilo kriterleri ve sağlık şartları aranır.", en: "Male and female applicants within the specified age range can apply. Height-weight criteria and health requirements also apply." } },
                 { q: { tr: "MSÜ sınavında eleme kriterleri nelerdir?", en: "What are the MSÜ elimination criteria?" }, a: { tr: "Yazılı sınavdan belirlenen taban puanı almak, ardından beden eğitimi, sağlık muayenesi ve mülakat aşamalarından geçmek gerekmektedir.", en: "Meeting the minimum written score, then passing physical education, health examination, and interview stages." } },
             ],
             richContent: {
-                howItWorks: { tr: "Her alt testten 4 yanlış 1 doğruyu götürerek net sayısı bulunur. Toplam net 100 üzerinden 500 puan standardına dönüştürülür.", en: "Nets: 4 wrong cancels 1 correct per section. Total net is converted to a 500-point scale." },
-                formulaText: { tr: "Net = Doğru − (Yanlış/4). Puan = (Toplam Net / 100) × 500", en: "Net = Correct − (Wrong/4). Score = (Total Net / 100) × 500" },
-                exampleCalculation: { tr: "22T+20M+14F+14S doğru, 3+4+2+2 yanlış → Net ≈ 66.75 → Puan ≈ 333.75", en: "22+20+14+14 correct, 3+4+2+2 wrong → Net ≈ 66.75 → Score ≈ 333.75" },
-                miniGuide: { tr: "<ul><li><b>Fiziksel Hazırlık:</b> Yazılı sınav kadar fiziksel yeterlilik de kritiktir.</li><li><b>Yaş Sınırı:</b> Başvuru yılı koşullarını MSÜ'nün resmi sitesinden teyit edin.</li></ul>", en: "Physical fitness is as important as the written exam. Check age limits on MSÜ's official site." },
+                howItWorks: { tr: "Her alt testte 4 yanlış 1 doğruyu götürecek şekilde net hesaplanır. Toplam net, yazılı performansı kabaca görmek için 500'lük bir ön izleme ölçeğine çevrilir; resmi sonuç ekranı ve çağrı puanları ayrıca dikkate alınmalıdır.", en: "Net is calculated in each section with the 4-wrong-cancels-1-correct rule. Total net is converted into a rough 500-scale preview to read written performance, while official result screens and call thresholds should still be considered separately." },
+                formulaText: { tr: "Net = Doğru − (Yanlış/4). Ön İzleme Puanı = (Toplam Net / 100) × 500", en: "Net = Correct − (Wrong/4). Preview Score = (Total Net / 100) × 500" },
+                exampleCalculation: { tr: "22 Türkçe, 20 Matematik, 14 Fen, 14 Sosyal doğru ve toplam 11 yanlışta net yaklaşık 67,25 olur; bu ekran da buna karşılık yaklaşık 336,25 puan ön izlemesi verir.", en: "With 22 Turkish, 20 Math, 14 Science, 14 Social correct answers and 11 total wrong answers, net is about 67.25 and the screen shows an approximate preview of 336.25." },
+                miniGuide: { tr: "<ul><li><b>Yazılı + Fiziki:</b> Yazılı puan tek başına yeterli değildir; fiziki yeterlilik ve sonraki seçim aşamalarını birlikte planlayın.</li><li><b>Resmi Kılavuz:</b> Yaş, boy-kilo ve çağrı usulü gibi şartları her dönem MSÜ ve ÖSYM duyurularından teyit edin.</li></ul>", en: "Written score alone is not sufficient; plan together with physical fitness and later stages. Verify age, height-weight, and call procedure details from official MSÜ and ÖSYM announcements each period." },
             },
         },
     },
@@ -6722,44 +6744,51 @@ export const schoolCalculators: CalculatorConfig[] = [
         slug: "yds-puan-hesaplama",
         category: "sinav-hesaplamalari",
         name: { tr: "YDS Puan Hesaplama", en: "YDS Score Calculator" },
-        h1: { tr: "YDS Puan Hesaplama 2026 — Yabancı Dil Sınavı Tahmini Puan", en: "YDS Score Calculator 2026 — Foreign Language Exam Score" },
-        description: { tr: "YDS (Yabancı Dil Bilgisi Düzey Tespit Sınavı) doğru ve yanlış sayılarınızı girerek tahmini YDS puanınızı ve CEFR karşılığını hesaplayın.", en: "Calculate your estimated YDS score and CEFR equivalent by entering correct and wrong answers." },
-        shortDescription: { tr: "YDS doğru ve yanlış sayılarınızdan tahmini puan ve seviye karşılığını anında öğrenin.", en: "Get your estimated YDS score and proficiency level from your correct and wrong answers instantly." },
+        h1: { tr: "YDS Puan Hesaplama 2026 — Doğru Sayısına Göre Seviye Bandı", en: "YDS Score Calculator 2026 — Score Band by Correct Answers" },
+        description: { tr: "YDS doğru sayınıza göre 100 üzerinden tahmini puanınızı ve ÖSYM A-B-C-D-E seviye bandınızı anında görün. Yanlış cevaplar puandan düşülmez.", en: "See your estimated YDS score out of 100 and the ÖSYM A-B-C-D-E level band based on correct answers. Wrong answers are not deducted." },
+        shortDescription: { tr: "YDS doğru sayınıza göre puan ve ÖSYM seviye bandını hızlıca hesaplayın.", en: "Quickly calculate your YDS score and ÖSYM level band from correct answers." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["ales-puan-hesaplama", "kpss-puan-hesaplama", "aks-puan-hesaplama"],
         inputs: [
             { id: "dogru", name: { tr: "Doğru Sayısı (80 Soru)", en: "Correct (80 Questions)" }, type: "number", defaultValue: 55, min: 0, max: 80 },
-            { id: "yanlis", name: { tr: "Yanlış Sayısı", en: "Wrong Answers" }, type: "number", defaultValue: 8, min: 0, max: 80 },
+            { id: "yanlis", name: { tr: "Yanlış Sayısı (Bilgi Amaçlı)", en: "Wrong Answers (Informational)" }, type: "number", defaultValue: 8, min: 0, max: 80 },
         ],
         results: [
-            { id: "net", label: { tr: "Net", en: "Net Score" }, decimalPlaces: 2 },
+            { id: "net", label: { tr: "Puanlanan Doğru", en: "Scored Correct Answers" }, decimalPlaces: 0 },
             { id: "puan", label: { tr: "Tahmini YDS Puanı", en: "Estimated YDS Score" }, decimalPlaces: 3 },
-            { id: "cefr", label: { tr: "CEFR Karşılığı", en: "CEFR Equivalent" }, type: "text" },
+            { id: "cefr", label: { tr: "YDS Seviye Bandı", en: "YDS Level Band" }, type: "text" },
         ],
         formula: (v) => {
-            const d = parseFloat(v.dogru) || 0, y = parseFloat(v.yanlis) || 0;
-            const net = d - y / 4;
-            const puan = (net / 80) * 100;
-            let cefr = { tr: "A1 (Başlangıç)", en: "A1 (Beginner)" };
-            if (puan >= 90) cefr = { tr: "C2 (Ustalık)", en: "C2 (Mastery)" };
-            else if (puan >= 80) cefr = { tr: "C1 (Etkin Kullanım)", en: "C1 (Effective)" };
-            else if (puan >= 70) cefr = { tr: "B2 (Bağımsız Üst)", en: "B2 (Upper Independent)" };
-            else if (puan >= 60) cefr = { tr: "B1 (Bağımsız Alt)", en: "B1 (Lower Independent)" };
-            else if (puan >= 50) cefr = { tr: "A2 (Temel Üst)", en: "A2 (Upper Basic)" };
+            const dogru = Math.min(Math.max(parseFloat(v.dogru) || 0, 0), 80);
+            let yanlis = Math.max(parseFloat(v.yanlis) || 0, 0);
+            if (dogru + yanlis > 80) {
+                yanlis = Math.max(0, 80 - dogru);
+            }
+
+            const net = dogru;
+            const puan = (dogru / 80) * 100;
+            let cefr = { tr: "50 Altı", en: "Below 50" };
+            if (puan >= 90) cefr = { tr: "A Seviyesi (90-100)", en: "Level A (90-100)" };
+            else if (puan >= 80) cefr = { tr: "B Seviyesi (80-89)", en: "Level B (80-89)" };
+            else if (puan >= 70) cefr = { tr: "C Seviyesi (70-79)", en: "Level C (70-79)" };
+            else if (puan >= 60) cefr = { tr: "D Seviyesi (60-69)", en: "Level D (60-69)" };
+            else if (puan >= 50) cefr = { tr: "E Seviyesi (50-59)", en: "Level E (50-59)" };
             return { net, puan, cefr };
         },
         seo: {
-            title: { tr: "YDS Puan Hesaplama 2026 — CEFR Seviye Karşılığı ile", en: "YDS Score Calculator 2026 — With CEFR Level Equivalent" },
-            metaDescription: { tr: "YDS doğru-yanlış sayınızı girerek tahmini puanınızı ve CEFR dil seviyenizi (A1-C2) anında hesaplayın. 2026 güncel YDS formülü.", en: "Enter YDS correct and wrong counts to instantly calculate your score and CEFR language level (A1-C2). 2026 YDS formula." },
-            content: { tr: "YDS (Yabancı Dil Bilgisi Düzey Tespit Sınavı), ÖSYM tarafından yapılan ve akademik ile kamu alanlarında kullanılan ulusal yabancı dil sınavıdır. Sınav 80 soru içermekte olup 4 yanlış 1 doğruyu götürmektedir. YDS puanı CEFR uluslararası dil yeterlilik çerçevesiyle eşleştirilir.", en: "YDS is ÖSYM's national foreign language exam used in academia and the public sector. It has 80 questions with 4-wrong-cancels-1-right rule. YDS scores map to CEFR proficiency levels." },
+            title: { tr: "YDS Puan Hesaplama 2026 — Doğru Sayısı ve A-B-C-D-E Bandı", en: "YDS Score Calculator 2026 — Correct Answers and A-B-C-D-E Band" },
+            metaDescription: { tr: "YDS doğru sayınızı girerek tahmini puanınızı ve ÖSYM'nin A-B-C-D-E seviye bandını anında hesaplayın. YDS'de yanlış cevaplar puandan düşülmez.", en: "Enter your YDS correct count to instantly calculate your estimated score and ÖSYM A-B-C-D-E level band. Wrong answers are not deducted in YDS." },
+            content: { tr: "YDS (Yabancı Dil Bilgisi Seviye Tespit Sınavı), ÖSYM tarafından akademik ve kamu başvurularında kullanılan merkezi yabancı dil sınavıdır. Sınav 80 sorudan oluşur. ÖSYM kılavuzuna göre değerlendirmede yalnız doğru cevaplar dikkate alınır; yanlış cevaplar puandan düşülmez. Sonuçlar 100 puan üzerinden A, B, C, D ve E seviye bantlarıyla okunur.", en: "YDS is the central foreign-language exam used by ÖSYM in academic and public-sector processes. It consists of 80 questions. According to the ÖSYM guide, only correct answers are counted in scoring and wrong answers are not deducted. Results are read on a 100-point scale with A, B, C, D and E bands." },
             faq: [
                 { q: { tr: "YDS ve e-YDS farkı nedir?", en: "Difference between YDS and e-YDS?" }, a: { tr: "YDS kağıt tabanlı sınav olup yılda belirli tarihlerde yapılır. e-YDS ise elektronik ve bireysel olup daha sık yapılmakta, ancak sonuçlar yalnızca devlet kurumlarında geçerli olmaktadır.", en: "YDS is paper-based held on set dates. e-YDS is electronic and individual but results are only valid for government institutions." } },
+                { q: { tr: "YDS seviye bandı nasıl okunur?", en: "How should the YDS level band be read?" }, a: { tr: "YDS sonuçları 100 puan üzerinden A, B, C, D ve E bandıyla yorumlanır. 90-100 A, 80-89 B, 70-79 C, 60-69 D ve 50-59 E seviyesidir.", en: "YDS results are interpreted on a 100-point scale with A, B, C, D and E bands. 90-100 is A, 80-89 is B, 70-79 is C, 60-69 is D and 50-59 is E." } },
                 { q: { tr: "Akademik atamalar için gereken YDS puanı nedir?", en: "What YDS score is needed for academic positions?" }, a: { tr: "YÖK mevzuatına göre araştırma görevlisi atamalarında çoğunlukla minimum 50 YDS puanı aranmakta; doçentlik için 65-70 arası bir puan gerekebilmektedir.", en: "Per YÖK regulation, research assistant positions typically require min. 50 YDS; associate professorship may require 65-70." } },
             ],
             richContent: {
-                howItWorks: { tr: "4 yanlış 1 doğruyu götürerek net bulunur, 80'e bölünüp 100 ile çarpılarak puan elde edilir. Puanlar CEFR seviyeleriyle eşleştirilir.", en: "Net = Correct - Wrong/4. Score = (Net/80)×100. Scores map to CEFR proficiency levels." },
-                formulaText: { tr: "Net = Doğru − (Yanlış/4). Puan = (Net/80) × 100", en: "Net = Correct − (Wrong/4). Score = (Net/80) × 100" },
-                exampleCalculation: { tr: "55 doğru, 8 yanlış → Net = 53 → Puan ≈ 66.25 → B2 (Bağımsız Üst)", en: "55 correct, 8 wrong → Net = 53 → Score ≈ 66.25 → B2 (Upper Independent)" },
-                miniGuide: { tr: "<ul><li><b>CEFR Hedefi:</b> Kamu personeli için B2 (70+), akademik kariyer için C1 (80+) hedefleyin.</li><li><b>e-YDS Avantajı:</b> Sonucunuzu hızlıca öğrenmek için e-YDS, yıl içinde birden fazla sınav fırsatı sunar.</li></ul>", en: "Aim for B2 (70+ YDS) for public sector roles, C1 (80+) for academic careers. e-YDS offers more test dates per year." },
+                howItWorks: { tr: "YDS'de puan, doğru cevap sayısına göre hesaplanır. ÖSYM değerlendirmesinde yanlış cevaplar puandan düşülmez; 80 sorudaki doğru sayısı 100 puanlık ölçeğe çevrilir ve sonuç A-B-C-D-E bandı ile yorumlanır.", en: "In YDS, the score is calculated from the number of correct answers. Wrong answers are not deducted in ÖSYM scoring; the correct count from 80 questions is converted to a 100-point scale and interpreted with the A-B-C-D-E band." },
+                formulaText: { tr: "Puanlanan Doğru = Doğru Sayısı. YDS Puanı = (Doğru / 80) × 100", en: "Scored Correct = Correct Answers. YDS Score = (Correct / 80) × 100" },
+                exampleCalculation: { tr: "55 doğru, 8 yanlış → Puanlanan doğru = 55 → Puan = (55 / 80) × 100 = 68,75 → D Seviyesi", en: "55 correct, 8 wrong → Scored correct = 55 → Score = (55 / 80) × 100 = 68.75 → Level D" },
+                miniGuide: { tr: "<ul><li><b>Seviye Bandı:</b> 90-100 A, 80-89 B, 70-79 C, 60-69 D, 50-59 E olarak okunur.</li><li><b>Başvuru Yorumu:</b> Akademik kadro, lisansüstü program veya kamu başvurularında ilgili kurumun istediği asgari YDS puanını ayrıca kontrol edin.</li></ul>", en: "Read 90-100 as A, 80-89 as B, 70-79 as C, 60-69 as D and 50-59 as E. For academic, graduate or public-sector applications, also verify the minimum YDS score required by the institution." },
             },
         },
     },
@@ -6917,6 +6946,7 @@ export const schoolCalculatorsBatch2: CalculatorConfig[] = [
         h1: { tr: "EKPSS Puan Hesaplama 2026 — Engelli Kamu Personeli Seçme Sınavı", en: "EKPSS Score Calculator 2026 — Disabled Public Personnel Selection Exam" },
         description: { tr: "EKPSS toplam doğru ve yanlış sayılarınızdan net bazlı tahmini skor ön izlemesi alın.", en: "Get a net-based EKPSS score preview from your total correct and wrong answers." },
         shortDescription: { tr: "EKPSS net toplamınıza göre yaklaşık başarı düzeyinizi hızlıca görün.", en: "Quickly preview your approximate EKPSS performance from your total net." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["kpss-puan-hesaplama", "ales-puan-hesaplama", "hakim-savci-yrd-puan-hesaplama"],
         inputs: [
             { id: "dogru", name: { tr: "Toplam Doğru (60 Soru)", en: "Total Correct (60 Questions)" }, type: "number", defaultValue: 38, min: 0, max: 60 },
@@ -6956,9 +6986,10 @@ export const schoolCalculatorsBatch2: CalculatorConfig[] = [
         slug: "hakim-savci-yrd-puan-hesaplama",
         category: "sinav-hesaplamalari",
         name: { tr: "Hâkim ve Savcı Yrd. Sınavı Puan Hesaplama", en: "Judge & Prosecutor Asst. Exam Score Calculator" },
-        h1: { tr: "Hâkim ve Savcı Yardımcılığı Sınavı Puan Hesaplama 2026", en: "Judge & Prosecutor Assistant Exam Score Calculator 2026" },
-        description: { tr: "Hâkim ve Savcı Yardımcılığı sınavı doğru ve yanlış sayılarınızı girerek tahmini puanınızı hesaplayın. HSYK / HSK sınav hazırlığı için.", en: "Calculate your estimated score for the Judge & Prosecutor Assistant exam by entering correct and wrong answers." },
-        shortDescription: { tr: "Hâkim ve Savcı Yrd. sınavı netlerinizden tahmini puanınızı hesaplayın.", en: "Calculate your estimated Judge & Prosecutor Assistant exam score from your nets." },
+        h1: { tr: "Hâkim ve Savcı Yardımcılığı Sınavı Puan Hesaplama 2026 — Ön İzleme", en: "Judge & Prosecutor Assistant Exam Score Calculator 2026 — Preview" },
+        description: { tr: "Hâkim ve Savcı Yardımcılığı sınavı doğru ve yanlış sayılarınızı girerek net bazlı yaklaşık puan ön izlemenizi hesaplayın.", en: "Enter your correct and wrong answers in the Judge & Prosecutor Assistant exam to calculate a net-based approximate score preview." },
+        shortDescription: { tr: "Hâkim ve Savcı Yardımcılığı sınavı netlerinizden yaklaşık puan ön izlemesini görün.", en: "See an approximate score preview from your Judge & Prosecutor Assistant exam nets." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["kpss-puan-hesaplama", "ales-puan-hesaplama", "yds-puan-hesaplama"],
         inputs: [
             { id: "dogru", name: { tr: "Doğru Sayısı (100 Soru)", en: "Correct (100 Questions)" }, type: "number", defaultValue: 70, min: 0, max: 100 },
@@ -6975,9 +7006,9 @@ export const schoolCalculatorsBatch2: CalculatorConfig[] = [
             return { net, puan };
         },
         seo: {
-            title: { tr: "Hâkim ve Savcı Yrd. Sınavı Puan Hesaplama 2026 — HSK/HSYK", en: "Judge & Prosecutor Asst. Exam Score Calculator 2026 — HSK" },
-            metaDescription: { tr: "Hâkim ve Savcı Yardımcılığı sınavındaki doğru ve yanlışlarınızı girerek tahmini puanınızı hesaplayın. Sınav hazırlığı için kullanışlı hesaplayıcı.", en: "Enter correct and wrong answers for the Judge & Prosecutor Assistant exam to calculate your estimated score." },
-            content: { tr: "Hâkim ve Savcı Yardımcılığı sınavı, Hâkimler ve Savcılar Kurulu (HSK) tarafından düzenlenen ve hukuk fakültesi mezunlarının yargı kademesine girmesini sağlayan önemli bir sınavdır. Sınav hukuk, anayasa ve mevzuat bilgisi ağırlıklı sorulardan oluşur.", en: "The Judge & Prosecutor Assistant exam, organized by the HSK, allows law graduates to enter the judiciary. Questions focus on law, constitutional law and legislation knowledge." },
+            title: { tr: "Hâkim ve Savcı Yrd. Sınavı Puan Hesaplama 2026 — Ön İzleme", en: "Judge & Prosecutor Asst. Exam Score Calculator 2026 — Preview" },
+            metaDescription: { tr: "Hâkim ve Savcı Yardımcılığı sınavındaki doğru ve yanlışlarınızı girerek net bazlı yaklaşık puan ön izlemenizi hesaplayın. Nihai değerlendirme için resmi sonuç ve mülakat süreci esas alınmalıdır.", en: "Enter your correct and wrong answers in the Judge & Prosecutor Assistant exam to calculate a net-based approximate score preview. The official result and interview process remain the final reference." },
+            content: { tr: "Hâkim ve Savcı Yardımcılığı sınavı, hukuk mezunlarının yargı kariyerine geçiş sürecinde izlediği önemli aşamalardan biridir. Bu sayfa, doğru ve yanlış sayınızı 100 puanlık ölçeğe taşıyarak yaklaşık bir puan ön izlemesi sunar. Ancak resmi sonuç, sınav sonrası değerlendirme ve takip eden sözlü süreçlerle birlikte anlam kazandığı için ekran çıktısı nihai sonuç belgesi yerine geçmez; çalışma düzeyini ve hedef bandı okumak için kullanılmalıdır.", en: "The Judge & Prosecutor Assistant exam is an important step in the judicial-career path of law graduates. This page converts your correct and wrong counts into an approximate preview on a 100-point scale. Since the official result is ultimately interpreted together with post-exam evaluation and the following oral stage, the output here does not replace the final result report and should be used to read study level and target range." },
             faq: [
                 { q: { tr: "Hangi bölüm mezunları başvurabilir?", en: "Which graduates can apply?" }, a: { tr: "Hukuk fakültesi mezunları başvurabilir. Bazı boşluklarda diğer hukuk kökenli branşlar da kabul edilebilir; kılavuzu inceleyin.", en: "Law faculty graduates can apply. In some rounds other law-related branches may be accepted; check the guide." } },
                 { q: { tr: "Sınavın aşamaları nelerdir?", en: "What are the exam stages?" }, a: { tr: "Yazılı sınav, ardından sözlü mülakat aşaması uygulanmaktadır.", en: "Written exam followed by an oral interview stage." } },
@@ -7000,6 +7031,7 @@ export const schoolCalculatorsBatch2: CalculatorConfig[] = [
         h1: { tr: "HMGS Puan Hesaplama 2026 — Hukuk Mesleklerine Giriş Sınavı", en: "HMGS Score Calculator 2026 — Entrance Exam for Legal Professions" },
         description: { tr: "HMGS doğru ve yanlış sayılarınızdan net bazlı tahmini puan ön izlemesi alın.", en: "Get a net-based HMGS score preview from your correct and wrong answers." },
         shortDescription: { tr: "Hukuk Mesleklerine Giriş Sınavı netlerinizi girin; yaklaşık puanınızı anında görün.", en: "Enter your Legal Professions Entrance Exam nets to instantly preview an approximate score." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["iyos-puan-hesaplama", "hakim-savci-yrd-puan-hesaplama", "kpss-puan-hesaplama"],
         inputs: [
             { id: "dogru", name: { tr: "Doğru Sayısı (80 Soru)", en: "Correct (80 Questions)" }, type: "number", defaultValue: 54, min: 0, max: 80 },
@@ -7016,8 +7048,8 @@ export const schoolCalculatorsBatch2: CalculatorConfig[] = [
             return { net, puan };
         },
         seo: {
-            title: { tr: "HMGS Puan Hesaplama 2026 — Hukuk Mesleklerine Giriş Sınavı", en: "HMGS Score Calculator 2026 — Legal Professions Entrance Exam" },
-            metaDescription: { tr: "HMGS doğru ve yanlış sayınızı girerek net bazlı tahmini puan ön izlemesi alın. Kesin sonuç için ÖSYM açıklaması esas alınmalıdır.", en: "Enter your HMGS correct and wrong counts to preview a net-based estimated score. Official ÖSYM results prevail." },
+            title: { tr: "HMGS Puan Hesaplama 2026 — Hukuk Mesleklerine Giriş Ön İzleme", en: "HMGS Score Calculator 2026 — Legal Professions Preview" },
+            metaDescription: { tr: "HMGS doğru ve yanlış sayınızı girerek net bazlı tahmini puan ön izlemesi alın. Kesin sonuç için resmi ÖSYM değerlendirmesi esas alınmalıdır.", en: "Enter your HMGS correct and wrong counts to preview a net-based estimated score. The official ÖSYM evaluation remains the final reference." },
             content: { tr: "HMGS, yani Hukuk Mesleklerine Giriş Sınavı, hukuk mesleklerine geçiş sürecinde kullanılan merkezi sınavlardan biridir. ÖSYM tarafından uygulanan bu sınavda resmi puan hesaplaması sınav istatistikleriyle şekillenir; bu nedenle araç, doğru ve yanlış sayınıza göre güvenli bir tahmini ön izleme sunar. Çalışma takibi için kullanabilir, nihai değerlendirmeyi ise resmi sonuç belgesiyle yapmalısınız.", en: "HMGS, the Entrance Exam for Legal Professions, is one of the central exams used in the transition process for legal careers. Since official scoring depends on exam statistics, this tool provides a safe estimate based on your correct and wrong answers. Use it for study tracking and rely on the official score report for final decisions." },
             faq: [
                 { q: { tr: "Bu araç HMGS resmi puanını birebir verir mi?", en: "Does this tool give the exact official HMGS score?" }, a: { tr: "Hayır. Resmi HMGS puanı ÖSYM değerlendirme sürecinde kesinleşir. Bu ekran, net toplamınızı hızlıca yorumlamanız için yaklaşık bir puan ön izlemesi sunar.", en: "No. The official HMGS score becomes final during the ÖSYM evaluation process. This screen provides an approximate preview so you can quickly interpret your net total." } },
@@ -7038,9 +7070,10 @@ export const schoolCalculatorsBatch2: CalculatorConfig[] = [
         slug: "oyp-puan-hesaplama",
         category: "sinav-hesaplamalari",
         name: { tr: "ÖYP Puan Hesaplama", en: "ÖYP Score Calculator" },
-        h1: { tr: "ÖYP Puan Hesaplama 2026 — Öğretim Üyesi Yetiştirme Programı", en: "ÖYP Score Calculator 2026 — Academic Staff Training Program" },
-        description: { tr: "ÖYP (Öğretim Üyesi Yetiştirme Programı) başvurularında kullanılan ALES ve YDS puanlarınızı girerek ağırlıklı değerlendirme puanınızı hesaplayın.", en: "Calculate your weighted ÖYP evaluation score by entering your ALES and YDS scores used in program applications." },
-        shortDescription: { tr: "ALES ve YDS puanlarınızdan ÖYP değerlendirme puanınızı hesaplayın.", en: "Calculate your ÖYP evaluation score from ALES and YDS scores." },
+        h1: { tr: "ÖYP Puan Hesaplama 2026 — ALES, YDS ve GPA Ön Değerlendirme", en: "ÖYP Score Calculator 2026 — ALES, YDS and GPA Preview" },
+        description: { tr: "ÖYP mantığıyla kullanılan ALES, yabancı dil ve lisans notu ağırlıklarını bir araya getirerek yaklaşık ön değerlendirme puanınızı hesaplayın.", en: "Combine ALES, language score, and undergraduate GPA weights used in the traditional ÖYP logic to calculate an approximate preview score." },
+        shortDescription: { tr: "ALES, YDS ve lisans notunuzdan ağırlıklı ön değerlendirme puanınızı görün.", en: "See your weighted preview score from ALES, YDS, and undergraduate GPA." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["ales-puan-hesaplama", "yds-puan-hesaplama", "aks-puan-hesaplama"],
         inputs: [
             { id: "ales", name: { tr: "ALES Puanı (SAY/SÖZ/EA)", en: "ALES Score (SAY/SOZ/EA)" }, type: "number", defaultValue: 75, min: 50, max: 100 },
@@ -7049,8 +7082,8 @@ export const schoolCalculatorsBatch2: CalculatorConfig[] = [
         ],
         results: [
             { id: "alesAgirliki", label: { tr: "ALES Ağırlıklı (×0.50)", en: "ALES Weighted (×0.50)" }, decimalPlaces: 3 },
-            { id: "ydsAgirliki", label: { tr: "YDS Ağırlıklı (×0.20)", en: "YDS Weighted (×0.20)" }, decimalPlaces: 3 },
-            { id: "notAgirliki", label: { tr: "Not Ağırlıklı (×0.30, 100'lük)", en: "GPA Weighted (×0.30, 100-scale)" }, decimalPlaces: 3 },
+            { id: "ydsAgirliki", label: { tr: "YDS Ağırlıklı (×0.15)", en: "YDS Weighted (×0.15)" }, decimalPlaces: 3 },
+            { id: "notAgirliki", label: { tr: "Not Ağırlıklı (×0.35, 100'lük)", en: "GPA Weighted (×0.35, 100-scale)" }, decimalPlaces: 3 },
             { id: "toplamPuan", label: { tr: "Toplam ÖYP Değerlendirme Puanı", en: "Total ÖYP Evaluation Score" }, decimalPlaces: 3 },
         ],
         formula: (v) => {
@@ -7059,24 +7092,24 @@ export const schoolCalculatorsBatch2: CalculatorConfig[] = [
             const gpa = parseFloat(v.lisanNot) || 0;
             const gpa100 = (gpa / 4) * 100;
             const alesAgirliki = ales * 0.50;
-            const ydsAgirliki = yds * 0.20;
-            const notAgirliki = gpa100 * 0.30;
+            const ydsAgirliki = yds * 0.15;
+            const notAgirliki = gpa100 * 0.35;
             const toplamPuan = alesAgirliki + ydsAgirliki + notAgirliki;
             return { alesAgirliki, ydsAgirliki, notAgirliki, toplamPuan };
         },
         seo: {
-            title: { tr: "ÖYP Puan Hesaplama 2026 — Öğretim Üyesi Yetiştirme Programı Başvurusu", en: "ÖYP Score Calculator 2026 — Academic Staff Training Program Application" },
-            metaDescription: { tr: "ALES ve YDS puanlarınızı girerek ÖYP başvurusundaki ağırlıklı değerlendirme puanınızı hesaplayın. YÖK ÖYP kriterleri esas alınmıştır.", en: "Enter ALES and YDS scores to calculate your weighted ÖYP evaluation score for academic program applications." },
-            content: { tr: "ÖYP (Öğretim Üyesi Yetiştirme Programı), YÖK koordinasyonunda üniversitelerin araştırma görevlisi ihtiyacını karşılamak amacıyla kurulan bir programdır. Başvurularda ALES puanı %50, YDS %20, lisans not ortalaması %30 ağırlıkla değerlendirmeye alınmaktadır.", en: "ÖYP is a YÖK program to meet universities' research assistant needs. ALES score carries 50%, YDS 20%, and undergraduate GPA 30% weight in evaluations." },
+            title: { tr: "ÖYP Puan Hesaplama 2026 — ALES, YDS ve GPA Ön Değerlendirme", en: "ÖYP Score Calculator 2026 — ALES, YDS and GPA Preview" },
+            metaDescription: { tr: "ALES, yabancı dil ve lisans not ortalamanızı girerek ÖYP mantığındaki ağırlıklı ön değerlendirme puanınızı hesaplayın. ALES %50, dil %15, not ortalaması %35 esas alınır.", en: "Enter ALES, language score, and undergraduate GPA to calculate a weighted preview based on the traditional ÖYP logic. ALES 50%, language 15%, GPA 35%." },
+            content: { tr: "ÖYP adıyla aranan hesaplama mantığında ALES puanı %50, yabancı dil puanı %15 ve 100'lük sisteme çevrilmiş lisans not ortalaması %35 ağırlıkla birleştirilir. Bu ekran, söz konusu klasik ön değerlendirme yapısını hızlıca görmek içindir; güncel araştırma görevlisi ilanı veya üniversite özel şartları varsa nihai karar ilgili resmi ilan metniyle verilmelidir.", en: "In the calculation logic traditionally searched under the name ÖYP, the ALES score carries 50%, the language score 15%, and the undergraduate GPA converted to a 100-point scale 35%. This screen is designed to quickly view that classic pre-evaluation structure; if there are current research-assistant announcements or university-specific requirements, the final decision should be based on the relevant official text." },
             faq: [
-                { q: { tr: "ÖYP ile atanan araştırma görevlileri ne alır?", en: "What benefits do ÖYP research assistants receive?" }, a: { tr: "ÖYP kapsamında araştırma görevlileri maaş, burs ve üniversitede araştırma imkânı elde eder. Lisansüstü eğitimlerini belirlenen üniversitede yaparlar.", en: "ÖYP research assistants receive salary, grant and university research facilities. They complete graduate studies at a designated university." } },
-                { q: { tr: "ÖYP başvurusu için minimum ALES puanı nedir?", en: "What is the minimum ALES score for ÖYP?" }, a: { tr: "YÖK mevzuatına göre araştırma görevlisi atamaları için minimum 70 ALES puanı aranmaktadır. ÖYP kontenjanlarında daha yüksek puanlar rekabette avantaj sağlar.", en: "Per YÖK regulation, minimum 70 ALES is required for research assistant appointments. Higher scores provide competitive advantage in ÖYP quotas." } },
+                { q: { tr: "ÖYP mantığındaki ağırlıklar nelerdir?", en: "What are the weights in the traditional ÖYP logic?" }, a: { tr: "Klasik hesapta ALES %50, yabancı dil puanı %15 ve 100'lük sisteme çevrilmiş lisans notu %35 ağırlıkla toplanır. Nihai başvuru koşulları varsa ilgili ilan metni ayrıca kontrol edilmelidir.", en: "In the classic formula, ALES is weighted at 50%, the language score at 15%, and the undergraduate GPA converted to a 100-point scale at 35%. Any final application-specific conditions should still be checked in the relevant announcement." } },
+                { q: { tr: "Bu sonuç güncel akademik ilanlarla birebir aynı mıdır?", en: "Is this result exactly the same as current academic postings?" }, a: { tr: "Her zaman değil. Pek çok aday ÖYP sorgusuyla bu ağırlık yapısını arar; ancak bazı üniversite ve kadro ilanlarında ek şartlar veya farklı değerlendirme adımları bulunabilir.", en: "Not always. Many candidates search this weighting structure under the name ÖYP, but some university or position announcements may include additional conditions or different evaluation steps." } },
             ],
             richContent: {
-                howItWorks: { tr: "ALES %50, YDS %20, Lisans GPA %30 ağırlıklı olarak toplam puan hesaplanır.", en: "ALES 50%, YDS 20%, undergraduate GPA 30% weighted total score is calculated." },
-                formulaText: { tr: "Toplam = (ALES × 0.50) + (YDS × 0.20) + (GPA / 4 × 100 × 0.30)", en: "Total = (ALES × 0.50) + (YDS × 0.20) + (GPA / 4 × 100 × 0.30)" },
-                exampleCalculation: { tr: "ALES 75, YDS 60, GPA 3.2/4.0 → ALES katkı 37.5 + YDS katkı 12 + GPA katkı 24 = 73.5 puan", en: "ALES 75, YDS 60, GPA 3.2/4.0 → ALES 37.5 + YDS 12 + GPA 24 = 73.5 total" },
-                miniGuide: { tr: "<ul><li><b>ALES Öncelik:</b> ÖYP'de ALES yarım puanı oluşturur; ALES'inizi önce optimize edin.</li><li><b>YDS Sınırı:</b> Minimum 50 YDS puanı zorunludur; bu eşiği geçmek temel hedeftir.</li></ul>", en: "ALES forms half the score—optimize it first. Minimum 50 YDS is required; clearing this threshold is the primary goal." },
+                howItWorks: { tr: "ALES puanı doğrudan %50 ağırlıkla alınır. Yabancı dil puanı %15 katkı verir. Lisans not ortalaması önce 100'lük sisteme çevrilir, ardından %35 ile toplam puana eklenir.", en: "The ALES score is taken directly with a 50% weight. The language score contributes 15%. The undergraduate GPA is first converted to a 100-point scale and then added to the total with a 35% weight." },
+                formulaText: { tr: "Toplam = (ALES × 0.50) + (Dil × 0.15) + ((GPA / 4) × 100 × 0.35)", en: "Total = (ALES × 0.50) + (Language × 0.15) + ((GPA / 4) × 100 × 0.35)" },
+                exampleCalculation: { tr: "ALES 75, YDS 60, GPA 3,20/4,00 için 100'lük not 80 olur. Toplam = 37,50 + 9 + 28 = 74,50 puan.", en: "For ALES 75, YDS 60, and GPA 3.20/4.00, the 100-point GPA becomes 80. Total = 37.50 + 9 + 28 = 74.50." },
+                miniGuide: { tr: "<ul><li><b>ALES Etkisi:</b> Toplamın yarısını oluşturduğu için ALES sonucu hâlâ en güçlü belirleyicidir.</li><li><b>İlan Kontrolü:</b> Güncel kadro ve üniversite duyurularında ek eşik veya özel şart bulunup bulunmadığını mutlaka kontrol edin.</li></ul>", en: "Because it forms half of the total, ALES remains the strongest driver. Always check whether current postings or university announcements include extra thresholds or special conditions." },
             },
         },
     },
@@ -7087,9 +7120,10 @@ export const schoolCalculatorsBatch3: CalculatorConfig[] = [
     {
         id: "dib-mbsts-puan-hesaplama", slug: "dib-mbsts-puan-hesaplama", category: "sinav-hesaplamalari",
         name: { tr: "DİB MBSTS Puan Hesaplama", en: "DİB MBSTS Score Calculator" },
-        h1: { tr: "DİB MBSTS Puan Hesaplama 2026 — Diyanet Din Görevlisi Sınavı", en: "DİB MBSTS Score Calculator 2026" },
-        description: { tr: "DİB MBSTS doğru ve yanlış sayılarınızı girerek tahmini puanınızı hesaplayın.", en: "Calculate your estimated DİB MBSTS score." },
-        shortDescription: { tr: "DİB MBSTS sınav netlerinizden tahmini puanınızı hesaplayın.", en: "Calculate estimated DİB MBSTS score from your nets." },
+        h1: { tr: "DİB MBSTS Puan Hesaplama 2026 — Net Bazlı Ön İzleme", en: "DIB MBSTS Score Calculator 2026 — Net-Based Preview" },
+        description: { tr: "DİB MBSTS doğru ve yanlış sayılarınızı girerek net bazlı tahmini puan ön izlemenizi hesaplayın.", en: "Enter your DIB MBSTS correct and wrong answers to calculate a net-based estimated score preview." },
+        shortDescription: { tr: "DİB MBSTS sınav netlerinizden yaklaşık puan ön izlemesini görün.", en: "See an approximate score preview from your DIB MBSTS exam nets." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["kpss-puan-hesaplama", "ales-puan-hesaplama"],
         inputs: [
             { id: "dogru", name: { tr: "Doğru (100 Soru)", en: "Correct (100 Q)" }, type: "number", defaultValue: 65, min: 0, max: 100 },
@@ -7104,7 +7138,7 @@ export const schoolCalculatorsBatch3: CalculatorConfig[] = [
             return { net, puan: net };
         },
         seo: {
-            title: { tr: "DİB MBSTS Puan Hesaplama 2026 — Diyanet Sınavı", en: "DİB MBSTS Score Calculator 2026" },
+            title: { tr: "DİB MBSTS Puan Hesaplama 2026 — Net Bazlı Ön İzleme", en: "DIB MBSTS Score Calculator 2026 — Net-Based Preview" },
             metaDescription: { tr: "DİB MBSTS sınav doğru-yanlış sayılarınızı girerek tahmini puanınızı hesaplayın.", en: "Calculate your estimated DİB MBSTS score from correct and wrong answers." },
             content: { tr: "DİB MBSTS, Diyanet İşleri Başkanlığı tarafından din görevlisi alımlarında kullanılan merkezi sınavdır. 100 soru içerir, 4 yanlış 1 doğruyu götürür.", en: "DİB MBSTS is the central exam by the Presidency of Religious Affairs for religious officer recruitment. 100 questions with 4-wrong-cancels-1-right rule." },
             faq: [
@@ -7122,9 +7156,10 @@ export const schoolCalculatorsBatch3: CalculatorConfig[] = [
     {
         id: "dus-puan-hesaplama", slug: "dus-puan-hesaplama", category: "sinav-hesaplamalari",
         name: { tr: "DUS Puan Hesaplama", en: "DUS Score Calculator" },
-        h1: { tr: "DUS Puan Hesaplama 2026 — Diş Hekimliği Uzmanlık Sınavı", en: "DUS Score Calculator 2026 — Dentistry Specialization Exam" },
-        description: { tr: "DUS sınav doğru-yanlış sayılarınızdan tahmini puanınızı hesaplayın.", en: "Calculate your estimated DUS score from correct and wrong answers." },
-        shortDescription: { tr: "DUS netlerinizden tahmini puanınızı hesaplayın.", en: "Calculate estimated DUS score." },
+        h1: { tr: "DUS Puan Hesaplama 2026 — Net Bazlı Ön İzleme", en: "DUS Score Calculator 2026 — Net-Based Preview" },
+        description: { tr: "DUS doğru ve yanlış sayılarınızdan net bazlı tahmini puan ön izlemenizi hesaplayın.", en: "Calculate a net-based estimated DUS score preview from your correct and wrong answers." },
+        shortDescription: { tr: "DUS netlerinizden yaklaşık puan ön izlemesini görün.", en: "See an approximate score preview from your DUS nets." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["tus-puan-hesaplama", "eus-puan-hesaplama"],
         inputs: [
             { id: "dogru", name: { tr: "Doğru (200 Soru)", en: "Correct (200 Q)" }, type: "number", defaultValue: 130, min: 0, max: 200 },
@@ -7139,7 +7174,7 @@ export const schoolCalculatorsBatch3: CalculatorConfig[] = [
             return { net, puan: (net / 200) * 100 };
         },
         seo: {
-            title: { tr: "DUS Puan Hesaplama 2026 — Diş Hekimliği Uzmanlık", en: "DUS Score Calculator 2026 — Dentistry Specialization" },
+            title: { tr: "DUS Puan Hesaplama 2026 — Net Bazlı Ön İzleme", en: "DUS Score Calculator 2026 — Net-Based Preview" },
             metaDescription: { tr: "DUS sınav doğru-yanlış sayılarınızı girerek tahmini puanınızı hesaplayın.", en: "Calculate your estimated DUS score from correct and wrong answers." },
             content: { tr: "DUS, diş hekimlerinin uzmanlık eğitimine geçişi için ÖSYM tarafından yılda iki kez yapılan sınavdır. 200 soru içerir.", en: "DUS is held twice a year by ÖSYM for dentists entering specialization programs. Contains 200 questions." },
             faq: [
@@ -7157,9 +7192,10 @@ export const schoolCalculatorsBatch3: CalculatorConfig[] = [
     {
         id: "eus-puan-hesaplama", slug: "eus-puan-hesaplama", category: "sinav-hesaplamalari",
         name: { tr: "EUS Puan Hesaplama", en: "EUS Score Calculator" },
-        h1: { tr: "EUS Puan Hesaplama 2026 — Eczacılık Uzmanlık Sınavı", en: "EUS Score Calculator 2026 — Pharmacy Specialization Exam" },
-        description: { tr: "EUS sınav doğru-yanlış sayılarınızdan tahmini puanınızı hesaplayın.", en: "Calculate your estimated EUS score." },
-        shortDescription: { tr: "EUS netlerinizden tahmini puanınızı hesaplayın.", en: "Calculate estimated EUS score." },
+        h1: { tr: "EUS Puan Hesaplama 2026 — Net Bazlı Ön İzleme", en: "EUS Score Calculator 2026 — Net-Based Preview" },
+        description: { tr: "EUS doğru ve yanlış sayılarınızdan net bazlı tahmini puan ön izlemenizi hesaplayın.", en: "Calculate a net-based estimated EUS score preview from your correct and wrong answers." },
+        shortDescription: { tr: "EUS netlerinizden yaklaşık puan ön izlemesini görün.", en: "See an approximate score preview from your EUS nets." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["tus-puan-hesaplama", "dus-puan-hesaplama"],
         inputs: [
             { id: "dogru", name: { tr: "Doğru (120 Soru)", en: "Correct (120 Q)" }, type: "number", defaultValue: 80, min: 0, max: 120 },
@@ -7174,7 +7210,7 @@ export const schoolCalculatorsBatch3: CalculatorConfig[] = [
             return { net, puan: (net / 120) * 100 };
         },
         seo: {
-            title: { tr: "EUS Puan Hesaplama 2026 — Eczacılık Uzmanlık Sınavı", en: "EUS Score Calculator 2026 — Pharmacy Specialization" },
+            title: { tr: "EUS Puan Hesaplama 2026 — Net Bazlı Ön İzleme", en: "EUS Score Calculator 2026 — Net-Based Preview" },
             metaDescription: { tr: "EUS sınav doğru-yanlış sayılarınızı girerek tahmini puanınızı hesaplayın.", en: "Calculate your estimated EUS score." },
             content: { tr: "EUS, eczacılık uzmanlık programlarına giriş için ÖSYM tarafından yapılan sınavdır.", en: "EUS is the ÖSYM exam for pharmacy specialization program admissions." },
             faq: [
@@ -7192,44 +7228,46 @@ export const schoolCalculatorsBatch3: CalculatorConfig[] = [
     {
         id: "isg-puan-hesaplama", slug: "isg-puan-hesaplama", category: "sinav-hesaplamalari",
         name: { tr: "İSG Puan Hesaplama", en: "ISG Score Calculator" },
-        h1: { tr: "İSG Puan Hesaplama 2026 — İş Sağlığı ve Güvenliği Sınavı", en: "ISG Score Calculator 2026 — Occupational Health & Safety Exam" },
-        description: { tr: "İSG uzman yardımcısı sınavı doğru-yanlış sayılarından tahmini puanınızı hesaplayın.", en: "Calculate your estimated ISG specialist assistant exam score." },
-        shortDescription: { tr: "İSG sınav netlerinizden tahmini puanınızı hesaplayın.", en: "Calculate estimated ISG score." },
+        h1: { tr: "İSG Puan Hesaplama 2026 — 50 Soruluk Test İçin Ön İzleme", en: "ISG Score Calculator 2026 — Preview for the 50-Question Test" },
+        description: { tr: "İSG / İşyeri Hekimliği testindeki doğru ve yanlış sayınıza göre net bazlı yaklaşık puan ön izlemesi alın.", en: "Get a net-based approximate score preview from your correct and wrong answers in the OHS / Workplace Medicine test." },
+        shortDescription: { tr: "50 soruluk İSG testinizden yaklaşık puan ön izlemesini görün.", en: "See an approximate score preview from your 50-question OHS test." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["kpss-puan-hesaplama", "ales-puan-hesaplama"],
         inputs: [
-            { id: "dogru", name: { tr: "Doğru (100 Soru)", en: "Correct (100 Q)" }, type: "number", defaultValue: 65, min: 0, max: 100 },
-            { id: "yanlis", name: { tr: "Yanlış", en: "Wrong" }, type: "number", defaultValue: 10, min: 0, max: 100 },
+            { id: "dogru", name: { tr: "Doğru (50 Soru)", en: "Correct (50 Q)" }, type: "number", defaultValue: 33, min: 0, max: 50 },
+            { id: "yanlis", name: { tr: "Yanlış", en: "Wrong" }, type: "number", defaultValue: 8, min: 0, max: 50 },
         ],
         results: [
             { id: "net", label: { tr: "Net", en: "Net" }, decimalPlaces: 2 },
-            { id: "puan", label: { tr: "Tahmini Puan", en: "Estimated Score" }, decimalPlaces: 3 },
+            { id: "puan", label: { tr: "Net Bazlı Tahmini Puan", en: "Net-Based Estimated Score" }, decimalPlaces: 3 },
         ],
         formula: (v) => {
             const net = (parseFloat(v.dogru) || 0) - (parseFloat(v.yanlis) || 0) / 4;
-            return { net, puan: net };
+            return { net, puan: (Math.max(0, net) / 50) * 100 };
         },
         seo: {
-            title: { tr: "İSG Puan Hesaplama 2026 — İş Sağlığı ve Güvenliği", en: "ISG Score Calculator 2026 — Occupational Health & Safety" },
-            metaDescription: { tr: "İSG sınav doğru-yanlış sayılarınızı girerek tahmini puanınızı hesaplayın.", en: "Calculate your estimated ISG specialist exam score." },
-            content: { tr: "İSG uzman yardımcısı sınavı, Çalışma ve Sosyal Güvenlik Bakanlığı'nın düzenlediği kamu sınavıdır.", en: "The ISG specialist assistant exam is organized by the Ministry of Labor." },
+            title: { tr: "İSG Puan Hesaplama 2026 — 50 Soruluk Test İçin Ön İzleme", en: "ISG Score Calculator 2026 — Preview for the 50-Question Test" },
+            metaDescription: { tr: "İSG sınavında 50 soruluk testte doğru ve yanlış sayınıza göre net bazlı yaklaşık puan ön izlemesi alın. Resmi sonuç ve belge yorumu için ilgili kurum duyuruları esas alınır.", en: "Get a net-based approximate score preview for the 50-question OHS test. Official result interpretation and certification should follow the relevant institutional announcements." },
+            content: { tr: "İşyeri Hekimliği ve İş Güvenliği Uzmanlığı sınavlarında her test 50 sorudan oluşur. Bu araç, doğru ve yanlış sayınızdan 4 yanlış 1 doğru mantığıyla net hesabı yapar ve sonucu 100'lük ölçeğe çevrilmiş hızlı bir ön izleme olarak sunar. Nihai sonuç ve belge yorumu için resmi sınav duyurusu ile kurum açıklamaları esas alınmalıdır.", en: "In Workplace Medicine and Occupational Safety Specialist exams, each test consists of 50 questions. This tool calculates net with the 4-wrong-cancels-1-correct rule and presents the result as a quick preview converted to a 100-point scale. The official exam announcement and institutional guidance remain the basis for final interpretation and certification." },
             faq: [
-                { q: { tr: "İSG sınavına kimler girebilir?", en: "Who can take ISG exam?" }, a: { tr: "Mühendislik, mimarlık ve sağlık bilimleri mezunları başvurabilir.", en: "Engineering, architecture and health sciences graduates can apply." } },
-                { q: { tr: "Sınav ne zaman yapılır?", en: "When is the exam held?" }, a: { tr: "Bakanlığın kadro ihtiyacına göre ilan edilir.", en: "Announced based on Ministry staffing needs." } },
+                { q: { tr: "İSG sınavında her test kaç sorudur?", en: "How many questions are there in each ISG test?" }, a: { tr: "İşyeri Hekimliği ve İş Güvenliği Uzmanlığı sınavlarında her test 50 sorudan oluşur. Bu yüzden ekrandaki puan ön izlemesi 50 soruluk yapı üzerinden hesaplanır.", en: "Each Workplace Medicine and Occupational Safety Specialist test consists of 50 questions. The preview on this screen is therefore calculated over a 50-question structure." } },
+                { q: { tr: "Bu sonuç belge alımını kesin gösterir mi?", en: "Does this result definitively show certification success?" }, a: { tr: "Hayır. Araç net bazlı hızlı bir ön izleme sunar. Belge sınıfı, resmi sınav duyurusu ve kurum değerlendirmesi nihai yorumu etkileyebilir.", en: "No. The tool provides a quick net-based preview. Certificate class, the official exam announcement, and institutional evaluation may affect the final interpretation." } },
             ],
             richContent: {
-                howItWorks: { tr: "4 yanlış 1 doğruyu götürür.", en: "4 wrong cancels 1 correct." },
-                formulaText: { tr: "Net = Doğru − (Yanlış/4)", en: "Net = Correct − (Wrong/4)" },
-                exampleCalculation: { tr: "65 doğru, 10 yanlış → Net 62.5", en: "65 correct, 10 wrong → Net 62.5" },
-                miniGuide: { tr: "<ul><li><b>İSG Sertifikası:</b> Sınavdan önce C/B/A sınıfı İSG sertifikası gerekebilir.</li></ul>", en: "An ISG certificate (C/B/A class) may be required before the exam." },
+                howItWorks: { tr: "Girilen doğru ve yanlış sayısından 4 yanlış 1 doğruyu götürecek şekilde net bulunur. Ardından net, 50 soru üzerinden 100'lük ölçeğe çevrilerek yaklaşık puan ön izlemesi üretilir.", en: "Net is calculated from the entered correct and wrong answers using the 4-wrong-cancels-1-correct rule. The net is then scaled from 50 questions to a 100-point preview score." },
+                formulaText: { tr: "Net = Doğru − (Yanlış/4). Tahmini Puan = (Net / 50) × 100", en: "Net = Correct − (Wrong/4). Estimated Score = (Net / 50) × 100" },
+                exampleCalculation: { tr: "33 doğru, 8 yanlış → Net 31 → Tahmini puan 62", en: "33 correct, 8 wrong → Net 31 → Estimated score 62" },
+                miniGuide: { tr: "<ul><li><b>Test Yapısı:</b> Sonucu yorumlarken hangi test türüne girdiğinizi ve ilgili belge sınıfını ayrıca kontrol edin.</li><li><b>Resmi Duyuru:</b> Takvim ve kural değişiklikleri için ÖSYM ve ilgili kurum ilanlarını izleyin.</li></ul>", en: "When reading the result, also check which test type you took and the relevant certificate class. Follow ÖSYM and institutional announcements for schedule or rule changes." },
             },
         },
     },
     {
         id: "tus-puan-hesaplama", slug: "tus-puan-hesaplama", category: "sinav-hesaplamalari",
         name: { tr: "TUS Puan Hesaplama", en: "TUS Score Calculator" },
-        h1: { tr: "TUS Puan Hesaplama 2026 — Tıpta Uzmanlık Sınavı", en: "TUS Score Calculator 2026 — Medical Specialization Exam" },
-        description: { tr: "TUS Temel ve Klinik bilimler doğru-yanlış sayılarından tahmini puanınızı hesaplayın.", en: "Calculate your TUS score from Basic and Clinical sciences correct/wrong answers." },
-        shortDescription: { tr: "TUS Temel ve Klinik netlerinizden tahmini puanınızı hesaplayın.", en: "Calculate estimated TUS score from Basic and Clinical nets." },
+        h1: { tr: "TUS Puan Hesaplama 2026 — Net Bazlı Ön İzleme", en: "TUS Score Calculator 2026 — Net-Based Preview" },
+        description: { tr: "TUS Temel ve Klinik bilimler doğru-yanlış sayılarından net bazlı tahmini puan ön izlemenizi hesaplayın.", en: "Calculate a net-based estimated TUS score preview from your Basic and Clinical sciences correct/wrong answers." },
+        shortDescription: { tr: "TUS Temel ve Klinik netlerinizden yaklaşık puan ön izlemesini görün.", en: "See an approximate score preview from your Basic and Clinical nets." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["dus-puan-hesaplama", "eus-puan-hesaplama"],
         inputs: [
             { id: "temel_d", name: { tr: "Temel Bilimler Doğru (100 Soru)", en: "Basic Sci. Correct (100 Q)" }, type: "number", defaultValue: 60, min: 0, max: 100 },
@@ -7248,7 +7286,7 @@ export const schoolCalculatorsBatch3: CalculatorConfig[] = [
             return { temelNet, klinikNet, puan: ((temelNet + klinikNet) / 200) * 100 };
         },
         seo: {
-            title: { tr: "TUS Puan Hesaplama 2026 — Tıpta Uzmanlık Sınavı", en: "TUS Score Calculator 2026 — Medical Specialization" },
+            title: { tr: "TUS Puan Hesaplama 2026 — Net Bazlı Ön İzleme", en: "TUS Score Calculator 2026 — Net-Based Preview" },
             metaDescription: { tr: "TUS Temel ve Klinik netlerinizi girerek tahmini TUS puanınızı hesaplayın.", en: "Calculate estimated TUS score from Basic and Clinical Sciences nets." },
             content: { tr: "TUS, tıp doktorlarının uzmanlık eğitimine geçişi için ÖSYM tarafından yılda iki kez yapılan sınavdır. 100 Temel + 100 Klinik soru içerir.", en: "TUS is held twice a year by ÖSYM for medical specialists. Contains 100 Basic + 100 Clinical questions." },
             faq: [
@@ -7273,6 +7311,7 @@ export const schoolCalculatorsBatch4: CalculatorConfig[] = [
         h1: { tr: "Ehliyet Sınavı Puan Hesaplama 2026 — Geçtim mi Kaldım mı?", en: "Driving License Exam Score Calculator 2026" },
         description: { tr: "Ehliyet teorik sınavında doğru sayınızı girerek puanınızı ve geçip geçmediğinizi hesaplayın.", en: "Enter correct answers to calculate your driving theory exam score and pass/fail status." },
         shortDescription: { tr: "Ehliyet teorik sınav puanınızı ve geçip geçmediğinizi hesaplayın.", en: "Calculate your driving theory exam score and result." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["ozel-guvenlik-sinav-hesaplama"],
         inputs: [
             { id: "dogru", name: { tr: "Doğru Sayısı (50 Soru)", en: "Correct (50 Questions)" }, type: "number", defaultValue: 42, min: 0, max: 50 },
@@ -7308,9 +7347,10 @@ export const schoolCalculatorsBatch4: CalculatorConfig[] = [
     {
         id: "iyos-puan-hesaplama", slug: "iyos-puan-hesaplama", category: "sinav-hesaplamalari",
         name: { tr: "İYÖS Puan Hesaplama", en: "IYOS Score Calculator" },
-        h1: { tr: "İYÖS Puan Hesaplama 2026 — İdari Yargı Ön Sınavı", en: "IYOS Score Calculator 2026 — Administrative Judiciary Preliminary Exam" },
+        h1: { tr: "İYÖS Puan Hesaplama 2026 — Net Bazlı Ön İzleme", en: "IYOS Score Calculator 2026 — Net-Based Preview" },
         description: { tr: "İYÖS doğru ve yanlış sayılarınızdan net bazlı tahmini puan ön izlemesi alın.", en: "Get a net-based IYOS score preview from your correct and wrong answers." },
         shortDescription: { tr: "İdari Yargı Ön Sınavı netlerinize göre yaklaşık puanınızı hızlıca görün.", en: "Quickly preview your approximate score from your Administrative Judiciary Preliminary Exam nets." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["hmgs-puan-hesaplama", "hakim-savci-yrd-puan-hesaplama", "kpss-puan-hesaplama"],
         inputs: [
             { id: "dogru", name: { tr: "Doğru (80 Soru)", en: "Correct (80 Q)" }, type: "number", defaultValue: 55, min: 0, max: 80 },
@@ -7325,7 +7365,7 @@ export const schoolCalculatorsBatch4: CalculatorConfig[] = [
             return { net, puan: (Math.max(0, net) / 80) * 100 };
         },
         seo: {
-            title: { tr: "İYÖS Puan Hesaplama 2026 — İdari Yargı Ön Sınavı", en: "IYOS Score Calculator 2026 — Administrative Judiciary Preliminary Exam" },
+            title: { tr: "İYÖS Puan Hesaplama 2026 — Net Bazlı Ön İzleme", en: "IYOS Score Calculator 2026 — Net-Based Preview" },
             metaDescription: { tr: "İYÖS doğru ve yanlış sayınızı girerek net bazlı tahmini puan ön izlemesi alın. Kesin sonuç için ÖSYM duyurusu esas alınır.", en: "Enter your IYOS correct and wrong counts to preview a net-based estimated score. Official ÖSYM results prevail." },
             content: { tr: "İYÖS, yani İdari Yargı Ön Sınavı, hukuk kariyer yollarından birinde kullanılan merkezi sınavlardan biridir. Resmi değerlendirme ÖSYM tarafından sınav istatistikleriyle tamamlandığı için bu araç, doğru ve yanlış sayınıza göre yaklaşık bir puan ön izlemesi sunar. Çalışma performansını yorumlamak için kullanılmalı, nihai karar resmi sonuç belgesine göre verilmelidir.", en: "IYOS, the Administrative Judiciary Preliminary Exam, is one of the central exams used in a legal career pathway. Since official evaluation is completed by ÖSYM using exam statistics, this tool provides an approximate preview based on your correct and wrong counts. It should be used to interpret study performance, while final decisions should rely on the official score report." },
             faq: [
@@ -7385,9 +7425,10 @@ export const schoolCalculatorsBatch4: CalculatorConfig[] = [
     {
         id: "pmyo-puan-hesaplama", slug: "pmyo-puan-hesaplama", category: "sinav-hesaplamalari",
         name: { tr: "PMYO Giriş Puanı Hesaplama", en: "PMYO Entry Score Calculator" },
-        h1: { tr: "PMYO Giriş Puanı Hesaplama 2026 — YKS, Fiziki, Mülakat", en: "PMYO Entry Score Calculator 2026 — YKS, Physical, Interview" },
+        h1: { tr: "PMYO Giriş Puanı Hesaplama 2026 — Başarı Sıralaması Ön İzleme", en: "PMYO Entry Score Calculator 2026 — Ranking Preview" },
         description: { tr: "PMYO için YKS puanı, fiziki yeterlilik ve mülakat notunu kullanarak giriş puanı simülasyonu yapın.", en: "Simulate your PMYO entry score using YKS score, physical fitness, and interview results." },
         shortDescription: { tr: "Polis Meslek Yüksekokulu başvurusunda kullanılan giriş puanını ağırlıklara göre önceden görün.", en: "Preview the weighted entry score used in Police Vocational School applications." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["pomem-puan-hesaplama", "ozel-guvenlik-sinav-hesaplama", "kpss-puan-hesaplama"],
         inputs: [
             { id: "yksPuan", name: { tr: "Başvuruya Esas YKS Puanı", en: "YKS Score Used for Application" }, type: "number", defaultValue: 310, min: 100, max: 500 },
@@ -7419,8 +7460,8 @@ export const schoolCalculatorsBatch4: CalculatorConfig[] = [
             return { girisPuani, fizikiDurum: fizikiDurum as any, mulakatDurum: mulakatDurum as any, durum: durum as any };
         },
         seo: {
-            title: { tr: "PMYO Giriş Puanı Hesaplama 2026 — YKS, Fiziki, Mülakat", en: "PMYO Entry Score Calculator 2026 — YKS, Physical, Interview" },
-            metaDescription: { tr: "PMYO giriş puanınızı YKS puanı, fiziki yeterlilik ve mülakat ağırlıklarına göre hesaplayın. Polis Akademisi sürecine uygun ön izleme alın.", en: "Calculate your PMYO entry score using YKS, physical fitness, and interview weights. Get a preview aligned with the Police Academy process." },
+            title: { tr: "PMYO Giriş Puanı Hesaplama 2026 — Başarı Sıralaması Ön İzleme", en: "PMYO Entry Score Calculator 2026 — Ranking Preview" },
+            metaDescription: { tr: "PMYO için başvuruya esas YKS puanı, fiziki yeterlilik ve mülakat notunu girerek başarı sıralamasına esas yaklaşık puan ön izlemesini görün. Kesin değerlendirme için dönem kılavuzu esas alınır.", en: "Enter the YKS score used for application, physical fitness, and interview scores to preview the approximate PMYO ranking score. The period guide remains the final reference." },
             content: { tr: "PMYO, lise mezunları için polislik eğitimine giriş sağlayan Polis Meslek Yüksekokulu sürecidir. Güncel düzenlemede başarı sıralamasına esas puan; başvuruya esas YKS puanının %25'i, fiziki yeterlilik puanının %25'i ve mülakat puanının %50'siyle oluşur. Bu araç, resmi değerlendirme sırasını birebir garanti etmez; ancak adayın üç aşamayı birlikte görerek ön hazırlık yapmasını kolaylaştırır.", en: "PMYO is the Police Vocational School pathway for high school graduates. Under the current regulation, the ranking score is formed by 25% of the YKS score used in the application, 25% of the physical fitness score, and 50% of the interview score. This tool does not guarantee the exact official ranking, but helps the candidate evaluate the three stages together." },
             faq: [
                 { q: { tr: "PMYO'ya kimler başvurabilir?", en: "Who can apply to PMYO?" }, a: { tr: "Lise mezunu, belirlenen yaş ve fiziksel kriterleri karşılayan adaylar başvurabilir.", en: "High school graduates meeting specified age and physical criteria can apply." } },
@@ -7438,9 +7479,10 @@ export const schoolCalculatorsBatch4: CalculatorConfig[] = [
     {
         id: "pomem-puan-hesaplama", slug: "pomem-puan-hesaplama", category: "sinav-hesaplamalari",
         name: { tr: "POMEM Giriş Puanı Hesaplama", en: "POMEM Entry Score Calculator" },
-        h1: { tr: "POMEM Giriş Puanı Hesaplama 2026 — KPSS, Fiziki, Mülakat", en: "POMEM Entry Score Calculator 2026 — KPSS, Physical, Interview" },
+        h1: { tr: "POMEM Giriş Puanı Hesaplama 2026 — Başarı Sıralaması Ön İzleme", en: "POMEM Entry Score Calculator 2026 — Ranking Preview" },
         description: { tr: "POMEM için KPSS puanı, fiziki yeterlilik ve mülakat sonuçlarına göre giriş puanı simülasyonu yapın.", en: "Simulate your POMEM entry score using KPSS, physical fitness, and interview results." },
         shortDescription: { tr: "Polis Meslek Eğitim Merkezi başvurusunda kullanılan giriş puanını ağırlıklara göre görün.", en: "Preview the weighted entry score used in Police Training Center applications." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["pmyo-puan-hesaplama", "ozel-guvenlik-sinav-hesaplama", "kpss-puan-hesaplama"],
         inputs: [
             { id: "kpssPuan", name: { tr: "KPSS Puanı", en: "KPSS Score" }, type: "number", defaultValue: 72, min: 50, max: 100 },
@@ -7472,9 +7514,9 @@ export const schoolCalculatorsBatch4: CalculatorConfig[] = [
             return { girisPuani, fizikiDurum: fizikiDurum as any, mulakatDurum: mulakatDurum as any, durum: durum as any };
         },
         seo: {
-            title: { tr: "POMEM Giriş Puanı Hesaplama 2026 — KPSS, Fiziki, Mülakat", en: "POMEM Entry Score Calculator 2026 — KPSS, Physical, Interview" },
-            metaDescription: { tr: "POMEM giriş puanınızı KPSS, fiziki yeterlilik ve mülakat ağırlıklarına göre hesaplayın. Polis Akademisi sürecine uygun ön izleme alın.", en: "Calculate your POMEM entry score using KPSS, physical fitness, and interview weights. Get a preview aligned with the Police Academy process." },
-            content: { tr: "POMEM, ön lisans ve lisans mezunlarının polis memuru olarak eğitildiği Polis Meslek Eğitim Merkezi sürecidir. Güncel yönetmelikte başarı sıralamasına esas puan; KPSS puanının %25'i, fiziki yeterlilik puanının %25'i ve mülakat puanının %50'siyle oluşur. Bu araç, resmi yerleştirme sonucunu garanti etmez; ancak adayın süreci üç temel bileşen üzerinden daha doğru takip etmesini sağlar.", en: "POMEM is the Police Training Center pathway for associate and bachelor degree graduates. Under the current regulation, the ranking score is formed by 25% of the KPSS score, 25% of the physical fitness score, and 50% of the interview score. This tool does not guarantee the official placement result, but helps the candidate track the process through its three core components." },
+            title: { tr: "POMEM Giriş Puanı Hesaplama 2026 — Başarı Sıralaması Ön İzleme", en: "POMEM Entry Score Calculator 2026 — Ranking Preview" },
+            metaDescription: { tr: "POMEM için KPSS puanı, fiziki yeterlilik ve mülakat notunu girerek başarı sıralamasına esas yaklaşık puan ön izlemesini görün. Dönem kılavuzu ve resmi çağrı metni nihai referanstır.", en: "Enter KPSS, physical fitness, and interview scores to preview the approximate POMEM ranking score. The period guide and official call text remain the final reference." },
+            content: { tr: "POMEM, ön lisans ve lisans mezunlarının polis memuru olarak eğitildiği Polis Meslek Eğitim Merkezi sürecidir. Bu araç, dönem kılavuzunda kullanılan KPSS, fiziki yeterlilik ve mülakat ağırlıklarını tek ekranda birleştirerek yaklaşık başarı sıralaması ön izlemesi verir. Sonuç ekranı, resmi yerleştirme listesi yerine çalışma ve hazırlık planlaması için kullanılmalıdır.", en: "POMEM is the Police Training Center pathway for associate and bachelor degree graduates. This tool combines the KPSS, physical fitness, and interview weights used in the period guide into a single approximate ranking preview. The result should be used for planning and preparation rather than as an official placement list." },
             faq: [
                 { q: { tr: "PMYO ve POMEM farkı nedir?", en: "Difference between PMYO and POMEM?" }, a: { tr: "PMYO lise mezunları için 2 yıllık önlisans programıdır. POMEM ise lisans/önlisans mezunları için 1 yıllık eğitimdir.", en: "PMYO is 2-year for high school grads. POMEM is 1-year for associate/bachelor degree holders." } },
                 { q: { tr: "POMEM'de baraj puanları nelerdir?", en: "What are the POMEM threshold scores?" }, a: { tr: "Fiziki yeterlilik aşamasında en az 60, mülakatta ise en az 70 puan gerekir. Nihai giriş puanı KPSS, fiziki ve mülakat ağırlıklarıyla belirlenir.", en: "You need at least 60 in physical fitness and at least 70 in the interview. The final entry score is determined by the KPSS, physical, and interview weights." } },
@@ -7764,10 +7806,11 @@ export const creditCalculatorsP1: CalculatorConfig[] = [
         id: "ihtiyac-kredisi",
         slug: "ihtiyac-kredisi-hesaplama",
         category: "finansal-hesaplamalar",
+        updatedAt: "2026-03-15",
         name: { tr: "İhtiyaç Kredisi Hesaplama", en: "Personal Loan Calculator" },
-        h1: { tr: "İhtiyaç Kredisi Hesaplama — Taksit ve Faiz Oranları", en: "Personal Loan Calculator — Installments & Interest" },
-        description: { tr: "En uygun faiz oranlarıyla ihtiyaç kredisi aylık taksitlerini hesaplayın.", en: "Calculate your personal loan monthly installments with the best interest rates." },
-        shortDescription: { tr: "İhtiyaç kredisi çekmeden önce ödeme planınızı ve toplam faiz maliyetinizi hemen görün.", en: "See your payment plan and total interest cost before taking a personal loan." },
+        h1: { tr: "İhtiyaç Kredisi Hesaplama — Aylık Taksit, Faiz ve Toplam Ödeme", en: "Personal Loan Calculator — Monthly Payment, Interest & Total Cost" },
+        description: { tr: "İhtiyaç kredisi aylık taksitini, toplam geri ödemeyi ve faiz yükünü hesaplayın.", en: "Calculate personal loan installments, total repayment, and interest burden." },
+        shortDescription: { tr: "İhtiyaç kredisi faiz hesaplama ekranında kredi tutarı, vade ve masraflara göre aylık ödeme planınızı görün.", en: "Use the personal loan screen to see your monthly payment plan based on loan amount, term, rate, and fees." },
         relatedCalculators: ["kredi-taksit-hesaplama", "ne-kadar-kredi-alabilirim-hesaplama", "kredi-dosya-masrafi-hesaplama"],
         inputs: [
             { id: "amount", name: { tr: "Kredi Tutarı", en: "Loan Amount" }, type: "range", defaultValue: 50000, suffix: "₺", min: 1000, max: 2000000, step: 1000, required: true },
@@ -7821,18 +7864,18 @@ export const creditCalculatorsP1: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "İhtiyaç Kredisi Hesaplama 2026 — En Uygun Faiz Oranları", en: "Personal Loan Calculator 2026" },
-            metaDescription: { tr: "İhtiyaç kredisi taksit hesaplama aracı ile ödeme planınızı oluşturun. Çekeceğiniz kredi tutarına göre aylık taksitleri ve faiz maliyetini anında öğrenin.", en: "Calculate your personal loan installments and see the exact interest cost and payment plan." },
-            content: { tr: "İhtiyaç kredisi (Tüketici kredisi), kişisel nakit ihtiyaçlarınızı karşılamak için bankalardan kullandığınız finansman türüdür. Türkiye'de ihtiyaç kredilerinde yasal olarak maksimum vade 36 aydır. Hesaplamalar, BSMV (%15) ve KKDF (%15) vergileri dahil edilerek brüt faiz üzerinden banka standartlarında yapılır.", en: "Personal loan calculator includes standard Turkish taxes (BSMV and KKDF) applied to the nominal interest rate." },
+            title: { tr: "İhtiyaç Kredisi Hesaplama 2026 — Aylık Taksit ve Toplam Maliyet", en: "Personal Loan Calculator 2026 — Monthly Payment and Total Cost" },
+            metaDescription: { tr: "İhtiyaç kredisi hesaplama aracıyla kredi tutarı, vade, faiz ve masraflara göre aylık taksit, toplam ödeme ve faiz yükünü görün; teklifleri daha sağlıklı kıyaslayın.", en: "Use the personal loan calculator to compare monthly payment, total repayment, and interest burden by loan amount, term, rate, and fees." },
+            content: { tr: "İhtiyaç kredisi hesaplama, kısa ve orta vadeli nakit ihtiyacında aylık taksiti kadar toplam geri ödemeyi de önceden görmeyi sağlar. Bu araç kredi tutarı, faiz oranı, vade ve ek masrafları birlikte değerlendirerek ihtiyaç kredisi maliyetini senaryo bazında gösterir. BDDK'nın genel vade sınırları kredi tutarına göre değişebildiği için burada gördüğünüz sonuç, bankanın güncel teklif metni ve başvuru koşullarıyla birlikte okunmalıdır.", en: "A personal loan calculator helps you preview not only the monthly installment but also the total repayment burden for short- and medium-term cash needs. This tool combines amount, interest rate, term, and extra fees to show scenario-based cost outcomes. Because general maturity limits can vary by loan amount, the result should be read together with the lender's current offer and underwriting conditions." },
             faq: [
-                { q: { tr: "İhtiyaç kredisi maksimum vade ne kadardır?", en: "What is the maximum term for personal loans?" }, a: { tr: "BDDK kurallarına göre 50.000 TL'ye kadar 36 ay, 50.000 TL - 100.000 TL arası 24 ay, 100.000 TL üstü 12 aydır.", en: "By BRSA rules, up to 50k TL is 36 months, 50k-100k is 24 months, and above 100k is 12 months." } },
-                { q: { tr: "Faize BSMV ve KKDF dahil mi?", en: "Are taxes included in the interest?" }, a: { tr: "Evet, girdiğiniz net faiz oranı sistem tarafından bankaların uyguladığı %30 (%15 BSMV + %15 KKDF) yasal vergi yüküyle çarpılarak hesaplanır.", en: "Yes, standard legal tax burdens (KKDF/BSMV) are added algorithmically." } }
+                { q: { tr: "İhtiyaç kredisinde azami vade sabit midir?", en: "Is the maximum term fixed for personal loans?" }, a: { tr: "Hayır. Genel vade sınırı kredi tutarına göre değişebilir ve bankanın ürün koşulları ayrıca sınırlama getirebilir. Bu nedenle sonucu başvuru anındaki resmi teklif ve sözleşme özetiyle birlikte kontrol etmek gerekir.", en: "No. The general maturity cap can change by loan amount, and the lender's product rules may add further limits. The result should therefore be checked against the official offer and contract summary at application time." } },
+                { q: { tr: "Masraf ve vergi etkisi toplam maliyeti ne kadar değiştirir?", en: "How much can fees and taxes affect total cost?" }, a: { tr: "Nominal faiz oranı düşük görünse bile tahsis ücreti, sigorta ve vergi etkisi toplam geri ödemeyi hissedilir biçimde artırabilir. Bu yüzden yalnız aylık taksite değil, toplam ödeme ve efektif maliyete bakmak gerekir.", en: "Even when the nominal rate looks low, fees, insurance, and tax effects can materially increase total repayment. That is why you should review total payment and effective cost, not only the monthly installment." } }
             ],
             richContent: {
                 howItWorks: { tr: "Seçtiğiniz vade, tutar ve faiz oranı üzerinden standart anüite formülü ile aylık eşit taksitler bulunur.", en: "Monthly installments are found via a standard annuity formula based on given amount, term and rate." },
-                formulaText: { tr: "Aylık Taksit = Tutar × [Brüt Faiz × (1+Brüt Faiz)^Vade] / [(1+Brüt Faiz)^Vade - 1]. Brüt Faiz = Net Faiz × 1,30.", en: "Payment = Amount × [Gross Rate × (1+Gross Rate)^Term] / [(1+Gross Rate)^Term - 1]." },
-                exampleCalculation: { tr: "50.000 TL, 12 Ay, %4.99 Faiz: Brüt faiz ≈ %6.48. Aylık taksit: 5.753 TL, Toplam: 69.047 TL.", en: "50,000 TL for 12 months at 4.99% gives around 5,753 TL monthly payment due to inclusive taxes." },
-                miniGuide: { tr: "<ul><li><b>Masraf:</b> Tahsis ücreti ve sigorta primlerini göz önünde bulundurun.</li></ul>", en: "Always consider allocation fees and life insurance costs." }
+                formulaText: { tr: "Aylık Taksit = Tutar × [Efektif Aylık Faiz × (1+Efektif Aylık Faiz)^Vade] / [(1+Efektif Aylık Faiz)^Vade - 1]. Araç, ihtiyaç kredilerinde toplam maliyeti etkileyen faiz ve yasal yükleri birlikte senaryolaştırır.", en: "Monthly Payment = Amount × [Effective Monthly Rate × (1+Effective Monthly Rate)^Term] / [(1+Effective Monthly Rate)^Term - 1]. The tool models the rate together with common legal cost effects seen in personal loans." },
+                exampleCalculation: { tr: "Örnek: 50.000 TL kredi, 12 ay vade ve aylık %4,99 faiz senaryosunda aylık taksit yaklaşık 5.753 TL, toplam geri ödeme ise yaklaşık 69.047 TL seviyesine çıkar. Masraf eklendiğinde toplam maliyet ayrıca yükselir.", en: "Example: A 50,000 TRY loan over 12 months at 4.99% monthly interest yields a payment of about 5,753 TRY and total repayment near 69,047 TRY. Adding fees pushes the overall cost higher." },
+                miniGuide: { tr: "<ul><li><b>Masrafı ayrı okuyun:</b> Tahsis ücreti ve sigorta toplam maliyeti görünenden yüksek yapabilir.</li><li><b>Vade kısaldıkça toplam faiz azalabilir:</b> Aylık ödeme yükselse de toplam yük çoğu zaman düşer.</li><li><b>Kart borcu kapatma senaryosunu karşılaştırın:</b> Aynı tutarı kredi kartı araçlarıyla da kıyaslamak daha doğru karar verir.</li></ul>", en: "Read fees separately, compare shorter vs. longer terms, and evaluate card-debt scenarios alongside the personal loan result." }
             }
         }
     },
@@ -7840,10 +7883,11 @@ export const creditCalculatorsP1: CalculatorConfig[] = [
         id: "konut-kredisi",
         slug: "konut-kredisi-hesaplama",
         category: "finansal-hesaplamalar",
+        updatedAt: "2026-03-15",
         name: { tr: "Konut Kredisi Hesaplama", en: "Mortgage Calculator" },
-        h1: { tr: "Konut Kredisi Hesaplama — Ev Kredisi Taksitleri", en: "Mortgage Calculator — Home Loan Installments" },
-        description: { tr: "Ev almak için çekeceğiniz konut kredisinin aylık ödemelerini hesaplayın.", en: "Calculate your monthly home loan payments." },
-        shortDescription: { tr: "Konut kredisi hesaplama aracı ile kira öder gibi ev sahibi olma planınızı yapın.", en: "Plan your mortgage payments with ease." },
+        h1: { tr: "Konut Kredisi Hesaplama — Ev Kredisi, Mortgage Taksiti ve Toplam Ödeme", en: "Mortgage Calculator — Home Loan Payment and Total Cost" },
+        description: { tr: "Konut kredisi aylık taksitini, toplam geri ödemeyi ve masrafları hesaplayın.", en: "Calculate mortgage installment, total repayment, and common fees." },
+        shortDescription: { tr: "Ev kredisi hesaplama ekranında peşinat etkisini, uzun vade maliyetini ve toplam geri ödemeyi görün.", en: "Use the mortgage screen to see down-payment impact, long-term cost, and total repayment." },
         relatedCalculators: ["kredi-dosya-masrafi-hesaplama", "kredi-taksit-hesaplama", "kredi-erken-kapama-hesaplama"],
         inputs: [
             { id: "amount", name: { tr: "Kredi Tutarı", en: "Loan Amount" }, type: "range", defaultValue: 1000000, suffix: "₺", min: 50000, max: 20000000, step: 10000, required: true },
@@ -7895,18 +7939,18 @@ export const creditCalculatorsP1: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "Konut Kredisi Hesaplama 2026 — Ev Kredisi Araçları", en: "Mortgage Calculator 2026" },
-            metaDescription: { tr: "Uzun vadeli konut kredinizi en ince ayrıntısına kadar hesaplayın. Ev kredisi faiz oranlarıyla aylık taksitlerinizi görün.", en: "Calculate your long-term mortgage payments and understand the total interest costs easily." },
-            content: { tr: "Konut kredisi (Ev kredisi / Mortgage), yasal mevzuata göre vergiden muaf (KKDF ve BSMV uygulanmaz) özel bir kredi türüdür. Satın alacağınız evin ekspertiz değerinin %90'ına kadar kredi kullanabilirsiniz.", en: "Mortgages in Turkey are exempt from BSMV and KKDF taxes." },
+            title: { tr: "Konut Kredisi Hesaplama 2026 — Ev Kredisi Taksiti ve Toplam Maliyet", en: "Mortgage Calculator 2026 — Home Loan Payment and Total Cost" },
+            metaDescription: { tr: "Konut kredisi hesaplama aracıyla aylık mortgage taksitini, toplam geri ödemeyi, faiz yükünü ve ekspertiz/masraf etkisini görün; peşinat senaryolarını kıyaslayın.", en: "Use the mortgage calculator to see monthly payment, total repayment, interest burden, and appraisal-fee impact while comparing down-payment scenarios." },
+            content: { tr: "Konut kredisi hesaplama, ev alırken yalnız aylık taksiti değil peşinat ihtiyacını, uzun vade faiz yükünü ve toplam sahip olma maliyetini birlikte görmenizi sağlar. Bu araç kredi tutarı, vade, faiz oranı ve ekspertiz benzeri ek masrafları bir araya getirerek mortgage senaryosunu ön izleme şeklinde sunar. Bankalar kredi tutarını ekspertiz değeri, peşinat oranı, gelir durumu ve kampanya yapısına göre değerlendirdiği için sonuç nihai teklif yerine planlama aracı olarak okunmalıdır.", en: "A mortgage calculator helps you evaluate not only the monthly installment but also down-payment needs, long-term interest burden, and overall ownership cost. This tool combines loan amount, term, rate, and appraisal-like fees to preview a home-loan scenario. Because lenders assess amount, appraisal value, down-payment ratio, income profile, and campaign terms together, the output should be treated as a planning reference rather than a final offer." },
             faq: [
-                { q: { tr: "Konut kredisinde vergiler neden %0?", en: "Why are taxes 0% for mortgages?" }, a: { tr: "Devlet, barınma ihtiyacını desteklemek amacıyla konut alımlarında tüketiciyi destekler ve BSMV/KKDF almaz.", en: "The state supports housing purchases by exempting them from standard consumer loan taxes." } },
-                { q: { tr: "Ekspertiz ücreti nedir?", en: "What is an appraisal fee?" }, a: { tr: "Banka, evin değerini belirlemek için SPK lisanslı bir uzman gönderir ve bu işlem için sabit bir bedel talep eder.", en: "Banks charge a fee to send a certified appraiser to value the property." } }
+                { q: { tr: "Peşinat arttıkça konut kredisi sonucu neden hızla değişir?", en: "Why does a higher down payment change mortgage results so much?" }, a: { tr: "Peşinat yükseldikçe kullanılan kredi tutarı azalır. Bu da aylık taksiti, toplam faiz yükünü ve çoğu durumda bankanın risk algısını düşürerek daha dengeli bir ödeme planı oluşturabilir.", en: "A larger down payment lowers the borrowed amount. That can reduce the monthly installment, total interest burden, and in many cases the lender's perceived risk." } },
+                { q: { tr: "Ekspertiz ve dosya benzeri masraflar neden ayrı izlenmeli?", en: "Why should appraisal and similar fees be tracked separately?" }, a: { tr: "Konut kredilerinde aylık taksit cazip görünse bile ekspertiz, sigorta ve dosya benzeri kalemler giriş maliyetini yükseltebilir. Toplam sahip olma maliyetini anlamak için bu kalemleri ayrı görmek gerekir.", en: "Even if the monthly installment looks attractive, appraisal, insurance, and file-like fees can lift the entry cost. Reading them separately gives a clearer picture of total ownership cost." } }
             ],
             richContent: {
-                howItWorks: { tr: "120 veya 240 aylık uzun vadelerde anüite formülü ile taksitler vergi eklenmeden (net faiz üzerinden) bulunur.", en: "Calculates using standard net interest without tax additions over extended terms." },
+                howItWorks: { tr: "Uzun vadeli mortgage senaryosunda araç, girilen kredi tutarı ve aylık faiz oranı üzerinden eşit taksitli ödeme planı çıkarır; ardından toplam geri ödeme ve masraf etkisini gösterir.", en: "For long-term mortgage scenarios, the tool builds an equal-installment schedule from loan amount and monthly rate, then adds total repayment and fee impact." },
                 formulaText: { tr: "Aylık Taksit = Tutar × [Net Faiz × (1+Net Faiz)^Vade] / [(1+Net Faiz)^Vade - 1].", en: "Payment = Amount × [Net Rate × (1+Net Rate)^Term] / [(1+Net Rate)^Term - 1]." },
-                exampleCalculation: { tr: "1.000.000 TL, 120 Ay, %3.10 Faiz: Aylık taksit yaklaşık 31.849 TL'dir.", en: "1M TL for 120 months at 3.10% is ~31,849 TL." },
-                miniGuide: { tr: "<ul><li><b>Peşinat:</b> Ne kadar yüksek peşinat verirseniz faiz yükünden o kadar kurtulursunuz.</li></ul>", en: "Higher down payments reduce long-term interest drastically." }
+                exampleCalculation: { tr: "Örnek: 1.000.000 TL kredi, 120 ay vade ve aylık %3,10 faiz senaryosunda aylık taksit yaklaşık 31.849 TL olur. 15.000 TL ek masraf girdiğinizde toplam geri ödeme buna göre artar.", en: "Example: A 1,000,000 TRY mortgage over 120 months at 3.10% monthly interest yields a payment near 31,849 TRY. Adding 15,000 TRY in fees increases the total repayment accordingly." },
+                miniGuide: { tr: "<ul><li><b>Peşinatı önce test edin:</b> Küçük peşinat değişimleri toplam faiz yükünü ciddi biçimde etkileyebilir.</li><li><b>Uzun vade maliyetini okuyun:</b> Aylık taksit rahatladıkça toplam geri ödeme büyüyebilir.</li><li><b>Kira ile beraber düşünün:</b> Aidat, bakım ve alternatif yatırım getirisi dahil edilmeden sağlıklı kıyas yapılamaz.</li></ul>", en: "Test down-payment scenarios first, read the long-term cost carefully, and compare mortgage results with rent plus maintenance and alternative returns." }
             }
         }
     },
@@ -7914,10 +7958,11 @@ export const creditCalculatorsP1: CalculatorConfig[] = [
         id: "tasit-kredisi",
         slug: "tasit-kredisi-hesaplama",
         category: "finansal-hesaplamalar",
+        updatedAt: "2026-03-15",
         name: { tr: "Taşıt Kredisi Hesaplama", en: "Vehicle Loan Calculator" },
-        h1: { tr: "Taşıt Kredisi Hesaplama — Araç Kredisi Fırsatları", en: "Vehicle Loan Calculator — Car Financing" },
-        description: { tr: "0 KM veya İkinci El araç alımlarında bankaların Taşıt Kredisi taksitlerini öğrenin.", en: "Calculate vehicle loan installments for new or used cars." },
-        shortDescription: { tr: "Otomobil hayalinize taşıt kredisi taksit hesaplayıcı ile planlı adım atın.", en: "Step into your dream car with our vehicle loan planner." },
+        h1: { tr: "Araç Kredisi Hesaplama — Taşıt, Araba ve Oto Kredisi Taksitleri", en: "Vehicle Loan Calculator — Car Loan Installments" },
+        description: { tr: "Araç kredisi hesaplama aracıyla sıfır km ve ikinci el otomobil için taşıt kredisi taksitlerini öğrenin.", en: "Calculate vehicle loan installments for new or used cars." },
+        shortDescription: { tr: "Taşıt, araba ve oto kredisi için aylık taksit, toplam ödeme ve vade etkisini tek ekranda görün.", en: "See monthly payment, total repayment, and maturity effect for car financing on one screen." },
         relatedCalculators: ["ihtiyac-kredisi-hesaplama", "kredi-yillik-maliyet-orani-hesaplama", "ticari-arac-kredisi-hesaplama"],
         inputs: [
             { id: "amount", name: { tr: "Kredi Tutarı", en: "Loan Amount" }, type: "range", defaultValue: 400000, suffix: "₺", min: 50000, max: 2000000, step: 10000, required: true },
@@ -7968,8 +8013,8 @@ export const creditCalculatorsP1: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "Taşıt Kredisi Hesaplama 2026 — Araç Kredisi Faiz Oranı", en: "Auto Loan Calculator 2026" },
-            metaDescription: { tr: "Sıfır ve 2. el araba kredisinde güncel faiz oranlarına göre taşıt kredisi taksitlerinizi hızlıca hesaplayın.", en: "Calculate your auto loan installments with current rates for new or used vehicles." },
+            title: { tr: "Araç Kredisi Hesaplama 2026 — Taşıt, Araba ve Oto Kredisi", en: "Auto Loan Calculator 2026 — Car Financing" },
+            metaDescription: { tr: "Araç kredisi hesaplama aracı ile sıfır ve ikinci el araba için aylık taksit, toplam geri ödeme ve güncel taşıt kredisi faiz oranı etkisini görün.", en: "Calculate monthly payment, total repayment, and rate impact for new or used car loans." },
             content: { tr: "Taşıt kredisi (Otomobil kredisi), bireylerin motorlu taşıt satın almaları için sunulan ipotekli bir kredi türüdür. BDDK'ya göre satın alınacak aracın fatura veya kasko değerine göre seçilebilecek maksimum vade sınırı 48 aydır.", en: "Auto loans are secured loans for purchasing vehicles. Terms depend on the vehicle's value up to 48 months in Turkey." },
             faq: [
                 { q: { tr: "Araç kredilerinde maksimum vade 48 ay mı?", en: "Is 48 months the maximum term?" }, a: { tr: "Evet, ancak aracın değerine göre değişir. Düşük tutarlı araçlarda 48 ay, premium araçlarda 12-24 aya kadar sınırlanabilir.", en: "Yes, but it depends on car value. Luxury cars are capped at shorter terms like 12-24 months." } },
@@ -8427,39 +8472,40 @@ export const creditCalculatorsP3: CalculatorConfig[] = [
         id: "kredi-karti-taksitli-nakit-avans",
         slug: "kredi-karti-taksitli-nakit-avans-hesaplama",
         category: "finansal-hesaplamalar",
+        updatedAt: "2026-03-15",
         name: { tr: "Taksitli Nakit Avans", en: "Credit Card Installment Cash" },
-        h1: { tr: "Kredi Kartı Taksitli Nakit Avans Hesaplama", en: "Credit Card Installment Cash Advance Calculator" },
-        description: { tr: "Kredi kartınızın limitinden nakit olarak çekeceğiniz tutarın güncel avans faizi ile kaç taksitle ne kadara mal olacağını görün.", en: "Calculate the exact monthly installments and total repayment for a cash advance withdrawn from your credit card based on current cash interest rates." },
-        shortDescription: { tr: "Kredi kartından avans çekerseniz faizinin ne kadar yansıyacağını hemen hesaplayın.", en: "Find out exactly how much interest will reflect when you take a cash advance from your card." },
-        relatedCalculators: ["cc-minimum-payment", "kredi-hesaplama"],
+        h1: { tr: "Nakit Avans Hesaplama - Kredi Kartı Taksitli Nakit Avans", en: "Cash Advance Calculator - Credit Card Installment Cash Advance" },
+        description: { tr: "Nakit avans hesaplama aracında kredi kartı taksitli nakit avansının aylık taksidini, toplam geri ödemesini, net ele geçen tutarı ve efektif maliyetini görün.", en: "Use this cash advance calculator to estimate the monthly installment, total repayment, net cash received, and effective cost of a credit-card installment cash advance." },
+        shortDescription: { tr: "Nakit avans ve taksitli nakit avans maliyetini birkaç saniyede karşılaştırın.", en: "Compare cash advance and installment cash advance costs in seconds." },
+        relatedCalculators: ["cc-minimum-payment", "kredi-karti-ek-taksit-hesaplama", "ihtiyac-kredisi-hesaplama"],
         inputs: [
             { id: "advanceAmount", name: { tr: "Çekilecek Nakit Avans Tutarı", en: "Cash Advance Amount" }, type: "number", defaultValue: 20000, suffix: "TL", required: true },
             { id: "term", name: { tr: "Vade Sayısı (Taksit)", en: "Installment Term" }, type: "number", defaultValue: 6, max: 12, required: true },
-            { id: "interestRate", name: { tr: "Aylık Akdi Faiz (%)", en: "Monthly Interest Rate (%)" }, type: "number", defaultValue: 5, required: true },
+            { id: "interestRate", name: { tr: "Aylık Nakit Avans Faizi (%)", en: "Monthly Cash Advance Rate (%)" }, type: "number", defaultValue: 4.25, required: true },
             {
-                id: "taxMode", name: { tr: "Vergi Profili", en: "Tax Profile" }, type: "select", defaultValue: "standard", options: [
-                    { value: "standard", label: { tr: "Standart (%30 vergi etkisi)", en: "Standard (30% tax effect)" } },
-                    { value: "campaign", label: { tr: "Kampanya / vergisiz", en: "Campaign / no tax" } },
-                    { value: "custom", label: { tr: "Özel vergi oranı gir", en: "Enter custom tax rate" } },
+                id: "taxMode", name: { tr: "Ek Maliyet Profili", en: "Extra Cost Profile" }, type: "select", defaultValue: "standard", options: [
+                    { value: "standard", label: { tr: "Varsayılan maliyet etkisi (%30)", en: "Default cost effect (30%)" } },
+                    { value: "campaign", label: { tr: "Kampanya / ek maliyet yok", en: "Campaign / no extra cost" } },
+                    { value: "custom", label: { tr: "Özel oran gir", en: "Enter custom rate" } },
                 ]
             },
-            { id: "customTaxRate", name: { tr: "Özel Vergi Yükü (%)", en: "Custom Tax Load (%)" }, type: "number", defaultValue: 30, suffix: "%", required: true, showWhen: { field: "taxMode", value: "custom" } },
+            { id: "customTaxRate", name: { tr: "Özel Ek Maliyet Oranı (%)", en: "Custom Extra Cost Rate (%)" }, type: "number", defaultValue: 30, suffix: "%", required: true, showWhen: { field: "taxMode", value: "custom" } },
             {
-                id: "hasFee", name: { tr: "Nakde Çevirme Ücreti Durumu", en: "Upfront Cash Fee" }, type: "select", options: [
-                    { value: "yes", label: { tr: "Evet (%1 + 50TL Ücret)", en: "Yes (1% + 50TL Fee)" } },
-                    { value: "no", label: { tr: "Hayır (Ücretsiz)", en: "No (Free promo)" } }
-                ], defaultValue: "yes"
+                id: "hasFee", name: { tr: "Standart Nakit Çekim Komisyonu", en: "Standard Cash Withdrawal Fee" }, type: "select", options: [
+                    { value: "yes", label: { tr: "Evet (%1 komisyon)", en: "Yes (1% fee)" } },
+                    { value: "no", label: { tr: "Hayır (taksitli avans varsayımı)", en: "No (installment cash assumption)" } }
+                ], defaultValue: "no"
             },
-            { id: "extraFixedFee", name: { tr: "Ek Sabit Servis Ücreti", en: "Extra Fixed Service Fee" }, type: "number", defaultValue: 0, suffix: "TL", required: true }
+            { id: "extraFixedFee", name: { tr: "Ek ATM / Servis Ücreti", en: "Extra ATM / Service Fee" }, type: "number", defaultValue: 0, suffix: "TL", required: true }
         ],
         results: [
             { id: "installment", label: { tr: "Aylık Taksit Tutarı", en: "Monthly Installment" }, suffix: " TL", decimalPlaces: 2 },
             { id: "netCashReceived", label: { tr: "Ele Geçen Net Nakit", en: "Net Cash Received" }, suffix: " TL", decimalPlaces: 2 },
-            { id: "upfrontFee", label: { tr: "Peşin İşlem Ücreti", en: "Upfront Withdrawal Fee" }, suffix: " TL", decimalPlaces: 2 },
+            { id: "upfrontFee", label: { tr: "Toplam Peşin Ücret / Masraf", en: "Total Upfront Fee / Charge" }, suffix: " TL", decimalPlaces: 2 },
             { id: "totalInterest", label: { tr: "Toplam Faiz Yükü", en: "Total Interest Cost" }, suffix: " TL", decimalPlaces: 2 },
             { id: "totalFinanceCost", label: { tr: "Toplam Finansman Maliyeti", en: "Total Financing Cost" }, suffix: " TL", decimalPlaces: 2 },
-            { id: "effectiveMonthlyRate", label: { tr: "Vergili Efektif Aylık Oran", en: "Effective Monthly Rate" }, suffix: " %", decimalPlaces: 3 },
-            { id: "effectiveYearlyRate", label: { tr: "Vergili Yıllık Bileşik Oran", en: "Effective Annualized Rate" }, suffix: " %", decimalPlaces: 2 },
+            { id: "effectiveMonthlyRate", label: { tr: "Efektif Aylık Oran", en: "Effective Monthly Rate" }, suffix: " %", decimalPlaces: 3 },
+            { id: "effectiveYearlyRate", label: { tr: "Efektif Yıllık Bileşik Oran", en: "Effective Annualized Rate" }, suffix: " %", decimalPlaces: 2 },
             { id: "totalRepayment", label: { tr: "Toplam Geri Ödeme", en: "Total Repayment" }, suffix: " TL", decimalPlaces: 2 },
             { id: "amortizationSchedule", label: { tr: "Aylık Ödeme Akışı", en: "Monthly Payment Flow" }, type: "schedule" },
             { id: "summary", label: { tr: "Nakit Avans Özeti", en: "Cash Advance Summary" }, type: "text" },
@@ -8487,8 +8533,7 @@ export const creditCalculatorsP3: CalculatorConfig[] = [
             }
 
             if (hasFee) {
-                const pureFee = (amount * 0.01) + 50;
-                upfrontFee = pureFee * 1.15;
+                upfrontFee = amount * 0.01;
             }
 
             upfrontFee += extraFixedFee;
@@ -8527,10 +8572,10 @@ export const creditCalculatorsP3: CalculatorConfig[] = [
             }
 
             const taxLabel = taxMode === "campaign"
-                ? { tr: "kampanya/vergisiz", en: "campaign/no-tax" }
+                ? { tr: "ek maliyet yok/kampanya", en: "campaign/no extra cost" }
                 : taxMode === "custom"
-                    ? { tr: `özel vergi yükü %${(taxRate * 100).toFixed(1)}`, en: `custom tax load ${(taxRate * 100).toFixed(1)}%` }
-                    : { tr: "standart %30 vergi etkisi", en: "standard 30% tax effect" };
+                    ? { tr: `özel ek maliyet %${(taxRate * 100).toFixed(1)}`, en: `custom extra cost ${(taxRate * 100).toFixed(1)}%` }
+                    : { tr: "varsayılan %30 maliyet etkisi", en: "default 30% cost effect" };
 
             const summary = {
                 tr: `${amount.toLocaleString("tr-TR", { maximumFractionDigits: 2 })} TL nakit avans çekiminde peşin kesinti sonrası elinize net ${netCashReceived.toLocaleString("tr-TR", { maximumFractionDigits: 2 })} TL geçer. ${taxLabel.tr} ile aylık taksit ${installment.toLocaleString("tr-TR", { maximumFractionDigits: 2 })} TL olur ve toplam finansman maliyeti ${totalFinanceCost.toLocaleString("tr-TR", { maximumFractionDigits: 2 })} TL seviyesine çıkar.`,
@@ -8551,18 +8596,18 @@ export const creditCalculatorsP3: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "Kredi Kartı Taksitli Nakit Avans Hesaplama 2026", en: "Credit Card Installment Cash Advance Calculator" },
-            metaDescription: { tr: "Taksitli nakit avansta aylık taksit, peşin komisyon, net ele geçen para, efektif oran ve toplam finansman maliyetini birlikte hesaplayın.", en: "Calculate the installment, upfront commission, net cash received, effective rate, and total financing cost of a card cash advance." },
-            content: { tr: "Kredi kartıyla taksitli nakit avans, acil nakit ihtiyacını karşılamak için hızlıdır; ancak çoğu zaman sadece aylık faizden ibaret değildir. Vergi etkisi, %1 + sabit komisyon tarzı çekim ücretleri ve ek servis bedelleri, gerçekten elinize geçen nakit ile toplam geri ödeme arasındaki farkı büyütür. Bu araç, avansın aylık taksitini, net nakit tutarını, toplam finansman maliyetini ve ödeme planını aynı ekranda toplar.", en: "Installment cash advances on a credit card are fast, but the cost is rarely just the stated monthly rate. Tax effects, percentage-based withdrawal fees, and extra service charges widen the gap between the cash you receive and the amount you repay. This calculator puts the installment, net cash, total financing cost, and payment flow on one screen." },
+            title: { tr: "Nakit Avans Hesaplama 2026 — Kredi Kartı Taksitli Nakit Avans", en: "Cash Advance Calculator 2026 — Credit Card Installment Cash Advance" },
+            metaDescription: { tr: "Nakit avans hesaplama aracında taksitli kredi kartı nakit avansının aylık taksidini, net ele geçen tutarı, efektif oranını ve toplam geri ödemesini görün.", en: "Estimate the installment, net cash received, effective rate, and total repayment of a credit-card installment cash advance." },
+            content: { tr: "Nakit avans aramalarında kullanıcıların bir bölümü standart ATM çekimini, bir bölümü ise taksitli kredi kartı nakit avansını kasteder. Bu sayfa özellikle taksitli senaryoya odaklanır: aylık taksit, toplam geri ödeme, efektif maliyet ve net ele geçen tutarı birlikte gösterir. Dilerseniz standart nakit çekim komisyonu ve ek kanal masrafı varsayımı ekleyerek iki kullanım biçimini karşılaştırabilirsiniz.", en: "Some users searching for cash advance mean a standard ATM withdrawal, while others mean the installment cash feature on a credit card. This page focuses on the installment scenario and brings the monthly payment, total repayment, effective cost, and net cash received into one view. You can optionally add a standard cash-withdrawal fee and extra channel charge to compare the two usage types." },
             faq: [
-                { q: { tr: "Nakit avans faizi ile alışveriş faizi aynı mıdır?", en: "Is cash advance interest the same as shopping interest?" }, a: { tr: "Hayır. Genellikle Nakit Avans (Çekim) faiz oranı, standart alışveriş (Akdi) faiz oranından daha yüksektir.", en: "No. Usually, under central bank directives, cash advance rates are higher by .5 - 1 percentage points compared to regular shopping (contractual) interest." } },
-                { q: { tr: "Peşin komisyonu (ücreti) nasıl olur?", en: "How does the upfront withdrawal fee work?" }, a: { tr: "Birçok banka, avans tutarının ekstrenize yansımasına %1 komisyon + 50-100 TL arası bir işlem vergi ücretini en başta yansıtır.", en: "Many banks immediately charge 1% of the drawn principal plus a fixed service fee right onto your first statement." } }
+                { q: { tr: "Nakit avans faizi ile alışveriş faizi aynı mıdır?", en: "Is cash advance interest the same as shopping interest?" }, a: { tr: "Hayır. TCMB'nin kredi kartı azami faiz tablosunda nakit çekim/kullanım işlemleri ayrı izlenir ve çoğu kart segmentinde alışveriş faizinden daha yüksek ya da en az onun kadar yüksek bir tavan uygulanır.", en: "No. In the CBRT maximum-rate table, cash withdrawal/use transactions are tracked separately and usually carry a ceiling that is as high as or higher than standard purchase interest." } },
+                { q: { tr: "Taksitli nakit avansta işlem ücreti alınır mı?", en: "Can a fee be charged on installment cash advance?" }, a: { tr: "TCMB'nin finansal tüketici ücretleri talimatında taksitli nakit avans ve taksitlendirme işlemlerinden ücret alınamayacağı belirtilir. Standart nakit avans işleminde ise ayrıca komisyon olabilir; bu nedenle sayfadaki komisyon alanı karşılaştırma amaçlı opsiyoneldir.", en: "The CBRT instruction on consumer financial fees says installment cash advances and installment-conversion transactions cannot be charged a fee. A standard cash advance may still involve a separate fee, so the fee field here is optional and mainly for comparison." } }
             ],
             richContent: {
-                howItWorks: { tr: "Araç, taksitli nakit avans oranını seçtiğiniz vergi profiline göre dönüştürür; sonra anüite formülü ile aylık taksidi hesaplar. Peşin çekim komisyonu ve ek servis bedelleri net ele geçen tutardan düşülür, böylece gerçek nakit-maliyet farkı ortaya çıkar. Ayrıca ay ay faiz ve anapara dağılımı da gösterilir.", en: "The calculator converts the cash-advance quote according to the selected tax profile, then uses annuity math to compute the installment. Upfront withdrawal commission and service fees are deducted from the cash you actually receive, making the true cash-versus-cost gap visible. A month-by-month interest and principal flow is also shown." },
-                formulaText: { tr: "Nakit Efektif Faiz = Nakit Avans Faizi × %130. Çekim Ücreti = (Anapara × %1) + 50 TL. Taksit = Anapara × (EfektifFaiz × (1+EfektifFaiz)^Vade) / ((1+EfektifFaiz)^Vade - 1)", en: "Effective Cash Rate = Rate × 130% (with taxes). Withdrawal Fee = (Principal × 1%) + Fixed Cost." },
-                exampleCalculation: { tr: "20.000 TL nakit avans 6 ay ve aylık %5 oranla çekildiğinde standart vergi etkisiyle efektif oran %6,5 seviyesine çıkar. Eğer banka ayrıca %1 + 50 TL komisyon ve 100 TL servis ücreti alıyorsa, cebinize giren para 20.000 TL'den anlamlı şekilde düşük kalırken toplam geri ödeme çok daha yukarı taşınır.", en: "With a 20,000 TL cash advance over 6 months at 5% monthly, the standard tax effect lifts the effective rate to about 6.5%. If the bank also charges a 1% + 50 TL commission plus a 100 TL service fee, the net cash you receive falls meaningfully below 20,000 TL while the total repayment rises much higher." },
-                miniGuide: { tr: "<ul><li><b>Net geçen parayı izleyin:</b> Aynı avans tutarında komisyonlu teklif çoğu zaman beklenenden pahalıdır.</li><li><b>Vade kısa görünse de maliyet yüksek olabilir:</b> 3-6 aylık avanslarda bile yıllıklandırılmış oran agresif seviyelere çıkabilir.</li></ul>", en: "Watch the net cash received, because the same headline advance can become expensive once commissions apply. Even short 3-6 month advances can translate into very aggressive annualized costs." }
+                howItWorks: { tr: "Araç, aylık nakit avans faizini seçtiğiniz ek maliyet profiline göre efektif orana çevirir ve anüite formülüyle taksidi hesaplar. Varsayılan faiz alanı 1 Mart 2026 itibarıyla TCMB'nin kredi kartı nakit çekim/kullanım işlemleri için açıkladığı azami akdi oran olan %4,25 ile gelir; bankanızın teklifine göre değiştirebilirsiniz. Standart nakit çekim komisyonunu açarsanız ayrıca %1 komisyon varsayımı da eklenir.", en: "The calculator converts the monthly cash-advance rate into an effective rate using the extra-cost profile you choose and then applies annuity math. The default rate is prefilled with the CBRT maximum contractual rate for credit-card cash withdrawal/use transactions effective March 1, 2026, which is 4.25%, but you can change it to your bank's offer. If you enable the standard withdrawal fee, the tool also adds a 1% fee assumption." },
+                formulaText: { tr: "Efektif Oran = Nakit Avans Faizi × (1 + Seçilen Ek Maliyet Oranı). Standart Nakit Çekim Komisyonu = Anapara × %1. Taksit = Anapara × (Efektif Oran × (1+Efektif Oran)^Vade) / ((1+Efektif Oran)^Vade - 1)", en: "Effective Rate = Cash Advance Rate × (1 + Selected Extra Cost Rate). Standard Cash Withdrawal Fee = Principal × 1%. Installment = Principal × (Effective Rate × (1+Effective Rate)^n) / ((1+Effective Rate)^n - 1)." },
+                exampleCalculation: { tr: "20.000 TL taksitli nakit avans 6 ay ve aylık %4,25 oranla kullanıldığında, ek maliyet varsayımı yoksa aylık taksit yaklaşık 3.846 TL olur. Aynı senaryoda standart nakit çekim komisyonu ve ek servis masrafı eklendiğinde elinize geçen net tutar düşer ve toplam finansman maliyeti yükselir.", en: "If a 20,000 TL installment cash advance is used for 6 months at 4.25% per month, the monthly payment is about 3,846 TL when no extra-cost effect is added. If a standard withdrawal fee and extra service charge are layered on top, the net cash received falls and the total financing cost rises." },
+                miniGuide: { tr: "<ul><li><b>Taksitli ve standart çekimi ayırın:</b> Taksitli nakit avans ile tek seferlik nakit çekim aynı maliyet yapısına sahip değildir.</li><li><b>İhtiyaç kredisiyle kıyaslayın:</b> Aynı tutarın aylık ödemesi ve toplam geri ödemesi ayrıca test edilmelidir.</li></ul>", en: "Separate installment cash advance from one-off cash withdrawal, because they do not share the same fee structure. Also compare the same amount against a personal-loan scenario to understand the full repayment trade-off." }
             }
         }
     },
@@ -8721,9 +8766,9 @@ export const investmentCalculatorsP1: CalculatorConfig[] = [
         slug: "altin-hesaplama",
         category: "finansal-hesaplamalar",
         name: { tr: "Altın Hesaplama", en: "Gold Calculator" },
-        h1: { tr: "Altın Hesaplama — Gram, Çeyrek ve Cumhuriyet Altını Kaç TL?", en: "Gold Value Calculator — Convert Gold Types to Cash" },
-        description: { tr: "Elinizdeki gram, çeyrek, yarım veya cumhuriyet altınlarının güncel piyasa değerini hesaplayın. Güncel gram fiyatını girerek birikiminizin TL karşılığını anlık öğrenin.", en: "Calculate the real-time value of your gold holdings including grams, quarters, and full coins based on market or custom prices." },
-        shortDescription: { tr: "Altın birikimlerinizin güncel TL değerini saniyeler içinde hesaplayan uzman araç.", en: "Expert tool to calculate the current TRY value of your gold savings in seconds." },
+        h1: { tr: "Altın Hesaplama — 24 Ayar / 22 Ayar Gram, Çeyrek, Cumhuriyet ve Ons Altın Kaç TL?", en: "Gold Value Calculator — Gram, Coin and Ounce Gold" },
+        description: { tr: "24 ayar ve 22 ayar gram altın, çeyrek, yarım, tam/ziynet, ata cumhuriyet ve ons altın için güncel TL değerini; has altın içeriği, prim ve makas etkisiyle birlikte hesaplayın.", en: "Calculate the TRY value of 24K and 22K gram gold, quarter, half, full, republic and ounce gold with fine-gold content, premium and spread assumptions." },
+        shortDescription: { tr: "Gram altın hesaplama, çeyrek altın hesaplama ve ons altın hesaplama senaryolarını tek yerde birleştiren profesyonel altın çevirici.", en: "Professional gold converter combining gram, coin and ounce gold valuation scenarios in one place." },
         inputs: [
             {
                 id: "goldType", name: { tr: "Altın Türü", en: "Gold Type" }, type: "select", options: [
@@ -8736,7 +8781,7 @@ export const investmentCalculatorsP1: CalculatorConfig[] = [
                 ], defaultValue: "3000"
             },
             { id: "amount", name: { tr: "Adet / Miktar", en: "Quantity / Amount" }, type: "number", defaultValue: 1 },
-            { id: "customPrice", name: { tr: "Güncel Gram Fiyatı (Opsiyonel, TL)", en: "Current Gram Price (Optional, TL)" }, type: "number", placeholder: { tr: "Piyasayı ezmek için girin", en: "Enter to override" } }
+            { id: "customPrice", name: { tr: "Güncel Gram Fiyatı (Opsiyonel, TL)", en: "Current Gram Price (Optional, TL)" }, type: "number", placeholder: { tr: "Örn: 4125", en: "Example: 4125" } }
         ],
         results: [
             { id: "total", label: { tr: "Toplam Tutar", en: "Total Value" }, suffix: " ₺", decimalPlaces: 2 },
@@ -8757,24 +8802,83 @@ export const investmentCalculatorsP1: CalculatorConfig[] = [
             return { total: amount * unitPrice, unitPrice };
         },
         seo: {
-            title: { tr: "Altın Hesaplama - Gram, Çeyrek, Yarım, Tam, Ata, Reşat ve Ons Altın Fiyatları", en: "Gold Calculator - Gram, Quarter, Half, Full, Ata, Reşat & Troy Oz Gold" },
-            metaDescription: { tr: "11 farklı altın türü için detaylı portföy hesaplama. Gram, çeyrek, yarım, tam, ata, reşat, gremse ve ons altınlarınızı güncel 24 ayar fiyatıyla değerleyin; has altın içeriği ve alış-satış makasını görün.", en: "Detailed gold portfolio calculator for 11 types: gram (14K–24K), quarter, half, full, ata, reşat, gremse and troy ounce. See pure gold content, coin premium and buy/sell spread." },
+            title: { tr: "Altın Hesaplama 2026 — Gram Altın, Çeyrek Altın, Cumhuriyet ve Ons Altın Çevirici", en: "Gold Calculator 2026 — Gram, Coin and Ounce Gold Converter" },
+            metaDescription: { tr: "Altın hesaplama aracıyla 24 ayar ve 22 ayar gram altın, çeyrek, yarım, cumhuriyet ve ons altın değerini hesaplayın. Canlı altın hesaplama, altın çevirici ve altın alım satım makas aralığı etkisini tek ekranda görün.", en: "Calculate the value of 24K and 22K gram gold, quarter, half, republic and ounce gold. Review live gold valuation logic, spread impact and conversion methodology on one page." },
             content: {
-                tr: "Altın hesaplama aracımız, Türkiye piyasasındaki tüm yaygın altın türlerini tek ekranda karşılaştırmalı olarak değerler. 24 ayar gram fiyatını girdikten sonra; 14, 18, 22 ve 24 ayar gram altınlardan çeyrek, yarım, tam/ziynet, ata cumhuriyet, reşat/hamit, gremse ve 1 ons altına kadar 11 farklı türün birim fiyatı otomatik hesaplanır.\n\nHas altın hesaplaması: Her altın türünün IAB (İstanbul Altın Borsası) standartlarına dayanan has altın (saf 24K) içeriği hesaba katılır. Çeyrek altın 1,604g, yarım altın 3,208g, tam altın 6,416g, ata cumhuriyet altını 6,600g has altın içerir.\n\nSikke primi: Madeni altın (sikke) türleri, ham altın içeriğinin ötesinde işçilik ve piyasa talebi kaynaklı bir prim taşır. Araç bu primi siz belirleyin diye ayrı bir alan olarak sunar.\n\nAlış–Satış makası: Kuyumcu veya banka size altın satarken 'satış fiyatı', sizden alırken 'alış fiyatı' uygular. Bu fiyat farkı (makas) genellikle %0,25–%1 arasındadır. İşlem türünü seçerek tam maliyet veya elde edeceklerinizi görün.",
-                en: "Our gold calculator values all common Turkish market gold types on a single screen. Enter the current 24K gram price and instantly see unit prices for 14K, 18K, 22K and 24K gram gold, plus quarter, half, full, ata republic, reşat/hamit, gremse and troy ounce coins. Calculations use IAB standard pure gold content per type, adjustable coin premium and buy/sell spread."
+                tr: `## Altın Hesaplama Neden Profesyonel Yaklaşım Gerektirir?
+Altın hesaplama, yatırımcının elindeki ürünün yalnızca nominal ağırlığını değil, saf altın içeriğini, işlem yönünü ve piyasa fiyatlamasını birlikte değerlendirmesini gerektirir. Bu nedenle doğru bir **altın hesaplama** sürecinde yalnızca "kaç adet altın var?" sorusu sorulmaz; altının ayarı, has altın karşılığı, alış veya satış senaryosu ve varsa ürün primi de dikkate alınır. Özellikle kuyumcu, banka ve dijital platformlar arasında fiyat farkları oluşabildiği için profesyonel yatırımcılar aynı ürünü birkaç farklı varsayımla test eder.
+
+Bu sayfadaki araç, bir **altın çevirici** mantığıyla çalışır. Ortak referans olarak 24 ayar gram fiyatını alır; ardından 24 ayar/22 ayar gram altın, çeyrek, yarım, tam/ziynet, ata cumhuriyet ve ons altın gibi türleri aynı zeminde karşılaştırır. Böylece kullanıcı, portföyündeki fiziksel veya kaydi altınların Türk lirası karşılığını daha analitik biçimde görebilir. Bu yaklaşım, yalnızca günlük fiyat takibi için değil; maliyet analizi, kademeli alım planı ve kar realizasyonu değerlendirmesi için de kullanışlıdır.
+
+## Gram Altın Hesaplama Mantığı
+**Gram altın hesaplama**, Türkiye piyasasında en temel referans yöntemidir çünkü diğer birçok altın türü dolaylı olarak 24 ayar gram altın fiyatı üzerinden okunur. Ancak burada kritik nokta, her gram altının aynı saflığa sahip olmamasıdır. 24 ayar gram altın teorik olarak saf altına en yakın üründür; 22 ayar gram altın ise alaşım içerdiği için aynı brüt ağırlıkta daha düşük saf altın taşır.
+
+### 24 Ayar Gram Altın Hesaplama
+24 ayar gram altın hesaplama yapılırken temel mantık doğrudandır: 1 gram ürün yaklaşık 1 gram saf altın kabul edilir. Bu nedenle birim değer, güncel 24 ayar fiyatına eşitlenir. Örneğin 24 ayar gram altın fiyatı 4.000 TL ise 10 gramlık bir pozisyonun teorik değeri yaklaşık 40.000 TL olur. Eğer işlem alış yönündeyse kurumun uyguladığı makas nedeniyle fiili maliyet daha yüksek; satış yönündeyse elinize geçen tutar biraz daha düşük olabilir.
+
+### 22 Ayar Gram Altın Hesaplama
+22 ayar gram altın hesaplama ise saflık oranı nedeniyle farklıdır. 22 ayar ürün, 24 ayarın 22/24 oranında saf altın içerir; başka bir ifadeyle 1 gram 22 ayar altın yaklaşık 0,9167 gram has altın karşılığı taşır. Bu nedenle 22 ayar gram altının teorik değeri, 24 ayar gram fiyatının doğrudan kopyası değildir. Profesyonel hesaplamada önce saflık oranı uygulanır, ardından varsa kurumun alış-satış farkı eklenir. Bu ayrım özellikle bilezik, takı ve ziynet dışı gram ürünlerde maliyet okuması yaparken önemlidir.
+
+## Çeyrek, Yarım ve Cumhuriyet Altını Hesaplama Mantığı
+Fiziksel sikke altınlarda yatırımcının en sık yaptığı hata, fiyatı yalnızca toplam ağırlık üzerinden okumaktır. Oysa **çeyrek altın hesaplama** ve benzeri coin türlerinde belirleyici değişken, toplam gramdan çok ürünün içerdiği saf altın miktarıdır. Ayrıca sikke ürünler işçilik, darphane maliyeti, erişilebilirlik ve dönemsel talep nedeniyle saf altın değerinin üzerinde bir primle işlem görebilir.
+
+### Çeyrek Altın Hesaplama
+Çeyrek altın, Türkiye'de en yaygın fiziksel yatırım araçlarından biridir. Toplam ağırlığı ile saf altın içeriği aynı değildir; hesaplamada yaklaşık 1,604 gram has altın referansı kullanılır. Çeyrek altın fiyatı bulunurken önce bu saf içerik 24 ayar gram fiyatı ile çarpılır, ardından piyasadaki ürün primi eklenir. Bu nedenle **çeyrek altın hesaplama** sonucu, sadece "gram fiyatı x çeyrek ağırlığı" formülünden daha yükseğe çıkabilir. Düğün sezonu gibi talebin arttığı dönemlerde prim etkisi belirginleşir.
+
+### Yarım Altın Hesaplama
+Yarım altın hesabında mantık çeyrek altının iki katı gibi düşünülse de pratikte her zaman birebir aynı fiyat davranışı görülmeyebilir. Yaklaşık 3,208 gram has altın içeren yarım altın, saf içerik bakımından çeyreğin iki katına yakındır; ancak piyasa koşulları, stok durumu ve kuyumcu fiyatlama politikası nedeniyle alış-satış seviyesi farklılaşabilir. Bu yüzden yarım altın alırken sadece etiket fiyatına değil, birim has altın başına düşen maliyete bakmak daha rasyoneldir.
+
+### Cumhuriyet Altını Hesaplama
+Cumhuriyet altını ve tam/ziynet altın grubunda hesaplama biraz daha hassastır. Piyasada "tam altın", "ziynet altın" ve "ata cumhuriyet" ifadeleri zaman zaman birbirinin yerine kullanılsa da bu ürünlerin saf altın karşılığı ve prim yapısı tam olarak aynı olmayabilir. Profesyonel **altın hesaplama** yaklaşımında, ürünün türüne göre ayrı has altın katsayısı kullanılır ve sonuç buna göre üretilir. Bu nedenle yatırımcı, cumhuriyet altını alırken yalnızca toplam tutara değil, ödediği primin ne kadarının saf altına ne kadarının ürün maliyetine gittiğine bakmalıdır.
+
+## Ons Altın Hesaplama ve Kur İlişkisi
+**Ons altın hesaplama** küresel fiyatlama ile yerel piyasa arasında köprü kurar. 1 ons altın yaklaşık 31,1035 gram saf altına eşittir. Uluslararası piyasalarda ons fiyatı çoğunlukla ABD doları üzerinden izlenirken, Türkiye'deki yatırımcı açısından sonuç Türk lirasına çevrilerek anlam kazanır. Bu yüzden ons altın fiyatı değişmese bile USD/TRY kuru yükselirse yerel gram altın fiyatı artabilir; kur gerilerse yerel fiyat baskılanabilir.
+
+Bu sayfadaki yöntem, canlı veri alınabildiğinde ons karşılığını yerel kurla ilişkilendirir; manuel senaryoda ise 24 ayar gram fiyatından hareketle yaklaşık ons değeri üretir. Böylece **canlı altın hesaplama** ile teorik hesap arasındaki ilişki görülebilir. Küresel yatırım takibi yapan kullanıcı için ons altın hesaplama, portföyün yalnızca iç piyasaya mı yoksa küresel XAU fiyatına mı tepki verdiğini anlamada kritik önemdedir.
+
+## Altın Alım Satım Makas Aralığı ve Sikke Primi
+Yatırımcı açısından en çok ihmal edilen kalemlerden biri **altın alım satım makas aralığı**dır. Makas, aynı kurumun aynı anda uyguladığı alış ve satış fiyatı arasındaki farktır. Siz altın alırken satış fiyatı üzerinden işlem yaparsınız; satarken alış fiyatı üzerinden. Bu fark düşük oynaklık dönemlerinde sınırlı kalabilir; fakat piyasa stresinde veya fiziki ürün kıtlığında genişleyebilir. Sonuç olarak kısa vadeli al-sat işlemlerinde doğru yönlü fiyatı kullanmamak, beklenen getiri hesabını ciddi biçimde bozabilir.
+
+Sikke primi ise özellikle çeyrek, yarım ve cumhuriyet altını gibi ürünlerde saf altın değerinin üzerine eklenen maliyet katmanıdır. Darphane maliyeti, işçilik, dağıtım kanalı ve dönemsel talep bu primi etkiler. Profesyonel kullanıcılar, canlı altın hesaplama yaparken makası ve primi ayrı ayrı düşünür; çünkü biri işlem maliyetini, diğeri ürünün spot değerden sapmasını gösterir.
+
+## Altın Çevirici Nasıl Kullanılmalı?
+Bu araç bir **altın çevirici** gibi kullanıldığında aşağıdaki sıra en sağlıklı sonucu verir:
+
+1. Önce 24 ayar gram altın için güvenilir bir referans fiyat seçin.
+2. İşlem yönünüzü belirleyin: alım mı yapıyorsunuz, satım mı?
+3. Fiziksel sikke ürünlerde ürün primini ayrı değerlendirin.
+4. Sonucu sadece toplam TL değeri olarak değil, has altın eşdeğeri üzerinden de yorumlayın.
+
+Bu yöntem sayesinde aynı portföy için "gram altın hesaplama", "çeyrek altın hesaplama" ve "ons altın hesaplama" sonuçlarını tek tablo üzerinde karşılaştırabilirsiniz. Böylece yatırımcı, elindeki ürünlerin gerçekten birbirine denk olup olmadığını anlayabilir. Örneğin nominal olarak benzer fiyatlı iki ürün, has altın içeriği ve makas yüzünden farklı net sonuçlar üretebilir.
+
+## Sonuç Nasıl Yorumlanmalı?
+Altın yatırımında doğru karar, yalnızca fiyatın yükseleceği beklentisine dayanmaz; doğru ürünün doğru maliyetle seçilmesine de bağlıdır. Bu nedenle altın hesaplama sonucunu yorumlarken üç soruya odaklanmak gerekir: ürün ne kadar saf altın içeriyor, işlem maliyeti ne kadar yüksek ve aynı sermayeyle alternatif ürünlerde daha iyi bir verimlilik var mı? Özellikle kısa vadeli işlem yapanlar için makas; orta ve uzun vadeli birikim yapanlar için ise prim ve likidite daha belirleyici olabilir.
+
+Bu içerik finansal okuryazarlığı desteklemek amacıyla hazırlanmıştır. Sonuçlar, girilen fiyat ve varsayımlara göre hesaplanan bilgilendirme amaçlı çıktılardır; nihai alım-satım kararından önce bankanızın, aracı kurumunuzun veya kuyumcunuzun anlık kotasyonunu ayrıca doğrulamanız gerekir.`,
+                en: `## Gold Valuation Logic
+This page values gram gold, coin gold and ounce gold on a common 24K reference. The calculator considers fine-gold content, coin premium and buy/sell spread instead of relying only on gross weight.
+
+### Gram Gold
+24K gram gold is treated as the closest product to pure gold. 22K gram gold is discounted by its purity ratio, which is approximately 22/24 of 24K fine content.
+
+### Coin Gold
+Quarter, half and republic-style coins are priced through their fine-gold equivalent first, then adjusted for fabrication premium and transaction spread. This is why physical coin prices can diverge from simple gross-weight math.
+
+### Ounce Gold
+One troy ounce equals approximately 31.1035 grams of pure gold. Local TRY valuation therefore depends both on the global ounce price and the USD/TRY relationship.
+
+The outputs are informational and should be cross-checked with the live quote of your bank, dealer or broker before any transaction.`
             },
             faq: [
-                { q: { tr: "Çeyrek altın kaç gram has altın içerir?", en: "How many grams of fine gold does a quarter coin contain?" }, a: { tr: "Çeyrek altın (küçük altın) toplam 1,754 gram ağırlığında olup 1,604 gram saf (has) altın içerir. Kalan 0,150 gram alaşım metallerinden oluşur.", en: "A Turkish quarter gold coin weighs 1.754g total and contains 1.604g of fine (pure) gold. The remaining 0.150g consists of alloy metals." } },
-                { q: { tr: "Sikke primi nedir, neden eklenir?", en: "What is coin premium and why is it added?" }, a: { tr: "Sikke primi; madeni altınların (çeyrek, yarım, tam vb.) ham altın içerikleri üzerindeki işçilik, darp maliyeti ve piyasa talebini yansıtan ek fiyat farkıdır. Türkiye piyasasında genellikle %1–%5 arasında değişir.", en: "Coin premium reflects fabrication cost, minting fees and market demand above the raw gold content. In the Turkish market it typically ranges from 1% to 5%." } },
-                { q: { tr: "Alış ve satış fiyatı arasındaki fark nedir?", en: "What is the difference between buying and selling price?" }, a: { tr: "Kuyumcu veya banka sizden altın aldığında 'alış fiyatını', size altın sattığında 'satış fiyatını' uygular. Satış fiyatı alış fiyatından her zaman yüksektir; aradaki fark 'makas' ya da 'spread' olarak bilinir.", en: "When you sell gold, the dealer offers the lower buying (bid) price; when you buy, you pay the higher selling (ask) price. The difference is called the spread or makas." } },
-                { q: { tr: "Has altın ile toplam ağırlık arasındaki fark nedir?", en: "What is the difference between fine gold and total weight?" }, a: { tr: "Toplam ağırlık; altın, gümüş ve bakır gibi alaşım metallerinin toplamını ifade eder. Has altın ise yalnızca saf 24K altın içeriğini gösterir. Birim değer belirlenirken has altın içeriği esas alınır.", en: "Total weight includes the alloy metals (silver, copper) in addition to gold. Fine gold refers only to the pure 24K content, which determines the intrinsic market value." } },
-                { q: { tr: "Reşat ve Hamit altın neyi ifade eder?", en: "What are Reşat and Hamit gold?" }, a: { tr: "Osmanlı döneminden kalan tarihi altın paralardır. Reşat, Sultan Reşat (V. Mehmed) döneminde (hicri 1327), Hamit ise II. Abdülhamid döneminde (hicri 1293) basılmıştır. İkisi aynı has altın içeriğine ve piyasa fiyatına sahiptir.", en: "These are historic Ottoman-era gold coins. Reşat was minted during the reign of Sultan Mehmed V and Hamit during Abdülhamid II. Both share the same fine gold content and market value." } }
+                { q: { tr: "İşçiliksiz altın hangisidir?", en: "Which gold products usually have the lowest workmanship cost?" }, a: { tr: "Yatırım amaçlı ürünler arasında en düşük ek maliyet çoğu zaman 24 ayar gram altın, bankadaki kaydi altın hesapları veya yüksek likiditeli külçe ürünlerde görülür. Çeyrek, yarım ve cumhuriyet gibi sikke altınlarda ise darphane, dağıtım ve talep etkisiyle işçilik/prime benzer ek fiyat katmanları oluşabilir. Bu nedenle yatırımcı için 'işçiliksiz altın' ifadesi genellikle saf altına en yakın, prim yükü düşük ürünleri anlatır; yine de her kurumun satış fiyatı ayrıca kontrol edilmelidir.", en: "Products closest to pure gold, such as 24K gram bars, allocated bank gold balances or highly liquid bullion products, usually carry the lowest extra workmanship layer. Coin products may include minting and demand premium, so each institution's quote should still be checked separately." } },
+                { q: { tr: "Altın alım satım makas aralığı nedir?", en: "What is the gold buy/sell spread?" }, a: { tr: "Altın alım satım makas aralığı, aynı kurumun uyguladığı alış fiyatı ile satış fiyatı arasındaki farktır. Siz altın alırken daha yüksek olan satış fiyatını ödersiniz; satarken daha düşük olan alış fiyatından işlem yaparsınız. Makas ne kadar genişse, yatırımcının kısa vadede başa baş noktasına ulaşması o kadar zorlaşır. Bu nedenle canlı altın hesaplama yaparken işlem yönünü doğru seçmek ve kurum bazlı kotasyon farkını hesaba katmak gerekir.", en: "The gold spread is the difference between the institution's buy and sell quote. A wider spread makes short-term break-even harder to reach, so the transaction direction and the institution-specific quote must be reflected in the calculation." } },
+                { q: { tr: "Gram altın mı, çeyrek altın mı daha avantajlıdır?", en: "Is gram gold or quarter gold usually more efficient?" }, a: { tr: "Bu sorunun tek bir doğru cevabı yoktur; amaç ve vade belirleyicidir. Düzenli birikim ve düşük ek maliyet arayan yatırımcı için gram altın çoğu zaman daha şeffaf ve verimli bir yapıya sahiptir. Çeyrek altın ise fiziki taşınabilirlik, hediyeleşme ve geleneksel kullanım açısından avantajlıdır; ancak ürün primi nedeniyle saf altın başına maliyeti dönem dönem daha yüksek olabilir. Bu yüzden karar verirken yalnızca etiket fiyatına değil, has altın eşdeğeri ve makas etkisine birlikte bakılmalıdır.", en: "There is no single answer. Gram gold is often more transparent for cost-focused accumulation, while quarter gold offers physical convenience and traditional use cases. The decision should be made by comparing fine-gold equivalent, premium and spread together." } }
             ],
             richContent: {
-                howItWorks: { tr: "Her altın türünün IAB standartlarındaki has altın içeriği, girilen 24K gram fiyatı ile çarpılır. Madeni sikkeler için ayrıca sikke primi uygulanır. Alış/Satış seçimi makas oranıyla birim fiyata yansıtılır.", en: "Each gold type's standardized fine gold content is multiplied by the entered 24K gram price. A coin premium is applied for minted coins, and the buy/sell spread adjusts the unit price accordingly." },
-                formulaText: { tr: "Birim Fiyat = Has Altın (g) × Gram Fiyatı × (1 + Sikke Primi%) × (1 ± Makas%). Toplam = Birim Fiyat × Adet", en: "Unit Price = Fine Gold (g) × Gram Price × (1 + Coin Premium%) × (1 ± Spread%). Total = Unit Price × Quantity" },
-                exampleCalculation: { tr: "Gram altın 3.000 ₺ iken, sikke primi %3 ve makas %0,5 ile alınan 5 çeyrek altın: 1,604g × 3.000 × 1,03 × 1,005 = 4.974 ₺/adet × 5 = 24.870 ₺.", en: "At 3,000 TL/g with 3% coin premium and 0.5% buy spread: 1.604g × 3,000 × 1.03 × 1.005 = 4,974 TL/unit × 5 = 24,870 TL." },
-                miniGuide: { tr: "Portföy değerleme yaparken has altın toplamına bakın, ağırlığa değil. Farklı türlerin has altın içeriği farklı olduğundan, 7g ata altın ile 7g 22 ayar gram altını aynı değerde değildir.", en: "When evaluating your portfolio, focus on fine gold total rather than physical weight. Different types have different fine gold content — 7g Ata coin vs 7g 22K bar gram do not hold the same value." }
+                howItWorks: { tr: "Araç 24 ayar gram altını referans fiyat olarak kabul eder. 22 ayar gram altında saflık oranı uygulanır; çeyrek, yarım ve cumhuriyet tipi sikkelerde ise ürünün has altın gramı esas alınır. Ardından işlem yönüne göre makas ve gerekiyorsa sikke primi birim fiyata yansıtılır.", en: "The calculator starts with the 24K gram reference price, applies purity ratios for lower-karat gram products, and uses fine-gold content for coins. Spread and coin premium are then reflected according to transaction direction." },
+                formulaText: { tr: "Teorik Değer = Has Altın Gramı × 24 Ayar Gram Fiyatı. Alış/Satış Birim Fiyatı = Teorik Değer × (1 + Sikke Primi) × (1 ± Makas). Toplam Portföy = Birim Fiyat × Miktar.", en: "Theoretical Value = Fine Gold Content × 24K Gram Price. Transaction Unit Price = Theoretical Value × (1 + Premium) × (1 ± Spread). Portfolio Value = Unit Price × Quantity." },
+                exampleCalculation: { tr: "Örnek: 24 ayar gram altın 4.000 TL, çeyrek altın has içeriği 1,604 gram, sikke primi %3 ve alış makası %0,5 olsun. Teorik fiyat 1,604 × 4.000 = 6.416 TL'dir. Prim eklendiğinde 6.608,48 TL, alış makası dahil edildiğinde yaklaşık 6.641,52 TL olur. 3 adet çeyrek altının toplam maliyeti yaklaşık 19.924,57 TL seviyesine çıkar.", en: "Example: if 24K gram gold is 4,000 TRY, quarter gold fine content is 1.604 grams, premium is 3% and buy spread is 0.5%, the transaction price becomes approximately 6,641.52 TRY per unit." },
+                miniGuide: { tr: "<ul><li><b>Etiket fiyatı yerine has altın eşdeğerini izleyin:</b> Aynı görünen iki ürün farklı saf altın içerebilir.</li><li><b>İşlem yönünü doğru seçin:</b> Alış ve satış senaryoları aynı fiyattan hesaplanmamalıdır.</li><li><b>Makas ve primi ayırın:</b> Makas işlem maliyetini, prim ise ürünün spot değerden sapmasını gösterir.</li><li><b>Sonucu canlı kotasyonla doğrulayın:</b> Nihai karar öncesinde banka veya kuyumcu fiyatını ayrıca kontrol edin.</li></ul>", en: "<ul><li>Track fine-gold equivalent rather than sticker price alone.</li><li>Use the correct direction for buy and sell scenarios.</li><li>Separate spread from coin premium when reading cost.</li><li>Always cross-check the final output with the live quote of your institution.</li></ul>" }
             }
         }
     },
@@ -9119,10 +9223,11 @@ export const investmentCalculatorsP2: CalculatorConfig[] = [
         id: "bilesik-buyume-hesaplama",
         slug: "bilesik-buyume-hesaplama",
         category: "finansal-hesaplamalar",
+        updatedAt: "2026-03-15",
         name: { tr: "Bileşik Büyüme Hesaplama (CAGR)", en: "CAGR Calculator" },
-        h1: { tr: "CAGR (Yıllık Bileşik Büyüme Oranı) Hesaplama Aracı", en: "Compound Annual Growth Rate (CAGR) Calculator" },
-        description: { tr: "Bir yatırımın veya iş hacminin belirli bir dönem boyunca yıllık ortalama büyüme oranını (CAGR) hesaplayın. Dalgalanmaları arındırarak geometrik büyüme trendini görün.", en: "Calculate the Compound Annual Growth Rate (CAGR) of an investment or business metric over any period to see the geometric growth trend." },
-        shortDescription: { tr: "Yatırımınızın yıllık ortalama büyüme hızını en doğru yöntemle saptayın.", en: "Identify the average annual growth rate of your investment with the most accurate method." },
+        h1: { tr: "CAGR Hesaplama — Yıllık Bileşik Büyüme Oranı", en: "CAGR Calculator — Compound Annual Growth Rate" },
+        description: { tr: "CAGR hesaplama aracıyla bir yatırımın veya iş hacminin belirli bir dönem boyunca yıllık ortalama büyüme oranını hesaplayın. Dalgalanmaları arındırarak geometrik büyüme trendini görün.", en: "Calculate the Compound Annual Growth Rate (CAGR) of an investment or business metric over any period to see the geometric growth trend." },
+        shortDescription: { tr: "CAGR oranını, toplam büyümeyi ve yıllık ortalama getiriyi saniyeler içinde görün.", en: "See CAGR, total growth, and annualized return in seconds." },
         inputs: [
             { id: "startValue", name: { tr: "Başlangıç Değeri (PV)", en: "Starting Value (PV)" }, type: "number", defaultValue: 10000 },
             { id: "endValue", name: { tr: "Bitiş Değeri (FV)", en: "Ending Value (FV)" }, type: "number", defaultValue: 25000 },
@@ -9139,8 +9244,8 @@ export const investmentCalculatorsP2: CalculatorConfig[] = [
             return { cagr, totalGrowth: total };
         },
         seo: {
-            title: { tr: "Bileşik Büyüme Oranı (CAGR) Hesaplama - Geometrik Getiri Ölçümü", en: "CAGR Calculator - Annual Geometric Growth Rate" },
-            metaDescription: { tr: "Yatırımlarınızın yıllık ortalama performansını CAGR formülü ile ölçün. Başlangıç ve bitiş değerlerine göre gerçek büyüme hızını saniyeler içinde bulun.", en: "Measure your average annual investment performance using the CAGR formula. Calculate real growth rates based on starting and ending values instantly." },
+            title: { tr: "CAGR Hesaplama 2026 — Bileşik Büyüme Oranı Formülü ve Yıllık Getiri", en: "CAGR Calculator 2026 — Compound Annual Growth Rate Formula" },
+            metaDescription: { tr: "CAGR hesaplama aracıyla başlangıç ve bitiş değerine göre yıllık bileşik büyüme oranını hesaplayın. Hisse, fon, şirket cirosu ve yatırım performansı için CAGR formülü burada.", en: "Calculate annual compound growth rate from starting and ending values. Use the CAGR formula for portfolio, fund, business, and investment performance." },
             content: {
                 tr: "Compound Annual Growth Rate (CAGR), yani Yıllık Bileşik Büyüme Oranı, özellikle uzun vadeli yatırımların performansını ölçmek için kullanılan en sağlıklı metriktir. Basit ortalamaların aksine, CAGR 'bileşik' etkiyi hesaba katar ve yatırımın her yıl sabit bir hızla büyüdüğünü varsayar. \n\nÖzellikle hisse senedi portföyleri, gayrimenkul değerlemeleri veya şirket satış grafiklerinde CAGR kullanımı zorunludur. Çünkü yıllık dalgalanmalar (bir yıl %10 artış, bir yıl %5 düşüş gibi) toplam getiriyi görmeyi zorlaştırır. CAGR aracı ile 5 veya 10 yıllık bir periyotta 'yıllık ortalama % kaç kazandım?' sorusuna en matematiksel cevabı alırsınız.",
                 en: "CAGR represents the geometric progression ratio that provides a constant rate of return over a time period. It is the best metric for comparing different investments (like stocks vs bonds) on an annualized basis, smoothing out volatility to show a steady growth trend."
@@ -10094,6 +10199,7 @@ export const investmentCalculatorsP5: CalculatorConfig[] = [
     {
         id: "kira-mi-konut-kredisi-mi",
         slug: "kira-mi-konut-kredisi-mi-hesaplama",
+        updatedAt: "2026-03-14",
         category: "finansal-hesaplamalar",
         name: { tr: "Kira mı, Konut Kredisi mi?", en: "Rent or Mortgage?" },
         h1: { tr: "Kira mı, Konut Kredisi mi? Hesaplama", en: "Rent or Mortgage? Calculator" },
@@ -10144,6 +10250,7 @@ export const investmentCalculatorsP5: CalculatorConfig[] = [
     {
         id: "kredi-karsilastirma",
         slug: "kredi-karsilastirma-hesaplama",
+        updatedAt: "2026-03-14",
         category: "finansal-hesaplamalar",
         name: { tr: "Kredi Karşılaştırma", en: "Loan Comparison" },
         h1: { tr: "Kredi Karşılaştırma Hesaplama", en: "Loan Comparison Calculator" },
@@ -10195,6 +10302,7 @@ export const investmentCalculatorsP5: CalculatorConfig[] = [
     {
         id: "borc-kapatma-planlayici",
         slug: "borc-kapatma-planlayici-hesaplama",
+        updatedAt: "2026-03-14",
         category: "finansal-hesaplamalar",
         name: { tr: "Borç Kapatma Planlayıcı", en: "Debt Payoff Planner" },
         h1: { tr: "Borç Kapatma Planlayıcı", en: "Debt Payoff Planner" },
@@ -10448,6 +10556,7 @@ export const investmentCalculatorsP5: CalculatorConfig[] = [
     {
         id: "gecmis-altin-fiyatlari",
         slug: "gecmis-altin-fiyatlari",
+        updatedAt: "2026-03-14",
         category: "finansal-hesaplamalar",
         name: { tr: "Geçmiş Altın Fiyatları", en: "Historical Gold Prices" },
         h1: { tr: "Geçmiş Altın Fiyatları (2010–2026) — Yıllık Ortalama TL, USD + Yatırım Simülatörü", en: "Historical Gold Prices (2010–2026) — Annual TRY & USD Averages + Investment Simulator" },
@@ -10557,6 +10666,7 @@ export const investmentCalculatorsP5: CalculatorConfig[] = [
     {
         id: "gecmis-doviz-kurlari",
         slug: "gecmis-doviz-kurlari",
+        updatedAt: "2026-03-14",
         category: "finansal-hesaplamalar",
         name: { tr: "Geçmiş Döviz Kurları", en: "Historical Exchange Rates" },
         h1: { tr: "Geçmiş Döviz Kurları Hesaplama (2010–2026) — Yıllara Göre Dolar, Euro ve Sterlin Kuru (TCMB)", en: "Historical Exchange Rates (2010–2026) — USD, EUR, GBP/TRY Annual Averages" },
@@ -10629,8 +10739,8 @@ export const investmentCalculatorsP5: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "Geçmiş Döviz Kurları Hesaplama (2010–2026) — Yıllara Göre Dolar Kuru", en: "Historical Exchange Rates 2010–2026 — USD EUR GBP/TRY Annual Data" },
-            metaDescription: { tr: "TCMB verilerine göre 2010-2026 arası yıllık ortalama dolar, euro ve sterlin grafiklerini inceleyin. Geçmiş kur hesaplama aracıyla paranızın döviz karşılığını bulun.", en: "Analyze annual average USD, EUR, and GBP charts based on CBRT data from 2010 to 2026. Find your money's foreign exchange equivalent with the historical rate tool." },
+            title: { tr: "Geçmiş Döviz Kurları 2010–2026 — Dolar, Euro ve Sterlin Ortalama Kurları", en: "Historical Exchange Rates 2010–2026 — USD, EUR and GBP Averages" },
+            metaDescription: { tr: "Geçmiş döviz kurları sayfasında 2010–2026 USD, EUR ve GBP/TL ortalamalarını inceleyin. Döviz yatırımının nominal ve reel etkisini tarihsel kur verisiyle karşılaştırın.", en: "Review 2010–2026 average USD, EUR, and GBP/TRY rates and compare historical nominal and real FX performance." },
             content: {
                 tr: `Türkiye gibi gelişmekte olan piyasalarda döviz kurları (başta USD/TL ve EUR/TL olmak üzere), ekonominin ateşini ölçen en kritik termometrelerden biridir. Sadece bir dış ticaret argümanı olmanın ötesinde döviz, bireysel yatırımcılar için bir kalkan, işletmeler için ise maliyet planlamasının bel kemiğidir. Türk Lirası, 2010 yılında Dolar karşısında 1.50 ortalama ile işlem görürken, makroekonomik dinamikler ve para politikası kararları neticesinde 2026 yılı projeksiyonlarında 43.98 bandına kadar yükselerek tarihsel bir devalüasyon döngüsüne girmiştir.\n\nBir sözleşmeyi geriye dönük revize etmek, muhasebe kayıtlarında geçmiş yıl vergi matrahı tespit etmek veya eski dönem ticari alacakların reel değerini (bugünkü satın alma gücünü) öğrenmek istediğinizde günlük ani kurlar yerine "Yıllık Ortalama Kurlar" kullanılır. Türkiye Cumhuriyet Merkez Bankası (TCMB) tarafından açıklanan günlük gösterge kurların yıl içindeki seans günlerine bölünmesiyle elde edilen bu ortalamalar, kurumların finansal tabloları için yasal bir dayanak oluşturur.\n\nGeçmiş Döviz Kurları Hesaplama servisi olarak sunduğumuz bu veri tabanı; Dolar, Euro ve İngiliz Sterlini için seçtiğiniz yıla ait ortalama kur değerini anında ekranınıza getirir. Ayrıca sistem arka planda önceki yılla kıyaslama yaparak "Kur Şoku" oranını (%) (örneğin 2021 ve 2022'deki devasa kur patlamaları) hesaplar. "5 yıl önce aldığım arabanın o günkü döviz karşılığı neydi?" ya da "Çektiğim konut kredisinde bankaya kaç dolar ödemiş oldum?" gibi spesifik analizlerinizi bu istatistiksel veriler ışığında dakikalar içinde çözümleyebilirsiniz.`,
                 en: `In emerging markets like Turkey, foreign exchange rates (primarily USD/TRY and EUR/TRY) serve as the most critical thermometer measuring the economy's heat. Beyond being a mere foreign trade argument, FX is a shield for individual investors and the backbone of cost planning for corporate businesses. While the Turkish Lira traded at an average of 1.50 against the Dollar in 2010, macroeconomic dynamics and monetary policy decisions have pushed projections to the 43.98 band by 2026, marking a historical cycle of devaluation.\n\nWhen you need to retroactively revise a contract, determine past year tax bases in accounting records, or learn the real value (current purchasing power) of old commercial receivables, "Annual Average Exchange Rates" are used instead of daily spot rates. Computed by averaging the daily indicative rates announced by the Central Bank of the Republic of Turkey (CBRT) across trading sessions throughout the year, these figures provide a legal basis for corporate financial statements.\n\nThis database, offered as the Historical Exchange Rates Calculation service, instantly brings the average rate of your selected year for the US Dollar, Euro, and British Pound to your screen. Furthermore, the system runs background comparisons with the preceding year to calculate the "FX Shock" ratio (%), highlighting massive currency explosions like those in 2021 and 2022. You can solve specific historical analyses such as "What was the FX equivalent of the car I bought 5 years ago?" or "How many dollars did I end up paying the bank for my mortgage?" within minutes using these statistical tools.`
@@ -10987,11 +11097,13 @@ export const investmentCalculatorsP5: CalculatorConfig[] = [
         },
         seo: {
             title: { tr: "Lise Mezuniyet Puanı Hesaplama 2026 — Diploma Notu", en: "High School Graduation Score Calculator 2026 — Diploma Grade" },
-            metaDescription: { tr: "9, 10, 11 ve 12. sınıf ortalamalarıyla lise mezuniyet puanını, diploma notunu ve yaklaşık OBP katkısını hesaplayın.", en: "Calculate the high-school graduation score, diploma grade and approximate OBP contribution using 9th-12th grade averages." },
-            content: { tr: "Lise mezuniyet puanı hesaplama aracı; dört yıl boyunca oluşan yıl sonu başarı ortalamalarının genel bir özetini verir. Özellikle diploma notunuzun üniversite başvuruları ve okul başarısı üzerindeki etkisini önden görmek, yıl bazında not artış veya düşüş eğilimini anlamak için kullanışlıdır.", en: "The high-school graduation score calculator summarizes year-end averages formed over four years. It helps you preview your diploma grade and school-performance trend." },
+            metaDescription: { tr: "9, 10, 11 ve 12. sınıf ortalamalarıyla lise mezuniyet puanını, diploma notunu ve yaklaşık OBP katkısını hesaplayın. Diploma notunuzun üniversiteye etkisini ve yıl bazında başarı trendinizi bu araçla kolayca analiz edin.", en: "Calculate the high-school graduation score, diploma grade and approximate OBP contribution using 9th-12th grade averages. Easily analyze your diploma's effect on university admission and your year-by-year performance trend." },
+            content: { tr: "Lise mezuniyet puanı hesaplama aracı; dört yıl boyunca oluşan yıl sonu başarı ortalamalarının genel bir özetini verir. Diploma notunuz, hem üniversite başvurularında hem de okul başarısı değerlendirmelerinde önemli bir kriterdir. Bu araç sayesinde, her yılın ortalamasının genel başarıya etkisini görebilir, not artış veya düşüş eğilimlerinizi analiz edebilirsiniz. Ayrıca, mezuniyet puanınızın OBP'ye (Ortaöğretim Başarı Puanı) nasıl yansıyacağını ve sınav sistemine katkısını önceden görebilirsiniz. Özellikle 9, 10, 11 ve 12. sınıf ortalamalarınızı girerek, diploma notunuzu ve OBP katkınızı hızlıca öğrenebilirsiniz. Unutmayın, erken yıllardaki düşük notlar sonradan yükselse de genel ortalamayı etkilemeye devam eder. Üniversite planlaması yaparken bu sonucu OBP ve taban puan araçlarıyla birlikte incelemeniz faydalı olacaktır.", en: "The high-school graduation score calculator summarizes year-end averages formed over four years. Your diploma grade is a key criterion for both university applications and school performance evaluations. With this tool, you can see the impact of each year's average on your overall success, analyze your grade trends, and preview how your graduation score will affect your OBP (Secondary Education Success Score) and its contribution to the exam system. By entering your 9th, 10th, 11th, and 12th grade averages, you can quickly learn your diploma grade and OBP contribution. Remember, lower grades from early years still affect the average even if you improve later. For university planning, review this result together with OBP and base-score tools." },
             faq: [
                 faqEntry("Mezuniyet puanı ile OBP aynı şey midir?", "Hayır. Mezuniyet puanı 100'lük sistemde okul başarısını ifade eder; OBP etkisi ise bu puanın sınav sistemine göre dönüştürülmüş katkısıdır.", "Is graduation score the same as OBP?", "No. Graduation score reflects school performance on a 100-point scale, while OBP is the converted contribution used in the exam system."),
                 faqEntry("Sadece son sınıf ortalaması mezuniyet puanını belirler mi?", "Hayır. Genel yorum için tüm yılların ortalamasını birlikte değerlendirmek gerekir.", "Does only the final-year average determine graduation score?", "No. For an overall interpretation, all years should be evaluated together."),
+                faqEntry("Mezuniyet puanım düşükse OBP'm de düşük mü olur?", "Genellikle evet, çünkü OBP mezuniyet puanınızdan türetilir. Ancak OBP'nin sınav sistemine etkisi ve katsayısı yıllara göre değişebilir.", "If my graduation score is low, will my OBP also be low?", "Generally yes, because OBP is derived from your graduation score. However, OBP's effect and coefficient in the exam system may vary by year."),
+                faqEntry("Diploma notu üniversiteye yerleşmede ne kadar etkili?", "Diploma notu, OBP üzerinden merkezi sınav puanınıza ek katkı sağlar. Ancak asıl belirleyici sınav puanıdır.", "How much does the diploma grade affect university placement?", "Diploma grade provides additional points to your central exam score via OBP, but the main determinant is your exam score."),
             ],
             richContent: {
                 howItWorks: { tr: "Girilen dört sınıf ortalaması toplanır ve 4'e bölünür. Sonuç mezuniyet puanı ve diploma notu olarak gösterilir.", en: "The four entered yearly averages are added and divided by 4. The result is shown as the graduation score and diploma grade." },
@@ -11058,16 +11170,18 @@ export const investmentCalculatorsP5: CalculatorConfig[] = [
         seo: {
             title: { tr: "Lise Sınıf Geçme Hesaplama 2026 — Ortalama ve Zayıf Analizi", en: "High School Class Passing Calculator 2026 — Average and Failure Analysis" },
             metaDescription: { tr: "Yıl sonu ortalaması, zayıf ders sayısı ve devamsızlıkla lise sınıf geçme durumunu ve risk seviyesini hızlıca yorumlayın.", en: "Quickly interpret high-school class-passing status and risk level with year-end average, failing courses and absence." },
-            content: { tr: "Lise sınıf geçme hesaplama aracı; ortalama, zayıf ders sayısı ve devamsızlık bilgisini bir araya getirerek hızlı bir risk analizi sunar. Bu sayfa resmi karar ekranı değildir; ancak yıl sonuna yaklaşırken durumunuzu görmek ve hangi alanda riskinizin arttığını anlamak için oldukça kullanışlıdır.", en: "The high-school class-passing calculator combines average, failing-course count and absence to provide a quick risk analysis. It is not an official decision screen, but it is useful for previewing your status." },
+            content: { tr: "Lise sınıf geçme hesaplama aracı; yıl sonu ortalaması, zayıf ders sayısı ve devamsızlık bilgisini bir araya getirerek hızlı bir risk analizi sunar. Bu araç, dönem sonunda sınıf geçme durumunuzu önceden görmenizi sağlar ve hangi alanda riskinizin arttığını anlamak için oldukça kullanışlıdır. Özellikle devamsızlık sınırına yaklaşan veya birden fazla zayıfı olan öğrenciler için erken uyarı niteliğindedir. Resmi karar ekranı değildir; ancak yıl sonuna yaklaşırken durumunuzu görmek, eksiklerinizi tamamlamak ve okul yönetimiyle iletişime geçmek için pratik bir ön izleme sunar. Sonucunuzu e-Okul ve okul yönetimiyle mutlaka karşılaştırın.", en: "The high-school class-passing calculator combines year-end average, failing-course count and absence to provide a quick risk analysis. This tool helps you preview your class-passing status before the term ends and is especially useful for students close to the absence limit or with multiple failing grades. It is not an official decision screen, but it offers a practical preview to help you address deficiencies and communicate with school administration. Always compare your result with e-School and official records." },
             faq: [
                 faqEntry("Sınıf geçmede sadece ortalama mı önemlidir?", "Hayır. Zayıf ders sayısı ve devamsızlık gibi unsurlar da sınıf geçme yorumunu etkiler.", "Is average the only important factor in class passing?", "No. Failing-course count and absence also affect class-passing interpretation."),
                 faqEntry("Bu araç resmi sonucu garanti eder mi?", "Hayır. Nihai karar okul idaresi ve yürürlükteki mevzuat değerlendirmesiyle verilir.", "Does this tool guarantee the official result?", "No. The final decision is made by the school administration under current regulations."),
+                faqEntry("Devamsızlık sınırı kaç gündür?", "Genellikle özürsüz 10 gün, toplamda ise 30 gün sınırdır. Ancak okul yönetmeliğine göre değişiklik gösterebilir.", "What is the absence limit?", "Usually 10 days unexcused, 30 days total, but may vary by school policy."),
+                faqEntry("Sorumlu geçmek ne demek?", "Bazı durumlarda öğrenci, zayıfı olduğu dersten sorumlu olarak bir üst sınıfa geçebilir. Ancak bu derslerden sonraki yıl başarılı olması gerekir.", "What does conditional pass mean?", "In some cases, a student may move to the next grade with failing courses as 'conditional', but must pass those courses the following year."),
             ],
             richContent: {
                 howItWorks: { tr: "Girilen yıl sonu ortalaması, zayıf ders sayısı ve devamsızlık bilgisi birlikte yorumlanır. Araç, hızlı bir geçme riski ön izlemesi üretir.", en: "The entered year-end average, failing-course count and absence are interpreted together to produce a quick class-passing preview." },
                 formulaText: { tr: "Bu araç kesin mevzuat kararı değil, Ortalama + Zayıf + Devamsızlık kombinasyonuna dayalı pratik yorum üretir.", en: "This tool does not replace official regulation, but provides a practical interpretation based on Average + Failing Courses + Absence." },
                 exampleCalculation: { tr: "Örnek: Ortalama 67, zayıf 1, devamsızlık 2 gün ise araç 'Doğrudan geçer' sonucu verir.", en: "Example: if the average is 67, failing courses are 1 and absence is 2 days, the tool returns 'Direct pass'." },
-                miniGuide: { tr: "<ul><li><b>Risk takibi:</b> Dönem bitmeden önce zayıf ders sayısını azaltmaya odaklanın.</li><li><b>Resmi doğrulama:</b> Sonucu okul yönetimi ve e-Okul kaydıyla karşılaştırın.</li></ul>", en: "<ul><li><b>Track risk:</b> Try to reduce the number of failing courses before the term ends.</li><li><b>Official check:</b> Compare the result with school administration and e-School records.</li></ul>" },
+                miniGuide: { tr: "<ul><li><b>Risk takibi:</b> Dönem bitmeden önce zayıf ders sayısını azaltmaya ve devamsızlık sınırını aşmamaya odaklanın.</li><li><b>Resmi doğrulama:</b> Sonucu okul yönetimi ve e-Okul kaydıyla karşılaştırın.</li><li><b>Sorumlu geçiş:</b> Sorumlu geçtiğiniz dersleri bir sonraki yıl mutlaka tamamlayın.</li><li><b>Destek alın:</b> Eksik olduğunuz derslerde öğretmeninizden veya rehberlik servisinden destek isteyin.</li></ul>", en: "<ul><li><b>Track risk:</b> Try to reduce the number of failing courses and avoid exceeding the absence limit before the term ends.</li><li><b>Official check:</b> Compare the result with school administration and e-School records.</li><li><b>Conditional pass:</b> Be sure to complete conditional courses the following year.</li><li><b>Get support:</b> Ask your teacher or guidance counselor for help in weak subjects.</li></ul>" },
             },
         },
     },
@@ -11109,16 +11223,18 @@ export const investmentCalculatorsP5: CalculatorConfig[] = [
         seo: {
             title: { tr: "Lise YBP Hesaplama 2026 — Yıl Sonu Başarı Puanı", en: "High School YBP Calculator 2026 — Year-End Success Score" },
             metaDescription: { tr: "1. ve 2. dönem ortalamalarınızla lise yıl sonu başarı puanını ve yaklaşık OBP katkısını hesaplayın.", en: "Calculate your high-school year-end success score and approximate OBP contribution with first and second term averages." },
-            content: { tr: "Lise YBP hesaplama aracı, iki dönem ortalamasını bir araya getirerek yıl sonu başarı düzeyinizi pratik biçimde görmenizi sağlar. Bu sonuç özellikle diploma notu, mezuniyet puanı ve üniversite hazırlık sürecinde okul başarısının genel yönünü anlamak için değerlidir.", en: "The high-school YBP calculator combines two term averages so that you can quickly see your year-end success level. It is valuable for understanding the general direction of school performance." },
+            content: { tr: "Lise YBP hesaplama aracı, iki dönem ortalamasını bir araya getirerek yıl sonu başarı düzeyinizi pratik biçimde görmenizi sağlar. Bu sonuç özellikle diploma notu, mezuniyet puanı ve üniversite hazırlık sürecinde okul başarısının genel yönünü anlamak için değerlidir. YBP, yıl bazında başarıyı özetler ve OBP'ye katkı sağlar. Dönemler arası fark, gelişim veya düşüş eğilimini gösterir. Sonucunuzu mezuniyet ve OBP araçlarıyla birlikte izleyerek uzun vadeli akademik planlama yapabilirsiniz. YBP'nizi yüksek tutmak, hem diploma notunuza hem de üniversiteye girişte ek puanınıza olumlu katkı sağlar.", en: "The high-school YBP calculator combines two term averages so you can quickly see your year-end success level. This result is especially valuable for understanding the general direction of school performance in the context of diploma grade, graduation score, and university preparation. YBP summarizes annual success and contributes to OBP. The gap between terms shows progress or decline. By tracking your result together with graduation and OBP tools, you can make long-term academic plans. Keeping your YBP high positively affects both your diploma grade and your university admission bonus." },
             faq: [
                 faqEntry("YBP neyi gösterir?", "YBP, öğrencinin ilgili öğretim yılı içindeki genel başarı düzeyini özetleyen 100'lük sistemde bir göstergedir.", "What does YBP show?", "YBP is a 100-point indicator summarizing the student's overall success level in the relevant academic year."),
                 faqEntry("YBP ile OBP aynı mıdır?", "Hayır. YBP yıl bazlı bir başarı göstergesidir; OBP ise genel okul başarısının sınav sistemine yansıyan formudur.", "Is YBP the same as OBP?", "No. YBP is a year-based success indicator, while OBP is the exam-system reflection of overall school performance."),
+                faqEntry("YBP üniversiteye girişte etkili mi?", "Evet, YBP diploma notunu ve OBP'yi etkilediği için üniversiteye girişte dolaylı katkı sağlar.", "Does YBP affect university admission?", "Yes, since YBP affects diploma grade and OBP, it indirectly contributes to university admission."),
+                faqEntry("Dönem ortalamaları arasında fark olursa ne olur?", "Dönemler arası büyük fark, yıl içi performans dalgalanmasını gösterir. Bu durum gelişim veya düşüş eğilimini anlamak için önemlidir.", "What if there is a gap between term averages?", "A large gap between terms shows performance fluctuation during the year. This is important for understanding progress or decline."),
             ],
             richContent: {
                 howItWorks: { tr: "1. dönem ve 2. dönem ortalamaları toplanır, ikiye bölünür ve yıl sonu başarı puanı bulunur.", en: "The first and second term averages are added and divided by two to find the year-end success score." },
                 formulaText: { tr: "YBP = (1. Dönem Ortalaması + 2. Dönem Ortalaması) / 2", en: "YBP = (1st Term Average + 2nd Term Average) / 2" },
                 exampleCalculation: { tr: "Örnek: 79 ve 84 ortalamaları için YBP 81,5 olur.", en: "Example: for term averages of 79 and 84, YBP becomes 81.5." },
-                miniGuide: { tr: "<ul><li><b>Yıl bazlı bakış:</b> Dönemler arası fark, gelişim veya düşüş eğilimini gösterir.</li><li><b>Uzun vadeli takip:</b> Sonucu mezuniyet ve OBP araçlarıyla birlikte izleyin.</li></ul>", en: "<ul><li><b>Year-based view:</b> The gap between terms shows progress or decline.</li><li><b>Long-term tracking:</b> Follow the result together with graduation and OBP tools.</li></ul>" },
+                miniGuide: { tr: "<ul><li><b>Yıl bazlı bakış:</b> Dönemler arası fark, gelişim veya düşüş eğilimini gösterir.</li><li><b>Uzun vadeli takip:</b> Sonucu mezuniyet ve OBP araçlarıyla birlikte izleyin.</li><li><b>YBP'yi yüksek tutun:</b> YBP'niz ne kadar yüksekse diploma notunuz ve OBP'niz de o kadar yüksek olur.</li><li><b>Destek alın:</b> Zayıf olduğunuz derslerde öğretmeninizden veya rehberlik servisinden destek isteyin.</li></ul>", en: "<ul><li><b>Year-based view:</b> The gap between terms shows progress or decline.</li><li><b>Long-term tracking:</b> Follow the result together with graduation and OBP tools.</li><li><b>Keep YBP high:</b> The higher your YBP, the higher your diploma grade and OBP.</li><li><b>Get support:</b> Ask your teacher or guidance counselor for help in weak subjects.</li></ul>" },
             },
         },
     },
@@ -11657,6 +11773,7 @@ export const taxCalculatorsBatch1: CalculatorConfig[] = [
         h1: { tr: "Damga Vergisi Hesaplama 2026  Sözleşme ve Kira Tutarına Göre", en: "Stamp Duty Calculator 2026" },
         description: { tr: "Sözleşme, kira veya ihale kararı bedelinize göre 2026 damga vergisini hesaplayın.", en: "Calculate 2026 stamp duty on contracts, rent agreements or tender decisions." },
         shortDescription: { tr: "Sözleşme tutarını girerek ödemeniz gereken damga vergisini anında öğrenin.", en: "Enter contract amount to find your stamp duty payable." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["kdv-hesaplama", "kira-stopaj-hesaplama"],
         inputs: [
             {
@@ -11753,6 +11870,7 @@ export const taxCalculatorsBatch1: CalculatorConfig[] = [
         h1: { tr: "Kurumlar Vergisi Hesaplama 2026  %25 Oranıyla Dönemsel Vergi", en: "Corporate Tax Calculator 2026  25% Rate" },
         description: { tr: "Şirketinizin 2026 yılı kurumlar vergisi ve geçici vergi tutarlarını hesaplayın.", en: "Calculate your company's 2026 corporate tax and quarterly provisional tax." },
         shortDescription: { tr: "Yıllık ticari kârınızı girerek kurumlar vergisi ve geçici vergi tutarlarını anında hesaplayın.", en: "Enter annual profit to calculate corporate tax and provisional tax instantly." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["gelir-vergisi-hesaplama", "kdv-hesaplama"],
         inputs: [
             { id: "profit", name: { tr: "Yıllık Ticari Kâr (TL)", en: "Annual Commercial Profit (TL)" }, type: "number", defaultValue: 1000000, suffix: "₺", required: true },
@@ -11787,6 +11905,7 @@ export const taxCalculatorsBatch1: CalculatorConfig[] = [
         h1: { tr: "Gelir Vergisi Hesaplama 2026  Yıllık Beyan ve Dilim", en: "Income Tax Calculator 2026  Annual Brackets" },
         description: { tr: "2026 gelir vergisi dilimlerine göre yıllık gelir vergisini ve efektif oranı hesaplayın.", en: "Calculate 2026 annual income tax and effective rate by progressive brackets." },
         shortDescription: { tr: "Yıllık gelirinizi girerek hangi vergi dilimine girdiğinizi ve toplam vergiyi görün.", en: "Enter annual income to see your tax bracket and total income tax." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["maas-hesaplama", "kurumlar-vergisi-hesaplama"],
         inputs: [
             { id: "income", name: { tr: "Yıllık Brüt Gelir (TL)", en: "Annual Gross Income (TL)" }, type: "number", defaultValue: 500000, suffix: "₺", required: true },
@@ -11823,6 +11942,7 @@ export const taxCalculatorsBatch1: CalculatorConfig[] = [
         h1: { tr: "Kira Geliri Vergisi Hesaplama 2026  GMSİ Beyanı", en: "Rental Income Tax Calculator 2026  GMSİ Return" },
         description: { tr: "2026 kira geliri istisna tutarı ve gider yöntemine göre ödenecek gelir vergisini hesaplayın.", en: "Calculate 2026 rental income tax with annual exemption and expense method." },
         shortDescription: { tr: "Yıllık kira gelirinizi girerek GMSİ istisnasını ve ödemeniz gereken vergiyi öğrenin.", en: "Enter annual rental income to see your GMSİ exemption and income tax payable." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["gelir-vergisi-hesaplama", "kira-stopaj-hesaplama"],
         inputs: [
             { id: "annualRent", name: { tr: "Yıllık Kira Geliri (TL)", en: "Annual Rental Income (TL)" }, type: "number", defaultValue: 240000, suffix: "₺", required: true },
@@ -11868,6 +11988,7 @@ export const taxCalculatorsBatch1: CalculatorConfig[] = [
         h1: { tr: "Kira Stopaj Hesaplama 2026  İşyeri Kira Stopajı %20", en: "Rental Withholding Tax 2026  20% on Commercial Rent" },
         description: { tr: "İşyeri kira ödemelerinde kiracının kesmesi gereken %20 stopaj tutarını hesaplayın.", en: "Calculate the 20% withholding tax deducted from commercial rental payments." },
         shortDescription: { tr: "Aylık kira bedelini girerek stopaj tutarını ve mal sahibine yapılacak net ödemeyi öğrenin.", en: "Enter monthly rent to find the withholding amount and net payment to landlord." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["kira-vergisi-hesaplama", "gelir-vergisi-hesaplama"],
         inputs: [
             { id: "monthlyRent", name: { tr: "Aylık Brüt Kira (TL)", en: "Monthly Gross Rent (TL)" }, type: "number", defaultValue: 20000, suffix: "₺", required: true },
@@ -12294,6 +12415,7 @@ export const tradeCalculatorsBatch1: CalculatorConfig[] = [
         h1: { tr: "İndirim Hesaplama — Yüzde ve Tutar Bazlı İndirim", en: "Discount Calculator — Percentage & Amount Discount" },
         description: { tr: "Ürünün orijinal fiyatına uygulanan yüzde veya tutar bazlı indirimi ve son fiyatı hesaplayın.", en: "Calculate percentage or fixed discount and final price on a product." },
         shortDescription: { tr: "Orijinal fiyat ve indirim oranını girerek indirimli fiyatı anında bulun.", en: "Enter original price and discount to instantly find the discounted price." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["zam-hesaplama", "kar-hesaplama", "kdv-hesaplama"],
         inputs: [
             { id: "originalPrice", name: { tr: "Orijinal Fiyat", en: "Original Price" }, type: "number", defaultValue: 1000, suffix: "₺", required: true },
@@ -12337,6 +12459,7 @@ export const tradeCalculatorsBatch1: CalculatorConfig[] = [
         h1: { tr: "Zam Hesaplama — Fiyat Artışı ve Yeni Tutar", en: "Price Increase Calculator — New Price After Markup" },
         description: { tr: "Mevcut fiyata uygulanan yüzde veya tutar bazlı zammın ardından yeni fiyatı hesaplayın.", en: "Calculate the new price after applying a percentage or fixed price increase." },
         shortDescription: { tr: "Mevcut fiyat ve zam oranını girerek yeni fiyatı anında bulun.", en: "Enter current price and increase rate to instantly find the new price." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["indirim-hesaplama", "kar-hesaplama", "kdv-hesaplama"],
         inputs: [
             { id: "currentPrice", name: { tr: "Mevcut Fiyat", en: "Current Price" }, type: "number", defaultValue: 1000, suffix: "₺", required: true },
@@ -12377,6 +12500,7 @@ export const tradeCalculatorsBatch1: CalculatorConfig[] = [
         h1: { tr: "Kâr Hesaplama — Satış ve Maliyet Fiyatından Net Kâr", en: "Profit Calculator — Net Profit from Cost & Sale Price" },
         description: { tr: "Maliyet ve satış fiyatına göre kâr tutarını ve kâr marjını hesaplayın.", en: "Calculate profit amount and margin from cost and selling price." },
         shortDescription: { tr: "Alış ve satış fiyatını girerek kâr tutarınızı ve marjınızı anında görün.", en: "Enter cost and sale price to instantly see your profit and margin." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["zarar-hesaplama", "indirim-hesaplama", "zam-hesaplama"],
         inputs: [
             { id: "costPrice", name: { tr: "Maliyet / Alış Fiyatı", en: "Cost Price" }, type: "number", defaultValue: 500, suffix: "₺", required: true },
@@ -12416,6 +12540,7 @@ export const tradeCalculatorsBatch1: CalculatorConfig[] = [
         h1: { tr: "Zarar Hesaplama — Maliyet ve Satış Fiyatından Net Zarar", en: "Loss Calculator — Net Loss from Cost & Sale Price" },
         description: { tr: "Satış fiyatı maliyetin altında kaldığında oluşan zararı ve zarar oranını hesaplayın.", en: "Calculate loss amount and loss rate when selling below cost." },
         shortDescription: { tr: "Maliyet ve satış fiyatını girerek net zarar tutarını ve oranını öğrenin.", en: "Enter cost and sale price to find your net loss amount and rate." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["kar-hesaplama", "indirim-hesaplama", "ortalama-maliyet-hesaplama"],
         inputs: [
             { id: "costPrice", name: { tr: "Maliyet / Alış Fiyatı", en: "Cost Price" }, type: "number", defaultValue: 1000, suffix: "₺", required: true },
@@ -12453,6 +12578,7 @@ export const tradeCalculatorsBatch1: CalculatorConfig[] = [
         h1: { tr: "Ortalama Maliyet Hesaplama — Farklı Fiyatlardan Ağırlıklı Ortalama", en: "Average Cost Calculator — Weighted Average from Multiple Prices" },
         description: { tr: "Farklı miktarlarda ve fiyatlarda alınan ürünlerin ağırlıklı ortalama maliyetini hesaplayın.", en: "Calculate the weighted average cost of products bought at different prices and quantities." },
         shortDescription: { tr: "Birden fazla alımın birim maliyetlerini girerek ağırlıklı ortalama maliyeti bulun.", en: "Enter multiple purchase prices and quantities to find the weighted average cost." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["kar-hesaplama", "zarar-hesaplama", "kargo-ucreti-hesaplama"],
         inputs: [
             { id: "qty1", name: { tr: "1. Alım Miktarı (Adet)", en: "Purchase 1 Quantity" }, type: "number", defaultValue: 100, required: true },
@@ -12584,6 +12710,7 @@ export const tradeCalculatorsBatch1: CalculatorConfig[] = [
         h1: { tr: "Fiyat Hesaplama — Maliyet ve Kâr Üzerinden Satış Fiyatı", en: "Price Calculator — Sale Price from Cost & Margin" },
         description: { tr: "Maliyetiniz ve hedeflediğiniz kâr marjı üzerinden ideal satış fiyatınızı hesaplayın.", en: "Calculate your ideal selling price based on cost and target profit margin." },
         shortDescription: { tr: "Ürün maliyetini ve kâr hedefinizi girerek satış fiyatını anında bulun.", en: "Enter cost and target margin to instantly find the selling price." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["kar-hesaplama", "ortalama-maliyet-hesaplama", "kdv-hesaplama"],
         inputs: [
             { id: "costPrice", name: { tr: "Birim Maliyet", en: "Unit Cost" }, type: "number", defaultValue: 100, suffix: "₺", required: true },
@@ -13242,10 +13369,11 @@ export const timeCalculatorsBatch1c: CalculatorConfig[] = [
         id: "iki-tarih-gun",
         slug: "iki-tarih-arasindaki-gun-sayisi-hesaplama",
         category: "zaman-hesaplamalari",
+        updatedAt: "2026-03-15",
         name: { tr: "İki Tarih Arasındaki Gün Sayısını Hesaplama", en: "Days Between Two Dates Calculator" },
-        h1: { tr: "İki Tarih Arasındaki Gün Sayısını Hesaplama", en: "Days Between Two Dates Calculator" },
-        description: { tr: "Başlangıç ve bitiş tarihleri arasındaki toplam gün, hafta ve ay sayısını hesaplayın.", en: "Calculate the number of days, weeks and months between two dates." },
-        shortDescription: { tr: "İki tarih arasında kaç gün, hafta ve ay olduğunu saniyeler içinde hesaplayın.", en: "Find out how many days, weeks and months are between two dates in seconds." },
+        h1: { tr: "İki Tarih Arası Gün Hesaplama — Kaç Gün Var, Kaç Gün Geçti?", en: "Days Between Two Dates Calculator — How Many Days Left or Passed?" },
+        description: { tr: "İki tarih arası gün hesaplama aracında toplam gün, hafta, ay ve yıl farkını görün. Sözleşme, proje ve resmi sürelerde net takvim farkını hesaplayın.", en: "Use this days-between-dates calculator to see the total day, week, month, and year difference between any two dates." },
+        shortDescription: { tr: "Herhangi iki tarih arasında kaç gün geçtiğini veya kaç gün var olduğunu anında öğrenin.", en: "Instantly find how many days have passed or remain between any two dates." },
         relatedCalculators: ["is-gunu-hesaplama", "iki-tarih-arasindaki-hafta-sayisi-hesaplama", "kac-gun-kaldi-hesaplama"],
         inputs: [
             { id: "startDate", name: { tr: "Başlangıç Tarihi", en: "Start Date" }, type: "date", defaultValue: "", required: true },
@@ -13277,12 +13405,14 @@ export const timeCalculatorsBatch1c: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "İki Tarih Arasındaki Gün Sayısı Hesaplama 2026", en: "Days Between Two Dates Calculator 2026" },
-            metaDescription: { tr: "İki tarih arasındaki gün, hafta ve ay sayısını anında hesaplayın. Proje süreleri, doğum günleri ve sözleşme süreleri için idealdir.", en: "Instantly calculate days, weeks and months between two dates. Ideal for project timelines, birthdays and contracts." },
-            content: { tr: "İki tarih arasındaki gün hesaplama; proje zaman çizelgesi, yaş hesabı, kira sözleşme süresi ve vade takibi gibi onlarca pratik alanda kullanılır. Başlangıç ve bitiş tarihlerini seçmeniz yeterlidir; gün, hafta, ay ve yıl cinsinden farkı anında görürsünüz.", en: "Calculating days between two dates is useful for project timelines, age calculation, lease duration and deadline tracking. Simply select start and end dates to see the difference in days, weeks, months and years." },
+            title: { tr: "İki Tarih Arası Gün Hesaplama 2026 — Toplam Gün, Hafta ve Ay Farkı", en: "Days Between Two Dates Calculator 2026 — Total Day, Week and Month Difference" },
+            metaDescription: { tr: "İki tarih arası gün hesaplama aracıyla toplam gün, hafta, ay ve yıl farkını anında görün. Herhangi iki tarih arasındaki net takvim süresi tek sayfada.", en: "Instantly see the total day, week, month, and year difference between any two dates with this calculator." },
+            content: { tr: "İki tarih arası gün hesaplama, yalnızca doğum günü veya tatil geri sayımı için değil; herhangi iki tarih arasındaki net takvim farkını görmek için kullanılır. Proje zaman çizelgesi, yaş hesabı, kira sözleşme süresi, teslim tarihi ve resmi başvuru sürelerinde kullanıcıların aradığı şey çoğu zaman tam olarak budur: başlangıç ve bitiş arasında kaç gün geçtiği ya da kaç gün olduğu. Bu araç başlangıç ve bitiş tarihlerini birlikte ele alır; gün, hafta, ay ve yıl cinsinden farkı tek ekranda gösterir. Eğer ihtiyacınız yalnızca bugünden ileri bir tarihe geri sayım yapmaksa <a href=\"/zaman-hesaplama/kac-gun-kaldi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kaç gün kaldı hesaplama</a> sayfası daha uygundur.", en: "Calculating days between two dates is not only for birthdays or holiday countdowns; it is for seeing the exact calendar gap between any two dates. Project timelines, age checks, lease terms, delivery dates, and official deadlines often depend on this exact difference. This tool handles both the start and end date together and shows the gap in days, weeks, months, and years on one screen. If you only need a countdown from today to a future date, the dedicated days-left calculator is the better fit." },
             faq: [
                 { q: { tr: "İki tarih arasındaki gün nasıl hesaplanır?", en: "How do you calculate days between two dates?" }, a: { tr: "Her iki tarih Unix zaman damgasına çevrilir ve fark bölü 86.400.000 (milisaniye/gün) ile tam gün sayısı bulunur.", en: "Both dates are converted to Unix timestamps, and the difference is divided by 86,400,000 (ms/day) to get total days." } },
+                { q: { tr: "İki tarih arası gün hesabı ile kaç gün kaldı sayacı aynı şey mi?", en: "Is a days-between-dates calculator the same as a days-left countdown?" }, a: { tr: "Hayır. Bu sayfa herhangi iki tarih arasındaki genel farkı ölçer. Kaç gün kaldı sayacı ise bugünü başlangıç kabul ederek yalnızca hedef tarihe kalan süreyi gösterir.", en: "No. This page measures the general difference between any two dates. A days-left countdown treats today as the start and only shows the remaining time until a target date." } },
                 { q: { tr: "Bu hesaplayıcı artık yılları dikkate alıyor mu?", en: "Does this calculator account for leap years?" }, a: { tr: "Evet. JavaScript Date API milisaniye cinsinden kesin fark hesapladığı için artık yıllar otomatik olarak dahil edilir.", en: "Yes. The JS Date API computes the exact millisecond difference, so leap years are automatically accounted for." } },
+                { q: { tr: "Tarihleri ters girersem sonuç ne olur?", en: "What happens if I reverse the dates?" }, a: { tr: "Başlangıç tarihi bitişten sonra ise araç yön bilgisini korumak için sonucu eksi işaretiyle gösterebilir. Böylece hangi tarihin önce geldiği de anlaşılır.", en: "If the start date is after the end date, the calculator can show the result with a minus sign so the direction of the gap remains visible." } },
             ],
             richContent: {
                 howItWorks: { tr: "Her iki tarih JavaScript Date nesnesine dönüştürülür ve fark milisaniye olarak hesaplanır. Gün: fark/86400000 | Hafta: gün/7 (kalan gün eklenir) | Ay: ortalama 30.4375 gün baz alınır.", en: "Both dates are converted to JS Date objects and the difference computed in milliseconds. Days: diff/86400000 | Weeks: days/7 | Months: based on avg 30.4375 days." },
@@ -13302,10 +13432,11 @@ export const timeCalculatorsBatch1d: CalculatorConfig[] = [
         id: "iki-tarih-hafta",
         slug: "iki-tarih-arasindaki-hafta-sayisi-hesaplama",
         category: "zaman-hesaplamalari",
+        updatedAt: "2026-03-15",
         name: { tr: "İki Tarih Arasındaki Hafta Sayısını Hesaplama", en: "Weeks Between Two Dates Calculator" },
-        h1: { tr: "İki Tarih Arasındaki Hafta Sayısını Hesaplama", en: "Weeks Between Two Dates Calculator" },
-        description: { tr: "İki tarih arasındaki toplam hafta sayısını ve kalan günleri hesaplayın.", en: "Calculate the total number of weeks and remaining days between two dates." },
-        shortDescription: { tr: "İki tarih arasında kaç hafta olduğunu anında öğrenin.", en: "Find out exactly how many weeks are between two dates instantly." },
+        h1: { tr: "İki Tarih Arası Hafta Hesaplama — Kaç Hafta Kaldı, Kaç Hafta Geçti?", en: "Weeks Between Two Dates Calculator — How Many Weeks Left or Passed?" },
+        description: { tr: "İki tarih arası hafta hesaplama aracında kaç hafta kaldığını veya kaç hafta geçtiğini; toplam hafta, tam hafta + kalan gün ve toplam gün olarak görün.", en: "Use this weeks-between-dates calculator to see how many weeks are left or have passed, including total weeks, full weeks plus remaining days, and total days." },
+        shortDescription: { tr: "İki tarih arasında kaç hafta, kaç gün kaldığını veya geçtiğini anında öğrenin.", en: "Instantly find how many weeks and days are left or have passed between two dates." },
         relatedCalculators: ["iki-tarih-arasindaki-gun-sayisi-hesaplama", "is-gunu-hesaplama", "hafta-hesaplama"],
         inputs: [
             { id: "startDate", name: { tr: "Başlangıç Tarihi", en: "Start Date" }, type: "date", defaultValue: "", required: true },
@@ -13332,19 +13463,26 @@ export const timeCalculatorsBatch1d: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "İki Tarih Arasındaki Hafta Sayısı Hesaplama 2026", en: "Weeks Between Two Dates Calculator 2026" },
-            metaDescription: { tr: "İki tarih arasında kaç hafta ve kaç gün olduğunu saniyeler içinde hesaplayın. Eğitim dönemleri ve hamilelik haftası takibi için idealdir.", en: "Calculate weeks and days between two dates in seconds. Perfect for school terms and pregnancy tracking." },
-            content: { tr: "Hafta bazlı zaman hesaplama; özellikle okul dönemleri, proje sprintleri, hamilelik takibi ve uzun süreli kiralama işlemlerinde kolaylık sağlar. Bu araçla iki tarih arasındaki net hafta sayısını ve küsuratlı (gün bazlı) farkı kolayca görebilirsiniz.", en: "Weekly time calculation is essential for school terms, project sprints, pregnancy tracking and long-term rentals. View both full weeks and precise day-based differences." },
+            title: { tr: "İki Tarih Arası Hafta Hesaplama 2026 — Kaç Hafta Kaldı, Kaç Hafta Geçti?", en: "Weeks Between Two Dates Calculator 2026 — How Many Weeks Left or Passed?" },
+            metaDescription: { tr: "İki tarih arası hafta hesaplama aracıyla kaç hafta kaldı veya geçti hemen görün. Toplam hafta, tam hafta + kalan gün, toplam gün farkı ve 30 gün, 45 gün, 1 yıl kaç hafta eder sorularının cevabı tek sayfada.", en: "Use the weeks-between-dates calculator to see how many weeks are left or have passed, including total weeks, full weeks plus remaining days, and total day difference." },
+            content: {
+                tr: `<p>İki tarih arası hafta hesaplama sayfalarında kullanıcıların en sık beklediği çıktı yalnızca “kaç hafta eder?” değil; aynı zamanda <strong>kaç hafta kaldı</strong> veya <strong>kaç hafta geçti</strong> sorusunun da net cevabıdır. Bu yüzden iyi bir hafta farkı aracı sadece gün farkını kaba biçimde yediye bölmez; hem <strong>toplam hafta</strong> sonucunu hem de <strong>tam hafta + kalan gün</strong> ayrımını birlikte verir. Okul dönemi planı, proje sprint takvimi, gebelik haftası, kira başlangıç-bitiş takibi veya kişisel çalışma programlarında “6,29 hafta” ile “6 hafta 2 gün” aynı bilgi değildir. Bu araç, başlangıç ve bitiş tarihleri arasındaki farkı tam gün bazında hesaplar; ardından sonucu hem ondalıklı hafta hem de tam hafta + kalan gün biçiminde gösterir.</p><h3>İki Tarih Arasındaki Hafta Sayısı Nasıl Hesaplanır?</h3><p>Önce iki tarih arasındaki mutlak fark milisaniye cinsinden alınır. Bu değer 86.400.000'e bölünerek toplam gün sayısı bulunur. Sonra gün sayısı 7'ye bölünür ve iki farklı çıktı üretilir: <strong>Toplam Hafta = Gün / 7</strong>, <strong>Tam Hafta = ⌊Gün / 7⌋</strong>, <strong>Kalan Gün = Gün % 7</strong>. Böylece 44 günlük bir aralık için hem yaklaşık <strong>6,29 hafta</strong> hem de daha okunabilir biçimde <strong>6 hafta 2 gün</strong> sonucu aynı anda görülebilir. Bu yaklaşım, “iki tarih arasındaki hafta sayısı hesaplama”, “iki tarih arası hafta hesaplama” ve “kaç hafta kaldı” aramalarındaki farklı kullanıcı niyetlerini aynı ekranda karşılar.</p><h3>30 Gün, 45 Gün ve 1 Yıl Kaç Hafta Eder?</h3><p>Arama motorlarında en sık görülen niyetlerden biri sabit süreleri haftaya çevirmektir. 30 gün yaklaşık <strong>4,29 hafta</strong>, 45 gün yaklaşık <strong>6,43 hafta</strong>, 90 gün yaklaşık <strong>12,86 hafta</strong> eder. 365 günlük bir yıl ise yaklaşık <strong>52,14 hafta</strong> sonucunu verir. Ancak takvim planlamasında çoğu zaman ondalıklı hafta yerine tam hafta + kalan gün ifadesi daha kullanışlıdır. Örneğin 30 gün = <strong>4 hafta 2 gün</strong>, 45 gün = <strong>6 hafta 3 gün</strong>, 365 gün = <strong>52 hafta 1 gün</strong> şeklinde okunabilir. Araç bu yüzden yalnızca tek bir sonuç türüne bağlı kalmaz.</p><h3>Bu Araç ile Hafta Numarası Hesabı Aynı Şey mi?</h3><p>Hayır. Bu sayfa iki tarih arasındaki sürenin kaç hafta sürdüğünü ölçer. Eğer ihtiyacınız belirli bir tarihin yılın kaçıncı haftasına denk geldiğini görmekse <a href="/zaman-hesaplama/hafta-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">hafta hesaplama</a> aracını kullanmanız gerekir. Benzer şekilde yalnızca toplam gün farkını görmek istiyorsanız <a href="/zaman-hesaplama/iki-tarih-arasindaki-gun-sayisi-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">iki tarih arasındaki gün sayısı hesaplama</a>, hafta sonlarını hariç tutarak net mesai süresini bulmak istiyorsanız <a href="/zaman-hesaplama/is-gunu-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">iş günü hesaplama</a> sayfası daha uygun olacaktır.</p><h3>Hangi Durumlarda Kullanılır?</h3><p>İki tarih arasında kaç hafta olduğunu bilmek; eğitim takviminde sınava kaç hafta kaldığını sayarken, spor ve diyet programlarında kaçıncı haftada olduğunuzu izlerken, gebelikte son adet tarihinden bugüne kadar geçen süreyi kabaca kontrol ederken ve iş planlarında sprint uzunluklarını hesaplarken oldukça faydalıdır. Ayrıca kira sözleşmesi, ücretsiz deneme süresi, kampanya periyodu veya teslimat planı gibi ticari konularda da takvim farkının hafta cinsinden görülmesi karar almayı kolaylaştırır.</p><h3>Tarih Sırası ve Artık Yıl Etkisi</h3><p>Araç, başlangıç tarihi ile bitiş tarihinin yerini değiştirseniz bile süreyi mutlak fark üzerinden hesaplar; yani sonuç eksiye düşmez. Ayrıca JavaScript tarih altyapısı kullanıldığı için artık yıllar ve ay uzunlukları otomatik olarak hesaba katılır. Bu sayede Şubat ayı, 29 gün çeken yıllar veya yıl sonu geçişleri manuel düzeltme gerektirmez. Özellikle uzun dönemli hafta farkı hesaplarında bu detay doğruluk için önemlidir.</p>`,
+                en: "This calculator measures the exact day difference between two dates, then converts it into both decimal weeks and full weeks plus remaining days. It is useful for school terms, project sprints, pregnancy week tracking, and any timeline that needs a clear week-based duration."
+            },
             faq: [
-                { q: { tr: "Bir ayda kaç hafta vardır?", en: "How many weeks are in a month?" }, a: { tr: "Bir ay ortalama 4.34 haftadır. Şubatta 4 hafta, 31 çeken aylarda ise yaklaşık 4.43 hafta bulunur.", en: "An average month has 4.34 weeks. February has 4, while 31-day months have approximately 4.43 weeks." } },
-                { q: { tr: "Gebelikte hafta hesabı nasıl yapılır?", en: "How is pregnancy week calculated?" }, a: { tr: "Son adet tarihini (SAT) başlangıç, bugünü bitiş tarihi seçerek kaçıncı haftada olduğunuzu bu araçla görebilirsiniz.", en: "Select your last period date as start and today as end to find your current pregnancy week." } },
-                { q: { tr: "15 gün kaç hafta eder ve 15 kaç hafta sürer?", en: "15 days is how many weeks?" }, a: { tr: "15 gün, tam olarak 2 hafta ve 1 gün eder (14 gün + 1 gün). '15 kaç hafta' sorusunun bir diğer anlamı olan 15 haftalık süre ise yaklaşık 3,5 aya (105 gün) denk gelir.", en: "15 days is exactly 2 weeks and 1 day." } }
+                { q: { tr: "İki tarih arasındaki hafta sayısı nasıl hesaplanır?", en: "How do you calculate weeks between two dates?" }, a: { tr: "Önce iki tarih arasındaki toplam gün farkı bulunur. Ardından bu sayı 7'ye bölünerek ondalıklı hafta sonucu elde edilir; ayrıca tam hafta için gün sayısının 7'ye bölümünden çıkan tam kısım, kalan gün için ise mod 7 kullanılır.", en: "First find the total day difference between the two dates. Then divide by 7 for decimal weeks, use the integer part for full weeks, and modulo 7 for remaining days." } },
+                { q: { tr: "İki tarih arasında kaç hafta kaldı veya geçti nasıl hesaplanır?", en: "How do I calculate how many weeks are left or have passed between two dates?" }, a: { tr: "Başlangıç olarak ilk tarihi, bitiş olarak ikinci tarihi seçmeniz yeterlidir. Araç iki tarih arasındaki mutlak farkı bulur ve sonucu toplam hafta, tam hafta + gün ve toplam gün olarak verir; böylece hem geçen hem kalan süre mantığıyla okunabilir.", en: "Choose the first date as the start and the second as the end. The tool finds the absolute gap and shows total weeks, full weeks plus days, and total days so the result can be read as either elapsed or remaining time." } },
+                { q: { tr: "Bir ayda kaç hafta vardır?", en: "How many weeks are in a month?" }, a: { tr: "Bir ay ortalama 4,34 haftadır. 28 günlük Şubat ayı 4 hafta ederken, 30 günlük aylar yaklaşık 4,29 hafta, 31 günlük aylar ise yaklaşık 4,43 hafta sürer.", en: "An average month has 4.34 weeks. A 28-day February equals 4 weeks, 30-day months are about 4.29 weeks, and 31-day months are about 4.43 weeks." } },
+                { q: { tr: "Gebelikte hafta hesabı nasıl yapılır?", en: "How is pregnancy week calculated?" }, a: { tr: "Son adet tarihini başlangıç, bugünü bitiş tarihi seçerek aradaki toplam hafta farkını görebilirsiniz. Tıbbi değerlendirme için ise ultrason ve doktor takibi esas alınmalıdır.", en: "Use the last menstrual period as the start date and today as the end date to see the total week difference. Medical assessment should still rely on ultrasound and physician follow-up." } },
+                { q: { tr: "15 gün kaç hafta eder?", en: "How many weeks is 15 days?" }, a: { tr: "15 gün tam olarak 2 hafta 1 gün eder. Ondalıklı ifadeyle yaklaşık 2,14 haftadır.", en: "15 days equals exactly 2 weeks and 1 day, or about 2.14 weeks in decimal form." } },
+                { q: { tr: "1 yıl kaç hafta eder?", en: "How many weeks are in a year?" }, a: { tr: "365 günlük standart bir yıl yaklaşık 52,14 hafta eder; yani 52 hafta 1 gün. Artık yıllarda 366 gün bulunduğu için sonuç yaklaşık 52,29 haftaya çıkar.", en: "A standard 365-day year is about 52.14 weeks, meaning 52 weeks and 1 day. Leap years reach about 52.29 weeks." } },
+                { q: { tr: "Tarihleri ters girersem sonuç değişir mi?", en: "Does the result change if I reverse the dates?" }, a: { tr: "Hayır. Bu araç iki tarih arasındaki mutlak farkı hesaplar; başlangıç ve bitiş tarihini ters girseniz bile aynı süre sonucu üretilir.", en: "No. The tool calculates the absolute difference, so reversing start and end dates still returns the same duration." } }
             ],
             richContent: {
-                howItWorks: { tr: "İki tarih arasındaki milisaniye farkı alınır, güne çevrilir ve 7'ye bölünür. Tam hafta kısmı (⌊Gün/7⌋) ve kalan gün (Gün % 7) ayrı ayrı sunulur.", en: "Difference in ms is converted to days and divided by 7. Both full weeks (⌊Days/7⌋) and remainder (Days % 7) are provided." },
-                formulaText: { tr: "Hafta = |Bitiş − Başlangıç| / (86.400.000 × 7)", en: "Weeks = |End − Start| / (86,400,000 × 7)" },
-                exampleCalculation: { tr: "Örnek: 1 Eylül → 15 Ekim → 44 gün → 6 hafta 2 gün.", en: "Example: Sep 1 → Oct 15 → 44 days → 6 weeks 2 days." },
-                miniGuide: { tr: "<ul><li><b>Eğitim Planı:</b> Sömestır veya vize haftasına kaç hafta kaldığını belirleyin.</li><li><b>Fitness Takibi:</b> Spor programınızda kaçıncı haftada olduğunuzu hesaplayın.</li></ul>", en: "<ul><li><b>Education:</b> See how many weeks remain until midterms.</li><li><b>Fitness:</b> Track which week of your program you're in.</li></ul>" },
+                howItWorks: { tr: "Araç iki tarih arasındaki farkı milisaniye olarak hesaplar, bunu tam gün sayısına dönüştürür ve ardından 7'ye böler. Sonuç üç katmanda sunulur: ondalıklı toplam hafta, tam hafta + kalan gün ve toplam gün. Böylece hem hızlı kıyas hem de detaylı takvim planlaması yapılabilir.", en: "The tool calculates the millisecond difference between two dates, converts it to whole days, and then divides by 7. It presents decimal weeks, full weeks plus remaining days, and total days together." },
+                formulaText: { tr: "Toplam Gün = |Bitiş − Başlangıç| / 86.400.000. Toplam Hafta = Gün / 7. Tam Hafta = ⌊Gün / 7⌋. Kalan Gün = Gün % 7.", en: "Total Days = |End − Start| / 86,400,000. Total Weeks = Days / 7. Full Weeks = ⌊Days / 7⌋. Remaining Days = Days % 7." },
+                exampleCalculation: { tr: "Örnek: 1 Ocak 2026 ile 31 Mart 2026 arasındaki fark 89 gündür. Bu süre yaklaşık 12,71 hafta eder; tam hafta ifadesiyle 12 hafta 5 gündür.", en: "Example: The gap between January 1, 2026 and March 31, 2026 is 89 days. That equals about 12.71 weeks, or 12 weeks and 5 days." },
+                miniGuide: { tr: "<ul><li><b>Sınav ve Eğitim:</b> Sınava, dönem sonuna veya tatil başlangıcına kaç hafta kaldığını görmek için kullanın.</li><li><b>Proje Planlama:</b> Sprint, teslimat ve kampanya sürelerini hafta bazında netleştirin.</li><li><b>Doğru Araç Seçimi:</b> Takvim farkını hafta yerine gün olarak incelemek isterseniz gün sayısı; hafta sonlarını dışlamak isterseniz iş günü aracına geçin.</li></ul>", en: "<ul><li><b>Education:</b> See how many weeks remain until exams, term end, or holidays.</li><li><b>Project Planning:</b> Clarify sprint, delivery, and campaign lengths in week terms.</li><li><b>Choose the Right Tool:</b> Use the day-count or business-day calculators when weeks are not the best unit.</li></ul>" },
             },
         },
     },
@@ -13414,10 +13552,11 @@ export const timeCalculatorsBatch2a: CalculatorConfig[] = [
         id: "kac-gun-kaldi",
         slug: "kac-gun-kaldi-hesaplama",
         category: "zaman-hesaplamalari",
+        updatedAt: "2026-03-15",
         name: { tr: "Kaç Gün Kaldı Hesaplama", en: "Days Remaining Calculator" },
-        h1: { tr: "Kaç Gün Kaldı Hesaplama — Hedef Tarihe Kalan Süre", en: "Days Remaining Calculator — Time Left Until Target Date" },
-        description: { tr: "Belirlediğiniz bir tarihe (doğum günü, sınav, tatil) kaç gün kaldığını saniyeler içinde öğrenin.", en: "Find out how many days are left until a specific date like a birthday, exam or holiday." },
-        shortDescription: { tr: "Önemli günlerinize ne kadar süre kaldığını gün, saat ve dakika bazında görün.", en: "See the remaining time until your important events in days, hours and minutes." },
+        h1: { tr: "Kaç Gün Kaldı Hesaplama — Sınava, Tatile, Doğum Gününe Kaç Gün Var?", en: "Days Remaining Calculator — How Many Days Until Exam, Holiday or Birthday?" },
+        description: { tr: "Bugünden seçtiğiniz tarihe kaç gün kaldığını saniyeler içinde görün. Sınav, tatil, düğün, doğum günü ve teslim tarihi geri sayımı için idealdir.", en: "Find out how many days are left from today until your chosen date, perfect for exams, holidays, weddings, birthdays, and deadlines." },
+        shortDescription: { tr: "Hedef tarihinize kaç gün kaldığını hemen görün.", en: "Instantly see how many days remain until your target date." },
         relatedCalculators: ["kac-gun-oldu-hesaplama", "iki-tarih-arasindaki-gun-sayisi-hesaplama", "safak-hesaplama"],
         inputs: [
             { id: "targetDate", name: { tr: "Hedef Tarih", en: "Target Date" }, type: "date", defaultValue: "", required: true },
@@ -13445,12 +13584,14 @@ export const timeCalculatorsBatch2a: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "Kaç Gün Kaldı Hesaplama 2026 — Hedef Tarih Sayacı", en: "Days Remaining Calculator 2026 — Target Date Countdown" },
-            metaDescription: { tr: "Gelecekteki bir tarihe kaç gün kaldığını anında hesaplayın. Sınav, düğün, tatil veya doğum günü geri sayımı için mükemmel araç.", en: "Instantly calculate days left until a future date. Perfect for exam, wedding, holiday or birthday countdowns." },
-            content: { tr: "Kaç gün kaldı hesaplama; zaman yönetimi ve motivasyon için kullanılan en popüler araçlardan biridir. Beklediğiniz bir tatil, yaklaşan bir sınav (YKS, KPSS vb.) veya özel bir kutlama için tam süreyi bilmek planlama yapmanızı kolaylaştırır. Bu araç bugünü baz alarak hedef tarihe kadar olan net gün sayısını verir.", en: "Days remaining calculation is iconic for time management and motivation. Knowing exactly how much time is left for a holiday, exam or celebration helps you plan better. This tool computes net days from today to your target." },
+            title: { tr: "Kaç Gün Kaldı Hesaplama 2026 — Sınava, Tatile, Doğum Gününe Kaç Gün Var?", en: "Days Remaining Calculator 2026 — How Many Days Until Exam, Holiday or Birthday?" },
+            metaDescription: { tr: "Bugünden seçtiğiniz tarihe kaç gün kaldığını anında hesaplayın. Sınav, düğün, tatil ve doğum günü geri sayımı için net gün, hafta + gün ve yaklaşık ay sonucu tek sayfada.", en: "Instantly calculate how many days are left from today until your target date, with day, week-plus-day, and approximate month outputs." },
+            content: { tr: "Kaç gün kaldı hesaplama, bugünden itibaren gelecekteki belirli bir tarihe geri sayım yapmak isteyen kullanıcıların en sık kullandığı araçlardan biridir. Beklediğiniz bir tatil, yaklaşan bir sınav (YKS, KPSS vb.), özel bir kutlama ya da teslim tarihi için kalan net süreyi bilmek planlama yapmayı kolaylaştırır. Bu araç bugünü başlangıç kabul eder ve hedef tarihe kadar kalan gün, hafta + gün ve yaklaşık ay bilgisini verir. Eğer ihtiyacınız bugünden bağımsız olarak <strong>herhangi iki tarih</strong> arasındaki farkı ölçmekse <a href=\"/zaman-hesaplama/iki-tarih-arasindaki-gun-sayisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">iki tarih arası gün hesaplama</a> sayfası daha doğru seçimdir.", en: "A days-left calculator is one of the most common tools for counting down from today to a future date. Knowing the exact remaining time until a holiday, exam, celebration, or deadline makes planning easier. This tool treats today as the start and gives you the remaining days, weeks plus days, and approximate months until the target. If you need the difference between any two dates rather than a countdown from today, the days-between-dates calculator is the better choice." },
             faq: [
                 { q: { tr: "Bugün dahil mi hesaplanır?", en: "Is today included?" }, a: { tr: "Bu araç bugünü 0. gün kabul eder ve yarından itibaren saymaya başlar. Yani yarınki bir tarih için '1 gün kaldı' sonucunu verir.", en: "This tool treats today as day 0 and starts counting from tomorrow. For example, a date tomorrow results in '1 day left'." } },
                 { q: { tr: "Sınavlara kaç gün kaldığını nasıl öğrenirim?", en: "How to find days left for exams?" }, a: { tr: "ÖSYM veya ilgili kurumun duyurduğu sınav tarihini araca girerek 'Kaç Gün Kaldı' sorusuna saniyeler içinde yanıt alabilirsiniz.", en: "Enter the official exam date to get your 'Days Left' answer instantly." } },
+                { q: { tr: "Geçmiş bir tarih girersem ne olur?", en: "What happens if I enter a past date?" }, a: { tr: "Bu araç ileri tarih geri sayımı için tasarlandığı için geçmiş tarih girildiğinde sonuç 'Tarih Geçmiş' olarak gösterilir. Geçmişten bugüne kaç gün geçtiğini ölçmek için ise 'kaç gün oldu' veya iki tarih arası gün aracını kullanabilirsiniz.", en: "Because this tool is designed for future-date countdowns, entering a past date returns a 'Date Passed' style result. To measure how many days have passed since a past date, use the passed-days or days-between-dates calculator instead." } },
+                { q: { tr: "Bu araç iki tarih arası gün hesabından farklı mı?", en: "Is this different from a days-between-dates calculator?" }, a: { tr: "Evet. Bu sayfa bugünü otomatik başlangıç kabul eder ve yalnızca hedef tarihe kalan süreyi gösterir. İki tarih arası gün aracı ise başlangıç ve bitiş tarihlerini sizin belirlediğiniz genel fark ekranıdır.", en: "Yes. This page automatically treats today as the start and only shows the remaining time until the target date. A days-between-dates calculator, by contrast, lets you choose both start and end dates." } },
             ],
             richContent: {
                 howItWorks: { tr: "Sistem, cihazınızın yerel tarihini (bugün) alır ve hedef tarihle arasındaki milisaniye farkını hesaplar. Bu fark 86.400.000'e bölünerek net tam gün sayısına ulaşılır.", en: "The system takes the current date and calculates the millisecond difference with the target date, then divides by 86,400,000 for the day count." },
@@ -14043,9 +14184,10 @@ export const examCalculatorsBatch2: CalculatorConfig[] = [
         slug: "ogg-sinav-puan-hesaplama",
         category: "sinav-hesaplamalari",
         name: { tr: "ÖGG Sınav Puan Hesaplama", en: "Private Security Exam Score Calculator" },
-        h1: { tr: "ÖGG Sınav Puan Hesaplama 2026 — Özel Güvenlik Sınavı Geçme Puanı", en: "ÖGG Private Security Exam Score Calculator 2026" },
-        description: { tr: "Özel güvenlik görevlisi sınavında (ÖGG) temel eğitim, silah bilgisi ve atış bölümlerindeki başarı durumunuzu doğru girerek geçme notunuzu hesaplayın.", en: "Calculate your total ÖGG private security exam score from basic training, weapon knowledge, and shooting section scores to determine pass/fail status." },
-        shortDescription: { tr: "Temel eğitim, silah bilgisi ve atış puanınızı girerek Silahlı veya Silahsız ÖGG geçme durumunuzu anında hesaplayın.", en: "Enter your section scores to instantly see your total ÖGG exam score and pass/fail status." },
+        h1: { tr: "ÖGG Sınav Puan Hesaplama 2026 — Silahlı / Silahsız Ön İzleme", en: "ÖGG Exam Score Calculator 2026 — Armed / Unarmed Preview" },
+        description: { tr: "Özel güvenlik görevlisi sınavında temel eğitim, silah bilgisi ve atış verilerinize göre silahlı veya silahsız başarı durumunuzu hızlıca görün.", en: "Quickly see your armed or unarmed private security exam outcome from your basic training, weapon knowledge, and shooting inputs." },
+        shortDescription: { tr: "Temel eğitim, silah bilgisi ve atış sonucunuza göre silahlı veya silahsız ön izlemeyi görün.", en: "See an armed or unarmed preview from your basic training, weapon knowledge, and shooting result." },
+        updatedAt: "2026-03-14",
         relatedCalculators: ["kpss-puan-hesaplama", "ales-puan-hesaplama", "yks-puan-hesaplama"],
         inputs: [
             {
@@ -14123,8 +14265,8 @@ export const examCalculatorsBatch2: CalculatorConfig[] = [
             };
         },
         seo: {
-            title: { tr: "ÖGG Sınav Puan Hesaplama 2026 — Özel Güvenlik Sınavı Geçme Puanı", en: "ÖGG Exam Score Calculator 2026 — Private Security Exam Passing Score" },
-            metaDescription: { tr: "Özel güvenlik görevlisi (ÖGG) sınavında 100 soruluk temel eğitim ile silah ve atış puanınızı girerek Silahlı / Silahsız geçme durumunuzu hesaplayın.", en: "Calculate your total ÖGG private security exam score and pass/fail status by entering basic training, weapon knowledge, and shooting section scores." },
+            title: { tr: "ÖGG Sınav Puan Hesaplama 2026 — Silahlı / Silahsız Ön İzleme", en: "ÖGG Exam Score Calculator 2026 — Armed / Unarmed Preview" },
+            metaDescription: { tr: "ÖGG temel eğitim, silah bilgisi ve atış verilerinize göre silahlı veya silahsız başarı durumunuzu hızlıca görün. Nihai belge sürecinde resmi duyurular esas alınır.", en: "Quickly see your armed or unarmed ÖGG outcome from your basic training, weapon knowledge, and shooting inputs. Official announcements remain the final reference for certification." },
             content: {
                 tr: "<p>Türkiye'de <strong>özel güvenlik görevlisi (ÖGG)</strong> olabilmek için Emniyet Genel Müdürlüğü (EGM) Özel Güvenlik Denetleme Başkanlığı tarafından düzenlenen teorik ve uygulamalı sınavları başarıyla geçmek zorunludur. Silahlı ve silahsız adaylar için değerlendirme kriterleri ve soru sayıları farklılık gösterir.</p><h3>ÖGG Sınavının Bölümleri ve Puanlama</h3><p><strong>1. Temel Eğitim Sınavı (Yazılı):</strong> Toplam 100 sorudan oluşur. Çözülen her doğru soru 1 puan değerindedir. Maksimum 100 puan alınabilir.<br><br><strong>2. Silah Bilgisi Sınavı (Yazılı):</strong> Toplam 25 sorudan oluşur. Her doğru cevap 2 puan değerindedir. Maksimum 50 puan alınabilir.<br><br><strong>3. Uygulamalı Atış Sınavı:</strong> Poligonda 5 el atış yapılır. Hedefe isabet eden her atış 10 puan değerindedir. Maksimum 50 puan alınabilir.</p><h3>ÖGG Geçme Şartları (Silahlı ve Silahsız)</h3><p><strong>Silahlı Özel Güvenlik Sınavı Geçme Şartları:</strong> Yazılı sınav ile silah bilgisi ve atış puanlarının toplamının aritmetik ortalamasının en az 60 olması gerekir. Formülü şu şekildedir: <strong>[ Temel Eğitim Puanı + (Silah Bilgisi Puanı + Atış Puanı) ] / 2 ≥ 60</strong>. Aynı zamanda Temel Eğitimden her halükarda en az 50 alınması zorunludur. Ayrıca (Silah Bilgisi + Atış) toplamının en az 50 olması gerekmektedir.</p><p><strong>Silahsız Özel Güvenlik Sınavı Geçme Şartı:</strong> Sadece 100 soruluk temel eğitim sınavına tabi olursunuz ve sınavı geçebilmek için 100 üzerinden en az 60 puan almanız yeterlidir. Eğer silahlı aday olarak başvurup genel averajı tutturamazsanız ancak temel eğitimden 60 ve üstü puan almışsanız, 'Silahsız Başarılı' sayılıp işleminize bu yönde devam edebilirsiniz.</p><h3>Hata Payı ve Yanlışlar</h3><p>ÖGG sınavlarında <strong>yanlış cevaplar doğru cevapları götürmez.</strong> Bu nedenle sınav esnasında boş soru bırakmamanız başarı oranınızı artıracaktır.</p>",
                 en: "<p>The ÖGG private security exam evaluation follows official EGM standards. Basic Training contains 100 questions (1 pt each). Weapon Knowledge has 25 questions (2 pts each). Shooting entails 5 shots (10 pts each). Passing Armed Security requires the average of [Basic + (Weapon+Shooting)] to be at least 60. Passing Unarmed requires at least 60 in Basic Training.</p>"
@@ -14189,14 +14331,22 @@ function faqEntry(trQuestion: string, trAnswer: string, enQuestion: string, enAn
 
 const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
     "maas-hesaplama": {
-        relatedCalculators: ["asgari-ucret-hesaplama", "gelir-vergisi-hesaplama", "kidem-tazminati-hesaplama", "ihbar-tazminati-hesaplama", "kira-vergisi-hesaplama"],
+        relatedCalculators: ["asgari-ucret-hesaplama", "gelir-vergisi-hesaplama", "damga-vergisi-hesaplama", "kidem-tazminati-hesaplama", "ihbar-tazminati-hesaplama"],
+        title: {
+            tr: "Maaş Hesaplama 2026 — Brütten Nete, Netten Brüte Maaş",
+            en: "Salary Calculator 2026 — Gross to Net and Net to Gross",
+        },
+        metaDescription: {
+            tr: "Brütten nete maaş hesaplama ve netten brüte çevirme işlemini 2026 SGK, gelir vergisi ve damga vergisi kurallarıyla tek ekranda yapın.",
+            en: "Calculate gross-to-net salary and reverse net-to-gross conversion with 2026 SGK, income tax, and stamp-duty rules in one screen.",
+        },
         contentAppend: {
-            tr: "Net maaş sonucunu yorumlarken yalnızca elinize geçen tutarı değil, SGK işçi payı, işsizlik primi, damga vergisi ve kümülatif gelir vergisi etkisini birlikte değerlendirmek gerekir. Aynı brüt ücret farklı aylarda farklı net sonuç verebileceği için özellikle yıl ortası vergi dilimi geçişlerinde Maaş Hesaplama aracı ile Gelir Vergisi, Asgari Ücret ve Tazminat hesaplayıcılarını birlikte kontrol etmek daha sağlıklı olur.",
-            en: "When interpreting net salary, evaluate not only the take-home pay but also SGK deductions, unemployment premium, stamp tax, and cumulative income tax effects together. The same gross salary can produce different net amounts across months, so checking salary together with income tax, minimum wage, and compensation tools is more reliable."
+            tr: "Net maaş sonucunu yorumlarken yalnızca elinize geçen tutarı değil, SGK işçi payı, işsizlik primi, damga vergisi ve kümülatif gelir vergisi etkisini birlikte değerlendirmek gerekir. Aynı brüt ücret farklı aylarda farklı net sonuç verebileceği için özellikle yıl içindeki vergi dilimi geçişlerinde sonucu <a href=\"/maas-ve-vergi/gelir-vergisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">gelir vergisi hesaplama</a>, <a href=\"/maas-ve-vergi/asgari-ucret-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">asgari ücret hesaplama</a> ve <a href=\"/maas-ve-vergi/damga-vergisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">damga vergisi hesaplama</a> araçlarıyla birlikte okumak daha sağlıklı olur.",
+            en: "When interpreting net salary, evaluate not only take-home pay but also SGK deductions, unemployment premium, stamp tax, and cumulative income tax effects together. Reading the result together with related tax tools makes the output more reliable.",
         },
         faqAppend: [
             faqEntry("Aynı brüt maaş neden farklı aylarda farklı net verir?", "Çünkü gelir vergisi Türkiye'de kümülatif ilerler. Yıl içinde vergi matrahınız yükseldikçe daha üst dilime geçebilir ve aynı brüt ücretin neti düşebilir.", "Why can the same gross salary produce different net pay in different months?", "Because income tax in Turkey is cumulative. As your tax base increases during the year, you may move into a higher bracket and receive lower net pay from the same gross salary."),
-            faqEntry("Maaş hesabında yan haklar dahil edilir mi?", "Düzenli ödenen yemek, yol, prim ve benzeri ödemeler bazı senaryolarda brüt maliyet ve tazminat hesabını etkileyebilir. Bu nedenle toplam ücret paketini ayrıca değerlendirmek gerekir.", "Are fringe benefits included in salary calculation?", "Regular meal, transport, bonus, and similar payments can affect gross cost and compensation scenarios. The full pay package should therefore be evaluated separately.")
+            faqEntry("Netten brüte maaş hesabı ne işe yarar?", "İş görüşmesinde hedef net ücret üzerinden pazarlık yaparken, işverenin teklif etmesi gereken yaklaşık brüt tutarı görmek için kullanılır. Böylece yalnızca net rakam değil toplam bordro etkisi de anlaşılır.", "What is net-to-gross salary calculation used for?", "It is useful when negotiating around a target take-home pay and you need to estimate the approximate gross amount required to produce that net result."),
         ],
     },
     "kidem-tazminati-hesaplama": {
@@ -14314,18 +14464,18 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
         ],
     },
     "indirim-hesaplama": {
-        relatedCalculators: ["zam-hesaplama", "kar-hesaplama", "fiyat-hesaplama", "yuzde-hesaplama"],
+        relatedCalculators: ["zam-hesaplama", "kar-hesaplama", "fiyat-hesaplama", "kar-zarar-marji", "yuzde-hesaplama"],
         title: {
-            tr: "İndirim Hesaplama — Kampanya, İskonto ve Net Satış Fiyatı",
-            en: "Discount Calculator — Campaign, Markdown and Net Price",
+            tr: "İndirim Hesaplama 2026 — İndirim Oranı, İskonto ve Net Fiyat",
+            en: "Discount Calculator 2026 — Markdown, Discount Rate and Net Price",
         },
         metaDescription: {
             tr: "Yüzde veya tutar bazlı indirim uyguladığınızda indirim tutarını, net satış fiyatını ve gerçek indirim oranını hızlıca hesaplayın.",
             en: "Quickly calculate discount amount, net sale price, and effective discount rate for percentage or fixed discounts.",
         },
         contentAppend: {
-            tr: "İndirim hesabı sadece müşteri tarafındaki son fiyatı göstermek için değil, kampanyanın marjı ne kadar aşındırdığını görmek için de kullanılır. Özellikle ardışık kampanyalarda tek büyük indirim ile iki ayrı indirimin aynı sonucu vermediğini unutmamak gerekir; bu nedenle sonuç kâr, fiyat ve yüzde araçlarıyla birlikte okunmalıdır.",
-            en: "Discount calculation is useful not only for the customer-facing final price but also for seeing how much a campaign erodes margin. In stacked promotions, one large discount and two sequential discounts do not usually produce the same result, so the outcome is best read together with profit, pricing, and percentage tools.",
+            tr: "İndirim hesaplama ekranı yalnızca müşteri tarafındaki son fiyatı göstermek için değil, kampanyanın marjı ne kadar aşındırdığını görmek için de kullanılır. Özellikle ardışık kampanyalarda tek büyük indirim ile iki ayrı indirimin aynı sonucu vermediğini unutmamak gerekir. Bu yüzden sonucu <a href=\"/ticaret-ve-is/kar-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kâr hesaplama</a>, <a href=\"/ticaret-ve-is/fiyat-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">fiyat hesaplama</a> ve <a href=\"/ticaret-ve-is/zam-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">zam hesaplama</a> araçlarıyla birlikte okumak daha doğru kampanya kararı verir.",
+            en: "Discount calculation is useful not only for the customer-facing final price but also for seeing how much a campaign erodes margin. Reviewing it together with profit, pricing, and markup tools gives a better campaign view.",
         },
         faqAppend: [
             faqEntry("Ardışık iki indirim neden toplam oranın toplamına eşit olmaz?", "Çünkü ikinci indirim ilk indirim sonrası düşen yeni fiyat üzerinden uygulanır. Bu nedenle örneğin iki ayrı yüzde indirimin etkisi tek seferde toplandığı kadar yüksek olmayabilir.", "Why are two sequential discounts not equal to simply adding the percentages?", "Because the second discount is applied to the already reduced price. Two percentage discounts therefore may not have the same effect as a single discount equal to their simple sum."),
@@ -14333,75 +14483,94 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
         ],
     },
     "zam-hesaplama": {
-        relatedCalculators: ["indirim-hesaplama", "kar-hesaplama", "fiyat-hesaplama", "enflasyon-hesaplama"],
+        relatedCalculators: ["indirim-hesaplama", "kar-hesaplama", "fiyat-hesaplama", "kar-zarar-marji", "enflasyon-hesaplama"],
         title: {
-            tr: "Zam Hesaplama — Yeni Fiyat, Artış Tutarı ve Etki Analizi",
-            en: "Price Increase Calculator — New Price and Increase Impact",
+            tr: "Zam Hesaplama 2026 — Yüzde Zam, Artış Tutarı ve Yeni Fiyat",
+            en: "Price Increase Calculator 2026 — Increase Rate and New Price",
         },
         metaDescription: {
             tr: "Yüzde veya tutar bazlı fiyat artışında zam tutarını ve yeni satış fiyatını hesaplayarak fiyat güncellemelerini daha kontrollü yönetin.",
             en: "Calculate increase amount and new sale price for percentage or fixed markups to manage price updates more consistently.",
         },
         contentAppend: {
-            tr: "Zam hesabı özellikle maliyet baskısı, enflasyon veya tedarik fiyatı artışı sonrasında fiyat listesini güncellerken önem kazanır. Ancak yeni fiyatı belirlerken yalnızca zam oranına bakmak yeterli değildir; müşterinin kabul sınırı, KDV etkisi ve hedef marj da birlikte düşünülmelidir.",
-            en: "Markup calculation becomes especially important when updating price lists after cost pressure, inflation, or supplier increases. Looking only at the markup rate is not enough; VAT impact, target margin, and customer price tolerance should also be considered.",
+            tr: "Zam hesaplama aracı özellikle maliyet baskısı, enflasyon veya tedarik fiyatı artışı sonrasında fiyat listesini güncellerken önem kazanır. Ancak yeni fiyatı belirlerken yalnızca zam oranına bakmak yeterli değildir; müşterinin kabul sınırı, KDV etkisi ve hedef marj da birlikte düşünülmelidir. Bu nedenle sonucu <a href=\"/ticaret-ve-is/fiyat-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">fiyat hesaplama</a>, <a href=\"/ticaret-ve-is/kar-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kâr hesaplama</a> ve <a href=\"/ticaret-ve-is/indirim-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">indirim hesaplama</a> ekranlarıyla birlikte okumak daha sağlıklıdır.",
+            en: "Markup calculation becomes especially important when updating price lists after cost pressure, inflation, or supplier increases. Reviewing the outcome together with price, profit, and discount tools gives a more balanced result.",
         },
         faqAppend: [
             faqEntry("Yüzde zam mı sabit tutar mı daha anlamlıdır?", "Bu, fiyat seviyesine ve ürün yapısına bağlıdır. Düşük fiyatlı ürünlerde sabit tutar daha anlaşılır olabilirken, geniş ürün gruplarında yüzde zam daha kolay uygulanır.", "Is percentage markup or fixed amount more meaningful?", "It depends on the price level and the product structure. Fixed amounts may be clearer on low-priced items, while percentage increases are often easier to apply across broader ranges."),
             faqEntry("Zam sonrası marjı ayrıca kontrol etmek gerekir mi?", "Evet. Yeni fiyat maliyet artışını karşılıyor gibi görünse bile hedef marjı tutturmayabilir. Bu yüzden zam sonucunu kâr ve fiyat hesaplayıcılarıyla çapraz kontrol etmek yararlıdır.", "Should margin be checked again after a price increase?", "Yes. Even if the new price appears to cover cost increases, it may still miss the target margin. Cross-checking with profit and pricing tools is useful."),
         ],
     },
-    "kar-hesaplama": {
-        relatedCalculators: ["zarar-hesaplama", "fiyat-hesaplama", "ortalama-maliyet-hesaplama", "kdv-hesaplama"],
+    "kar-zarar-marji": {
+        relatedCalculators: ["kar-hesaplama", "zarar-hesaplama", "fiyat-hesaplama", "ortalama-maliyet-hesaplama", "kdv-hesaplama"],
         title: {
-            tr: "Kâr Hesaplama — Marj, Markup ve Birim Kârlılık",
-            en: "Profit Calculator — Margin, Markup and Unit Profitability",
+            tr: "Kâr Marjı Hesaplama 2026 — Satış Fiyatı, Markup ve Marj",
+            en: "Profit Margin Calculator 2026 — Sale Price, Markup and Margin",
+        },
+        metaDescription: {
+            tr: "Maliyet ve satış fiyatından kâr veya zarar tutarını, kâr marjını ve markup oranını hesaplayın. Satış fiyatı planlaması ve birim kârlılık analizi için ücretsiz araç.",
+            en: "Calculate profit or loss amount, profit margin, and markup from cost and sale price for pricing and unit-profit analysis.",
+        },
+        contentAppend: {
+            tr: "Kâr marjı hesaplama ekranı yalnızca tek bir ürünün kârlılığını görmek için değil; satış fiyatı revizyonu, kampanya sınırı belirleme ve yeni sipariş kararı alma süreçlerinde de kullanılır. Özellikle <strong>marj</strong> ile <strong>markup</strong> farkı doğru okunmadığında işletme beklediğinden düşük kârlılıkla çalışabilir. Bu nedenle sonucu <a href=\"/ticaret-ve-is/kar-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kâr hesaplama</a>, <a href=\"/ticaret-ve-is/fiyat-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">fiyat hesaplama</a> ve <a href=\"/ticaret-ve-is/ortalama-maliyet-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">ortalama maliyet hesaplama</a> araçlarıyla birlikte okumak daha sağlıklı karar verir.",
+            en: "The profit-margin screen helps not only with single-product profitability but also with repricing, campaign-floor decisions, and reorder planning. Reviewing it together with profit, price, and average-cost tools supports healthier decisions.",
+        },
+        faqAppend: [
+            faqEntry("Kâr marjı ile markup neden farklı çıkar?", "Çünkü kâr marjı satış fiyatını, markup ise maliyeti baz alır. Aynı kâr tutarı iki farklı tabana bölündüğü için yüzdeler doğal olarak farklı görünür.", "Why do profit margin and markup produce different percentages?", "Because profit margin uses sale price as the base, while markup uses cost. The same profit amount produces different percentages when divided by different bases."),
+            faqEntry("Satış fiyatını hedef marja göre mi hedef markup'a göre mi kurmalıyım?", "Perakende ve e-ticarette çoğu zaman kâr marjı daha anlamlıdır; ancak satın alma ve tedarik dilinde maliyet üstüne eklenen oran yani markup daha sık kullanılır. Önemli olan tüm ekipte tek tanım üzerinde anlaşmaktır.", "Should I set sale price from target margin or target markup?", "Retail and e-commerce teams often work with margin, while procurement teams often use markup. The important thing is aligning the entire team on the same definition."),
+        ],
+    },
+    "kar-hesaplama": {
+        relatedCalculators: ["kar-zarar-marji", "fiyat-hesaplama", "ortalama-maliyet-hesaplama", "indirim-hesaplama", "kdv-hesaplama"],
+        title: {
+            tr: "Kâr Hesaplama 2026 — Kâr Marjı, Markup ve Birim Kârlılık",
+            en: "Profit Calculator 2026 — Margin, Markup and Unit Profitability",
         },
         metaDescription: {
             tr: "Maliyet ve satış fiyatına göre kâr tutarını, satışa göre marjı ve maliyete göre markup oranını aynı ekranda hesaplayın.",
             en: "Calculate profit amount, sales margin, and markup versus cost on the same screen using cost and selling price.",
         },
         contentAppend: {
-            tr: "Kâr hesabında en sık karıştırılan konu marj ile markup farkıdır. Bir ürünün satışa göre kâr marjı yüksek görünürken maliyete göre kâr oranı farklı olabilir; bu nedenle fiyatlama, kampanya ve stok yenileme kararlarında hangi metriğe baktığınızı netleştirmek gerekir.",
-            en: "The most commonly confused issue in profit analysis is the difference between margin and markup. A product can look strong on sales margin while showing a different result on cost-based markup, so pricing, campaign, and replenishment decisions should be tied to the metric you actually intend to manage.",
+            tr: "Kâr hesaplama aracı özellikle <strong>kâr marjı hesaplama</strong>, <strong>markup hesaplama</strong> ve <strong>satıştan ne kadar kazanıyorum</strong> gibi sorgular için pratik bir çerçeve sunar. Buradaki en kritik ayrım, kâr tutarını tek başına değil yüzdesel verimlilikle birlikte okumaktır. Sonucu <a href=\"/ticaret-ve-is/fiyat-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">fiyat hesaplama</a>, <a href=\"/ticaret-ve-is/ortalama-maliyet-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">ortalama maliyet hesaplama</a> ve kampanya etkisini görmek için <a href=\"/ticaret-ve-is/indirim-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">indirim hesaplama</a> araçlarıyla birlikte değerlendirmek daha doğru olur.",
+            en: "This profit calculator is useful for common intent such as margin, markup, and earnings-per-sale analysis. Reading the output together with pricing, average-cost, and discount tools gives a more complete business picture.",
         },
         faqAppend: [
-            faqEntry("Marj mı markup mı daha çok kullanılmalı?", "Yönetmek istediğiniz karara bağlıdır. Satış gelirinin ne kadarının kâr olduğunu görmek istiyorsanız marj; maliyet üzerine ne kadar eklediğinizi görmek istiyorsanız markup daha uygundur.", "Should I focus on margin or markup?", "It depends on the decision you are making. If you want to know how much of sales turns into profit, use margin; if you want to know how much was added on top of cost, use markup."),
-            faqEntry("KDV dahil fiyatla kâr hesabı yapmak doğru mu?", "Genelde hayır. Kârlılık analizinde vergi hariç satış ve maliyet tutarlarıyla çalışmak daha tutarlı sonuç verir; aksi halde marj olduğundan farklı görünebilir.", "Is it correct to calculate profit using VAT-inclusive prices?", "Usually no. Profitability analysis is more consistent when it uses VAT-exclusive sale and cost figures; otherwise the margin can be distorted."),
+            faqEntry("Kâr oranı ile kâr marjı neden aynı değildir?", "Kâr oranı genellikle maliyete göre, kâr marjı ise satış fiyatına göre hesaplanır. Bu nedenle aynı ürün için iki oran farklı seviyelerde çıkabilir.", "Why are profit rate and profit margin not the same?", "Profit rate is usually measured against cost, while profit margin is measured against sale price. The same product can therefore show two different ratios."),
+            faqEntry("Satış fiyatını geriye doğru hangi mantıkla kurabilirim?", "Önce ortalama birim maliyeti netleştirin, ardından hedef marj veya markup seçin. Sonrasında fiyatı <a href=\"/ticaret-ve-is/fiyat-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">fiyat hesaplama</a> ekranıyla test ederek kâr hedefinizin korunup korunmadığını kontrol edin.", "How can I derive the sale price backwards?", "First confirm the average unit cost, then decide whether you are targeting margin or markup. Next, test the result with the price calculator to confirm the profit goal is protected."),
         ],
     },
     "zarar-hesaplama": {
-        relatedCalculators: ["kar-hesaplama", "indirim-hesaplama", "ortalama-maliyet-hesaplama", "fiyat-hesaplama"],
+        relatedCalculators: ["kar-hesaplama", "kar-zarar-marji", "indirim-hesaplama", "ortalama-maliyet-hesaplama", "fiyat-hesaplama"],
         title: {
-            tr: "Zarar Hesaplama — Zarar Tutarı, Oranı ve Taban Fiyat Etkisi",
-            en: "Loss Calculator — Loss Amount, Rate and Floor Price Effect",
+            tr: "Zarar Hesaplama 2026 — Zarar Tutarı, Oranı ve Zararına Satış",
+            en: "Loss Calculator 2026 — Loss Amount, Rate and Loss-Leading Sales",
         },
         metaDescription: {
             tr: "Maliyetin altında satış yaptığınızda oluşan zarar tutarını ve zarar oranını hesaplayarak kampanya ve tasfiye kararlarını daha net görün.",
             en: "Calculate loss amount and rate when selling below cost to evaluate clearance and campaign decisions more clearly.",
         },
         contentAppend: {
-            tr: "Zarar hesabı özellikle stok eritme, sezon sonu satış ve nakit akışı baskısında anlam kazanır. Ancak her düşük fiyat aynı stratejik sonucu doğurmaz; bir ürünün zararına satılması toplam stok dönüşünü hızlandırırken diğer ürünlerde kârlılığı koruma ihtiyacı devam edebilir.",
-            en: "Loss calculation becomes meaningful especially in stock liquidation, end-of-season sales, and cash-flow pressure. Yet not every low-price decision has the same strategic effect; selling one item at a loss may accelerate overall inventory turnover while margins still need to be protected elsewhere.",
+            tr: "Zarar hesaplama sayfası özellikle <strong>zararına satış</strong>, <strong>zarar oranı hesaplama</strong> ve <strong>taban fiyat</strong> kararlarında kullanılır. Tek bir ürünün zararına satılması bazen stok devir hızını artırabilir; ancak bu karar toplam sepet kârlılığını bozuyorsa sürdürülebilir olmaz. Bu yüzden sonucu <a href=\"/ticaret-ve-is/kar-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kâr hesaplama</a>, <a href=\"/ticaret-ve-is/ortalama-maliyet-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">ortalama maliyet hesaplama</a> ve kampanya baskısını görmek için <a href=\"/ticaret-ve-is/indirim-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">indirim hesaplama</a> araçlarıyla birlikte okumak gerekir.",
+            en: "This loss page is particularly useful for loss-leading, loss-rate, and floor-price decisions. Reading it together with profit, average-cost, and discount tools helps reveal whether the decision is strategically sustainable.",
         },
         faqAppend: [
-            faqEntry("Zararına satış her zaman kötü müdür?", "Her zaman değil. Bazen nakit akışını hızlandırmak, eski stoğu eritmek veya müşteri çekmek için kontrollü zararına satış yapılabilir. Önemli olan bunun toplam iş sonucuna etkisini ölçmektir.", "Is selling at a loss always bad?", "Not always. Controlled loss-leading can be used to accelerate cash flow, clear old stock, or attract customers. The important point is measuring its effect on the overall business result."),
-            faqEntry("Minimum satış fiyatı neden önceden belirlenmeli?", "Çünkü kampanya sırasında duygusal veya rekabet baskısıyla fiyat düşürmek kolaydır. Önceden belirlenen taban fiyat, zarar seviyesinin kontrolden çıkmasını engeller.", "Why should a minimum sale price be defined in advance?", "Because under campaign or competitive pressure, prices can be cut too quickly. A predefined floor price helps prevent the loss level from getting out of control."),
+            faqEntry("Zarar oranını maliyete göre mi satışa göre mi okumalıyım?", "Operasyonel kararların çoğunda maliyete göre oran daha pratiktir; çünkü ne kadar sermaye aşındığını gösterir. Ancak raporlamada satışa göre okuma da ayrıca anlamlı olabilir.", "Should I read the loss rate against cost or against sales?", "For many operational decisions, measuring against cost is more practical because it shows how much capital is being eroded. Reading it against sales can still be useful for reporting."),
+            faqEntry("Zararına kampanya planlarken hangi eşiği takip etmeliyim?", "Önce minimum kabul edilebilir satış fiyatını belirleyin, ardından kampanya sonrası sepet kârlılığını test edin. Gerekirse <a href=\"/ticaret-ve-is/fiyat-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">fiyat hesaplama</a> ve <a href=\"/finansal-hesaplamalar/kar-zarar-marji\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kâr/zarar marjı</a> araçlarıyla senaryo kurun.", "Which threshold should I track when planning a loss-leading campaign?", "Set the minimum acceptable sale price first, then test basket profitability after the campaign. If needed, build scenarios with the price and profit-margin tools."),
         ],
     },
     "ortalama-maliyet-hesaplama": {
-        relatedCalculators: ["kar-hesaplama", "zarar-hesaplama", "fiyat-hesaplama", "kargo-ucreti-hesaplama"],
+        relatedCalculators: ["kar-hesaplama", "zarar-hesaplama", "fiyat-hesaplama", "kargo-ucreti-hesaplama", "desi-hesaplama"],
         title: {
-            tr: "Ortalama Maliyet Hesaplama — Ağırlıklı Birim Maliyet",
-            en: "Average Cost Calculator — Weighted Unit Cost",
+            tr: "Ortalama Maliyet Hesaplama 2026 — Ağırlıklı Birim Maliyet",
+            en: "Average Cost Calculator 2026 — Weighted Unit Cost",
         },
         metaDescription: {
             tr: "Farklı fiyat ve miktarlardaki alımları birleştirerek toplam maliyeti ve ağırlıklı ortalama birim maliyeti hızlıca hesaplayın.",
             en: "Combine purchases made at different prices and quantities to calculate total cost and weighted average unit cost quickly.",
         },
         contentAppend: {
-            tr: "Ağırlıklı ortalama maliyet özellikle aynı ürün farklı fiyatlardan tekrar tekrar alındığında işe yarar. Tek birim maliyeti ortaya çıkarmak; kâr hesabı, fiyat güncellemesi ve stok değerlendirmesinde dağınık alım fiyatlarıyla uğraşmadan daha tutarlı karar vermenizi sağlar.",
-            en: "Weighted average cost is especially useful when the same product is purchased repeatedly at different prices. Reducing all purchases to one unit cost supports more consistent decisions in pricing, profit analysis, and inventory review without juggling scattered purchase prices.",
+            tr: "Ağırlıklı ortalama maliyet özellikle aynı ürün farklı partilerde ve farklı fiyatlardan alındığında kritik hale gelir. Tek birim maliyeti netleştirmek; <a href=\"/ticaret-ve-is/kar-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kâr hesaplama</a>, <a href=\"/ticaret-ve-is/fiyat-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">fiyat hesaplama</a> ve lojistik yükünü görmek için <a href=\"/ticaret-ve-is/kargo-ucreti-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kargo ücreti hesaplama</a> araçlarında daha sağlıklı karar vermeyi sağlar. Dağınık alım fiyatlarıyla çalışmak yerine tek bir referans maliyet kullanmak operasyonu sadeleştirir.",
+            en: "Weighted average cost becomes critical when the same product is purchased in different batches and at different prices. Using one reference unit cost simplifies pricing and profitability analysis.",
         },
         faqAppend: [
             faqEntry("Ağırlıklı ortalama maliyet ne zaman yanıltıcı olabilir?", "Alımlar arasında ciddi kalite farkı, farklı lot özellikleri veya ayrı satış kanalları varsa tek ortalama değer bazı detayları gizleyebilir. Böyle durumlarda ürün gruplarını ayırarak hesap yapmak daha sağlıklıdır.", "When can weighted average cost be misleading?", "If purchases differ materially in quality, lot characteristics, or sales channels, one blended average can hide important detail. In such cases it is better to calculate by separate groups."),
@@ -14447,22 +14616,22 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
         ],
     },
     "fiyat-hesaplama": {
-        relatedCalculators: ["kar-hesaplama", "ortalama-maliyet-hesaplama", "indirim-hesaplama", "zam-hesaplama"],
+        relatedCalculators: ["kar-hesaplama", "kar-zarar-marji", "ortalama-maliyet-hesaplama", "indirim-hesaplama", "zam-hesaplama"],
         title: {
-            tr: "Fiyat Hesaplama — Hedef Marjdan Satış Fiyatı Bulma",
-            en: "Price Calculator — Finding Sale Price from Target Margin",
+            tr: "Fiyat Hesaplama 2026 — Satış Fiyatı, Marj ve Birim Kâr",
+            en: "Price Calculator 2026 — Sale Price, Margin and Unit Profit",
         },
         metaDescription: {
             tr: "Birim maliyet ve hedef kâr marjına göre KDV hariç satış fiyatını ve birim kâr tutarını hesaplayarak daha dengeli fiyatlandırma yapın.",
             en: "Use unit cost and target margin to calculate VAT-exclusive sale price and unit profit for more controlled pricing.",
         },
         contentAppend: {
-            tr: "Fiyat hesabında en önemli nokta, hedeflediğiniz oranın marj mı yoksa markup mı olduğunu doğru tanımlamaktır. İşletmeler çoğu zaman bu ikisini karıştırdığı için fiyat listesi ya beklenenden düşük kârlı olur ya da pazarda gereksiz pahalı kalır.",
-            en: "The most important point in pricing is defining correctly whether your target is a margin or a markup. Businesses often mix the two, causing price lists to end up either less profitable than expected or unnecessarily expensive in the market.",
+            tr: "Fiyat hesaplama ekranı, <strong>satış fiyatı hesaplama</strong> ve <strong>ürünü kaça satmalıyım</strong> gibi niyetler için doğrudan çözüm üretir. Burada kritik konu, hedeflediğiniz yüzdelik değerin marj mı yoksa markup mı olduğunu doğru tanımlamaktır. Fiyatı belirledikten sonra sonucu <a href=\"/ticaret-ve-is/kar-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kâr hesaplama</a>, <a href=\"/ticaret-ve-is/ortalama-maliyet-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">ortalama maliyet hesaplama</a> ve kampanya senaryoları için <a href=\"/ticaret-ve-is/indirim-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">indirim hesaplama</a> araçlarıyla test etmek fiyat politikasını daha dengeli hale getirir.",
+            en: "This screen directly supports selling-price questions. The key is defining correctly whether the target percentage refers to margin or markup, then validating the result with profit, average-cost, and discount tools.",
         },
         faqAppend: [
             faqEntry("Hedef marj yükseldikçe fiyat neden hızla artar?", "Çünkü formül satış fiyatını maliyetin üzerine doğrusal değil, payda mantığıyla taşır. Marj yüzde olarak yükseldikçe aynı maliyetten gereken satış fiyatı daha hızlı büyür.", "Why does the required price rise so quickly as target margin increases?", "Because the formula does not add linearly over cost; it works through the selling-price denominator. As margin climbs, the required sale price rises faster."),
-            faqEntry("Bulunan fiyatın üstüne KDV ayrıca eklenmeli mi?", "Eğer hesap KDV hariç fiyat üzerinden yapılıyorsa evet. Nihai etiket veya fatura fiyatı için ilgili vergi oranını ayrıca düşünmek gerekir.", "Should VAT be added on top of the calculated price?", "Yes, if the calculation is based on a VAT-exclusive value. The relevant tax rate should be considered separately for final label or invoice pricing."),
+            faqEntry("KDV dahil nihai etiket fiyatını nasıl bulurum?", "Önce KDV hariç satış fiyatını bu araçla hesaplayın, sonra ilgili vergi oranını <a href=\"/finansal-hesaplamalar/kdv-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">KDV hesaplama</a> sayfasıyla ekleyin. Böylece iç kârlılık ve son kullanıcı fiyatı ayrı ayrı yönetilebilir.", "How do I find the final VAT-inclusive sticker price?", "First calculate the VAT-exclusive sale price here, then add the relevant VAT rate with the VAT calculator. This helps manage internal profitability and customer-facing price separately."),
         ],
     },
     "insaat-alani-hesaplama": {
@@ -14504,37 +14673,41 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
         ],
     },
     "gelir-vergisi-hesaplama": {
-        relatedCalculators: ["maas-hesaplama", "asgari-ucret-hesaplama", "kira-vergisi-hesaplama", "kidem-tazminati-hesaplama", "enflasyon-hesaplama"],
+        relatedCalculators: ["maas-hesaplama", "asgari-ucret-hesaplama", "kira-vergisi-hesaplama", "damga-vergisi-hesaplama", "kurumlar-vergisi-hesaplama"],
         title: {
-            tr: "Gelir Vergisi Hesaplama 2026 — Yıllık Vergi Dilimleri ve Efektif Oran",
-            en: "Income Tax Calculator 2026 — Annual Brackets and Effective Rate",
+            tr: "Gelir Vergisi Hesaplama 2026 — Vergi Dilimleri, Efektif Oran ve Net Gelir",
+            en: "Income Tax Calculator 2026 — Tax Brackets, Effective Rate and Net Income",
         },
         metaDescription: {
             tr: "2026 gelir vergisi dilimlerine göre yıllık vergi tutarını, efektif oranı ve vergi sonrası net geliri tek ekranda hesaplayın.",
             en: "Calculate annual income tax, effective rate, and after-tax net income under 2026 tax brackets.",
         },
         contentAppend: {
-            tr: "Gelir vergisi hesabında matrahın hangi gelir unsurundan oluştuğu kadar yıl içindeki kümülatif toplam da önemlidir. Ücret, kira veya ticari kazanç hesaplanırken istisna, gider ve dilim etkisini ayrıca görmek için ilgili vergi ve maaş araçları arasında geçiş yapmak daha doğru bir vergi planlaması sağlar.",
-            en: "In income tax calculations, not only the type of taxable income but also the cumulative total during the year matters. Moving between salary and tax tools helps evaluate exemptions, deductions, and bracket effects more accurately."
+            tr: "Gelir vergisi hesabında matrahın hangi gelir unsurundan oluştuğu kadar yıl içindeki kümülatif toplam da önemlidir. Ücret, kira veya ticari kazanç hesaplanırken istisna, gider ve dilim etkisini ayrıca görmek için sonucu <a href=\"/maas-ve-vergi/maas-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">maaş hesaplama</a>, <a href=\"/maas-ve-vergi/kira-vergisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kira vergisi hesaplama</a> ve <a href=\"/maas-ve-vergi/kurumlar-vergisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kurumlar vergisi hesaplama</a> araçlarıyla birlikte okumak daha doğru bir vergi planlaması sağlar.",
+            en: "In income tax calculations, not only the type of taxable income but also the cumulative total during the year matters. Reading the result together with salary, rental-tax, and corporate-tax tools gives better planning context.",
         },
         faqAppend: [
             faqEntry("Gelir vergisi neden kümülatif hesaplanır?", "Ücret gelirlerinde vergi dilimi yıl başından itibaren oluşan toplam matraha göre izlenir. Bu yüzden ilerleyen aylarda aynı kazanç için daha yüksek oran uygulanabilir.", "Why is income tax calculated cumulatively?", "For salary income, the tax bracket follows the total accumulated base from the beginning of the year. Therefore a higher rate may apply to the same income in later months."),
-            faqEntry("Vergi dilimine girmek net maaşı nasıl etkiler?", "Yeni vergi dilimine geçildiğinde brüt ücret değişmese bile gelir vergisi kesintisi artar ve çalışanın eline geçen net tutar düşebilir.", "How does moving into a tax bracket affect net salary?", "When you move into a new tax bracket, income tax withholding rises even if gross wage is unchanged, which can reduce take-home pay.")
+            faqEntry("Efektif vergi oranı neden marjinal orandan daha düşüktür?", "Çünkü toplam gelirinizin tamamı en yüksek dilimden vergilenmez; her kısım kendi dilim oranıyla hesaplanır. Bu yüzden son dilime girseniz bile toplam verginizin gelire oranı genelde daha düşüktür.", "Why is the effective tax rate lower than the marginal rate?", "Because not all of your income is taxed at the highest bracket; each portion is taxed at its own bracket rate. That is why the overall rate is usually lower than the last-bracket rate."),
         ],
     },
     "asgari-ucret-hesaplama": {
         relatedCalculators: ["maas-hesaplama", "gelir-vergisi-hesaplama", "kidem-tazminati-hesaplama", "ihbar-tazminati-hesaplama", "kira-vergisi-hesaplama"],
+        title: {
+            tr: "Asgari Ücret 2026 — Brüt, Net ve İşveren Maliyeti",
+            en: "Minimum Wage 2026 — Gross, Net and Employer Cost",
+        },
         metaDescription: {
-            tr: "2026 asgari ücret için brüt tutarı, net ele geçen ücreti ve işveren toplam maliyetini tek sayfada karşılaştırın.",
-            en: "Review 2026 minimum wage gross pay, take-home pay, and total employer cost in one page.",
+            tr: "2026 asgari ücret için brüt tutarı, net ele geçen ücreti ve işveren maliyeti senaryosunu tek sayfada karşılaştırın.",
+            en: "Review 2026 minimum wage gross pay, take-home pay, and an employer-cost scenario in one page.",
         },
         contentAppend: {
-            tr: "Asgari ücret hesabı çoğu kullanıcı için yalnızca aylık net tutarı görmekten ibaret değildir; işverene toplam maliyet, yan hakların etkisi ve tazminat tabanları da aynı verinin farklı kullanım alanlarıdır. Bu yüzden asgari ücret sonucu, maaş ve tazminat hesaplarıyla birlikte yorumlandığında daha işlevsel hale gelir.",
-            en: "For many users, minimum wage calculation is not only about seeing the monthly net amount; employer cost, fringe benefit impact, and compensation bases are also derived from the same data. The result becomes more useful when read together with salary and compensation tools."
+            tr: "Asgari ücret hesabı çoğu kullanıcı için yalnızca aylık net tutarı görmekten ibaret değildir; işverene toplam maliyet, yan hakların etkisi ve tazminat tabanları da aynı verinin farklı kullanım alanlarıdır. Bu yüzden sonucu <a href=\"/maas-ve-vergi/maas-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">maaş hesaplama</a>, <a href=\"/maas-ve-vergi/gelir-vergisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">gelir vergisi hesaplama</a> ve <a href=\"/maas-ve-vergi/kidem-tazminati-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kıdem tazminatı hesaplama</a> araçlarıyla birlikte yorumlamak daha işlevseldir.",
+            en: "For many users, minimum wage calculation is not only about the monthly net figure; employer cost, benefit impact, and compensation bases are derived from the same data. The result becomes more useful when read together with salary and tax tools.",
         },
         faqAppend: [
             faqEntry("Asgari ücret işverene maliyet ile net ücret aynı şey midir?", "Hayır. Çalışanın eline geçen net ücret ile işverenin SGK ve diğer yükümlülüklerle katlandığı toplam maliyet farklıdır.", "Is employer cost the same as net minimum wage?", "No. The employee's take-home pay differs from the employer's total cost, which includes SGK and other liabilities."),
-            faqEntry("Asgari ücret tazminat hesaplarını etkiler mi?", "Evet. Özellikle alt ücret grubunda kıdem, ihbar ve bazı işçilik alacaklarının tabanını yorumlarken asgari ücret düzeyi önemli referans oluşturur.", "Does minimum wage affect compensation calculations?", "Yes. Especially for lower wage groups, minimum wage is an important reference when interpreting severance, notice, and similar employment claims.")
+            faqEntry("Temmuz 2026 tutarı neden tahmini görünüyor?", "Çünkü yıl içindeki ikinci artış ancak resmi karar açıklandığında kesinleşir. Sayfadaki tahmini alan planlama içindir; bağlayıcı veri olarak resmi açıklama esas alınmalıdır.", "Why does the July 2026 amount appear as estimated?", "Because any second increase during the year becomes final only after the official decision. The estimated field is for planning only; the official announcement should be treated as authoritative."),
         ],
     },
     "kira-artis-hesaplama": {
@@ -14551,20 +14724,20 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
     "kira-vergisi-hesaplama": {
         relatedCalculators: ["gelir-vergisi-hesaplama", "kira-artis-hesaplama", "maas-hesaplama", "enflasyon-hesaplama", "mevduat-faiz-hesaplama"],
         title: {
-            tr: "Kira Vergisi Hesaplama 2026 — GMSİ, İstisna ve Gider Yöntemi",
-            en: "Rental Income Tax Calculator 2026 — Exemption and Expense Method",
+            tr: "Kira Vergisi Hesaplama 2026 — GMSİ, İstisna, Götürü ve Gerçek Gider",
+            en: "Rental Income Tax Calculator 2026 — Exemption and Expense Methods",
         },
         metaDescription: {
             tr: "2026 kira geliri için istisna tutarını, götürü veya gerçek gider etkisini ve hesaplanan gelir vergisini birlikte görün.",
             en: "See the 2026 rental income exemption, expense-method impact, and calculated income tax together.",
         },
         contentAppend: {
-            tr: "Kira vergisi hesabında istisna tutarı kadar gider yöntemi seçimi de sonucu değiştirir. Gerçek gider ile götürü gider arasında doğru tercih yapılmadığında ödenecek vergi olduğundan yüksek ya da düşük tahmin edilebilir; bu nedenle toplam gelir yapısını da dikkate almak gerekir.",
-            en: "In rent tax calculations, not only the exemption amount but also the expense method affects the result. Choosing incorrectly between actual and lump-sum expenses can overstate or understate tax due, so the overall income structure should be considered."
+            tr: "Kira vergisi hesabında istisna tutarı kadar gider yöntemi seçimi de sonucu değiştirir. Gerçek gider ile götürü gider arasında doğru tercih yapılmadığında ödenecek vergi olduğundan yüksek ya da düşük tahmin edilebilir. Bu nedenle sonucu <a href=\"/maas-ve-vergi/kira-stopaj-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kira stopaj hesaplama</a>, <a href=\"/maas-ve-vergi/gelir-vergisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">gelir vergisi hesaplama</a> ve <a href=\"/finansal-hesaplamalar/enflasyon-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">enflasyon hesaplama</a> araçlarıyla birlikte değerlendirmek daha doğru bir tablo sunar.",
+            en: "In rent tax calculations, not only the exemption amount but also the expense method affects the result. Reviewing the output together with rent-withholding, income-tax, and inflation tools gives better context.",
         },
         faqAppend: [
             faqEntry("Götürü gider mi gerçek gider mi avantajlı?", "Bu tercih kira gelirinizin düzeyine ve belgeleyebildiğiniz masraflara göre değişir. Belirli bir yılda bir yöntem daha avantajlıyken sonraki yılda diğer yöntem öne çıkabilir.", "Which is better: lump-sum or actual expense method?", "The better choice depends on your rental income level and documented expenses. One method may be more favorable in one year and the other in the next."),
-            faqEntry("İstisna sonrası vergi yine yüksek çıkarsa neden?", "Çünkü istisna yalnızca belirli kısmı düşer; kalan vergiye tabi matrah için ayrıca gider yöntemi ve vergi dilimi etkisi devam eder.", "Why can tax still be high after the exemption?", "Because the exemption removes only part of the income; expense method and tax brackets still affect the remaining taxable base.")
+            faqEntry("İşyeri kira stopajı ödendiyse vergiye etkisi olur mu?", "Evet. İşyeri kiralarında kiracı tarafından kesilen stopaj, yıllık beyanda mahsup mekanizmasını etkileyebilir. Bu nedenle yalnızca kira tutarını değil stopaj akışını da ayrıca izlemek gerekir.", "Does paid commercial-rent withholding affect the annual tax?", "Yes. In commercial rent, withholding paid by the tenant can affect offset treatment in the annual return. That is why the withholding flow should be tracked separately as well."),
         ],
     },
     "harcirah-yolluk-hesaplama": {
@@ -14586,21 +14759,22 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
         ],
     },
     "damga-vergisi-hesaplama": {
-        relatedCalculators: ["kdv-tevkifati-hesaplama", "kira-stopaj-hesaplama", "gelir-vergisi-hesaplama", "kambiyo-vergisi-hesaplama"],
+        relatedCalculators: ["kira-stopaj-hesaplama", "gelir-vergisi-hesaplama", "kira-vergisi-hesaplama", "kdv-tevkifati-hesaplama", "kambiyo-vergisi-hesaplama"],
         title: {
-            tr: "Damga Vergisi Hesaplama 2026 — Sözleşme ve Kira Damga Vergisi",
-            en: "Stamp Duty Calculator 2026 — Contract and Rent Documents",
+            tr: "Damga Vergisi Hesaplama 2026 — Sözleşme, Kira ve İhale Damga Vergisi",
+            en: "Stamp Duty Calculator 2026 — Contract, Rent and Tender Documents",
         },
         metaDescription: {
             tr: "Sözleşme, kira veya ihale kararında uygulanacak damga vergisini belge türüne ve tutara göre hızlıca hesaplayın.",
             en: "Quickly calculate stamp duty on contracts, rental agreements, or tender decisions based on document type and amount.",
         },
         contentAppend: {
-            tr: "Damga vergisinde asıl kritik nokta, hangi belge türünün hangi oranla vergilendirildiğini doğru sınıflandırmaktır. Aynı tutar üzerinden düzenlenen iki farklı belge çok farklı vergi üretebilir; bu nedenle sonuç, kira stopajı ve diğer vergi araçlarıyla birlikte yorumlandığında daha net anlam kazanır.",
-            en: "The key issue in stamp duty is classifying the document type correctly, because two documents with the same amount may trigger very different rates. The result becomes more meaningful when read together with rent withholding and related tax tools.",
+            tr: "Damga vergisinde asıl kritik nokta, hangi belge türünün hangi oranla vergilendirildiğini doğru sınıflandırmaktır. Aynı tutar üzerinden düzenlenen iki farklı belge çok farklı vergi üretebilir; bu nedenle sonucu <a href=\"/maas-ve-vergi/kira-stopaj-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kira stopaj hesaplama</a>, <a href=\"/maas-ve-vergi/kira-vergisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kira vergisi hesaplama</a> ve <a href=\"/maas-ve-vergi/gelir-vergisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">gelir vergisi hesaplama</a> araçlarıyla birlikte yorumlamak daha net bir çerçeve sunar.",
+            en: "The key issue in stamp duty is classifying the document type correctly, because two documents with the same amount may trigger very different taxes. Reading the result with related tax tools gives clearer context.",
         },
         faqAppend: [
             faqEntry("Damga vergisi sözleşmenin hangi tutarı üzerinden hesaplanır?", "Genellikle sözleşmede yer alan parasal bedel esas alınır. Ancak belge niteliği ve istisna hükümleri sonucu değiştirebileceği için nihai yorumda sözleşme içeriği önemlidir.", "Which amount is used to calculate stamp duty?", "The monetary amount written in the document is usually taken as the basis. However, the document type and exemptions can change the outcome, so the contract content still matters."),
+            faqEntry("Kira sözleşmesinde damga vergisi ile stopaj aynı şey midir?", "Hayır. Damga vergisi belge üzerinden doğan ayrı bir vergidir; kira stopajı ise işyeri kiralarında kira ödemesi üzerinden kesilen gelir vergisi niteliğindeki ayrı bir yükümlülüktür.", "Is stamp duty the same as withholding in a rental contract?", "No. Stamp duty is a separate tax arising from the document itself, while rent withholding is a different tax burden deducted from commercial-rent payments."),
         ],
     },
     "kdv-tevkifati-hesaplama": {
@@ -14622,39 +14796,41 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
         ],
     },
     "kurumlar-vergisi-hesaplama": {
-        relatedCalculators: ["gelir-vergisi-hesaplama", "vergi-gecikme-faizi-hesaplama", "kdv-tevkifati-hesaplama", "gumruk-vergisi-hesaplama"],
+        relatedCalculators: ["gelir-vergisi-hesaplama", "vergi-gecikme-faizi-hesaplama", "kdv-tevkifati-hesaplama", "damga-vergisi-hesaplama", "gumruk-vergisi-hesaplama"],
         title: {
-            tr: "Kurumlar Vergisi Hesaplama 2026 — Yıllık ve Geçici Vergi",
-            en: "Corporate Tax Calculator 2026 — Annual and Provisional Tax",
+            tr: "Kurumlar Vergisi Hesaplama 2026 — Yıllık Vergi, Geçici Vergi ve Net Kâr",
+            en: "Corporate Tax Calculator 2026 — Annual Tax, Provisional Tax and Net Profit",
         },
         metaDescription: {
             tr: "Şirket kârı üzerinden yıllık kurumlar vergisini, dönemsel geçici vergi yükünü ve vergi sonrası net kârı birlikte hesaplayın.",
             en: "Calculate annual corporate tax, provisional tax burden, and after-tax net profit from company earnings.",
         },
         contentAppend: {
-            tr: "Kurumlar vergisinde sadece yıl sonu vergi yükü değil, geçici vergi dönemlerinde oluşan nakit çıkışı da önemlidir. Şirket kârlılığı, ertelenmiş vergi etkileri ve farklı istisnalar dikkate alındığında bu hesap en çok bütçe planlaması ve ön tahmin amacıyla yararlıdır.",
-            en: "In corporate tax, not only the year-end tax burden but also the cash outflow from provisional tax periods matters. Given profitability timing, deferred-tax effects, and exemptions, this calculation is most useful as a budgeting and forecasting tool.",
+            tr: "Kurumlar vergisinde sadece yıl sonu vergi yükü değil, geçici vergi dönemlerinde oluşan nakit çıkışı da önemlidir. Şirket kârlılığı, ertelenmiş vergi etkileri ve farklı istisnalar dikkate alındığında bu hesap en çok bütçe planlaması ve ön tahmin amacıyla yararlıdır. Sonucu <a href=\"/maas-ve-vergi/gelir-vergisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">gelir vergisi hesaplama</a>, <a href=\"/maas-ve-vergi/vergi-gecikme-faizi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">vergi gecikme faizi hesaplama</a> ve <a href=\"/maas-ve-vergi/damga-vergisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">damga vergisi hesaplama</a> araçlarıyla birlikte değerlendirmek daha güçlü bir vergi planı sağlar.",
+            en: "In corporate tax, not only the year-end tax burden but also provisional-tax cash outflows matter. Reading the result together with related tax tools gives stronger planning context.",
         },
         faqAppend: [
             faqEntry("Geçici vergi ile yıllık kurumlar vergisi neden ayrı izlenir?", "Çünkü geçici vergi yıl içindeki ön ödeme yükünü gösterir; yıl sonunda hesaplanan nihai kurumlar vergisiyle mahsup ilişkisi kurulur. Nakit akışı planında bu ayrım önemlidir.", "Why are provisional tax and annual corporate tax tracked separately?", "Because provisional tax shows the prepayment burden during the year, which is later offset against the final annual corporate tax. This distinction matters for cash-flow planning."),
+            faqEntry("Muhasebe kârı ile vergilendirilecek kâr neden farklı olabilir?", "Çünkü kanunen kabul edilmeyen giderler, istisnalar, indirimler ve dönemsel düzeltmeler vergi matrahını muhasebe kârından farklılaştırabilir. Bu araç hızlı planlama içindir; kesin beyan için mali müşavir kontrolü gerekir.", "Why can accounting profit differ from taxable profit?", "Because non-deductible expenses, exemptions, deductions, and period adjustments can make the tax base different from accounting profit. This tool is intended for fast planning, not final filing."),
         ],
     },
     "kira-stopaj-hesaplama": {
         relatedCalculators: ["kira-vergisi-hesaplama", "gelir-vergisi-hesaplama", "damga-vergisi-hesaplama", "emlak-vergisi-hesaplama"],
         title: {
-            tr: "Kira Stopaj Hesaplama 2026 — İşyeri Stopajı ve Net Ödeme",
-            en: "Rent Withholding Calculator 2026 — Commercial Withholding and Net Payment",
+            tr: "Kira Stopaj Hesaplama 2026 — İşyeri Kirası Stopajı ve Net Ödeme",
+            en: "Rent Withholding Calculator 2026 — Commercial Rent Withholding and Net Payment",
         },
         metaDescription: {
             tr: "İşyeri kiralarında uygulanacak stopaj tutarını, net mal sahibi ödemesini ve yıllık stopaj yükünü tek sayfada hesaplayın.",
             en: "Calculate withholding on commercial rent, the landlord's net receipt, and annual withholding burden in one page.",
         },
         contentAppend: {
-            tr: "Kira stopajında asıl ayrım, ödemenin konut mu işyeri kirası mı olduğudur. İşlem işyeri kirası kapsamında ise stopaj sonucu hem kiracının ödeme planını hem de mal sahibinin yıllık beyan mahsubunu etkiler; bu nedenle kira vergisi aracıyla birlikte değerlendirmek yararlıdır.",
-            en: "The key distinction in rent withholding is whether the payment is residential or commercial. If it falls under commercial rent, the withholding affects both the tenant's payment plan and the landlord's annual return offset, so it is useful to review it with the rental-tax tool.",
+            tr: "Kira stopajında asıl ayrım, ödemenin konut mu işyeri kirası mı olduğudur. İşlem işyeri kirası kapsamında ise stopaj sonucu hem kiracının ödeme planını hem de mal sahibinin yıllık beyan mahsubunu etkiler. Bu nedenle sonucu <a href=\"/maas-ve-vergi/kira-vergisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kira vergisi hesaplama</a>, <a href=\"/maas-ve-vergi/damga-vergisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">damga vergisi hesaplama</a> ve <a href=\"/maas-ve-vergi/gelir-vergisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">gelir vergisi hesaplama</a> araçlarıyla birlikte değerlendirmek yararlıdır.",
+            en: "The key distinction in rent withholding is whether the payment is residential or commercial. Reviewing the result together with rental-tax, stamp-duty, and income-tax tools provides a fuller picture.",
         },
         faqAppend: [
             faqEntry("Stopaj kiracının toplam maliyetini değiştirir mi?", "Brüt kira sabitse stopaj kiracı tarafından vergi dairesine ödenen bir kesinti olarak ayrıca izlenir. Bu nedenle nakit çıkışı ve mal sahibine net geçen tutar birlikte okunmalıdır.", "Does withholding change the tenant's total cost?", "If gross rent is fixed, withholding is tracked separately as a payment remitted by the tenant to the tax office. That is why total cash outflow and the landlord's net receipt should be read together."),
+            faqEntry("Konut kirasında da stopaj var mı?", "Genel uygulamada stopaj daha çok işyeri kiralarında gündeme gelir. Konut kiralarında aynı mekanizma işlemediği için önce ödemenin hukuki niteliğini doğru sınıflandırmak gerekir.", "Does residential rent also have withholding?", "In general practice, withholding is primarily relevant for commercial rent. Since the same mechanism does not usually apply to residential rent, the legal nature of the payment should be identified first."),
         ],
     },
     "emlak-vergisi-hesaplama": {
@@ -14803,35 +14979,62 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
     },
     "kredi-taksit-hesaplama": {
         relatedCalculators: ["ihtiyac-kredisi-hesaplama", "konut-kredisi-hesaplama", "kredi-yillik-maliyet-orani-hesaplama", "kredi-erken-kapama-hesaplama", "mevduat-faiz-hesaplama"],
+        title: {
+            tr: "Kredi Taksit Hesaplama 2026 — Aylık Taksit, Ödeme Planı ve Toplam Geri Ödeme",
+            en: "Loan Payment Calculator 2026 — Monthly Installment, Schedule and Total Repayment",
+        },
+        metaDescription: {
+            tr: "Aylık kredi taksitini, toplam geri ödemeyi, toplam faizi ve ödeme planını hesaplayın. İhtiyaç, taşıt ve konut kredisi senaryolarını tek ekranda kıyaslayın.",
+            en: "Calculate monthly installment, total repayment, total interest, and the payment schedule for personal, vehicle, and mortgage loan scenarios.",
+        },
         contentAppend: {
-            tr: "Aylık taksit tek başına en iyi kredi teklifini göstermez; dosya masrafı, toplam faiz yükü, erken kapama ihtimali ve yıllık maliyet oranı da kararın parçasıdır. Bu nedenle kredi taksit sonucunu ihtiyaç, konut ve yıllık maliyet araçlarıyla birlikte değerlendirmek daha sağlıklı kredi kıyaslaması sağlar.",
+            tr: "<p><strong>Kredi taksiti hesaplama</strong> aramasında en sık hata, yalnız aylık ödeme rakamına odaklanmaktır. Oysa iki teklif aynı taksiti veriyor gibi görünse bile toplam geri ödeme, dosya masrafı, erken kapama ihtimali ve vade yapısı değiştiğinde gerçek maliyet ayrışır. Bu yüzden <strong>kredi ödeme planı hesaplama</strong> sonucunu ay ay tabloyla birlikte okumak daha güvenilir bir karşılaştırma üretir.</p><p>Bu sayfa genel kredi kararını destekler; ihtiyaç kredisi için kısa ve orta vade nakit akışını, konut kredisi için ise uzun vade toplam maliyeti ayrıca uzman sayfalarda incelemek daha doğrudur. Sonucu <a href=\"/finansal-hesaplamalar/ihtiyac-kredisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">ihtiyaç kredisi hesaplama</a>, <a href=\"/finansal-hesaplamalar/konut-kredisi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">konut kredisi hesaplama</a> ve <a href=\"/finansal-hesaplamalar/kredi-yillik-maliyet-orani-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kredi yıllık maliyet oranı hesaplama</a> araçlarıyla birlikte değerlendirmek daha sağlıklı sonuç verir.</p>",
             en: "Monthly installment alone does not identify the best loan offer; file fees, total interest burden, early closure potential, and annual cost rate also matter. Reviewing the result together with personal, mortgage, and APR tools leads to a healthier comparison."
         },
         faqAppend: [
             faqEntry("En düşük taksit en iyi kredi midir?", "Her zaman değil. Vade uzadıkça aylık taksit düşebilir ancak toplam geri ödeme ve toplam faiz yükü artar.", "Is the lowest installment always the best loan?", "Not always. As maturity extends, monthly installments may fall while total repayment and total interest burden increase."),
-            faqEntry("Aylık faiz oranı ile yıllık maliyet oranı aynı mı?", "Hayır. Aylık faiz oranı sadece nominal kredi faizini gösterirken yıllık maliyet oranı ek ücretler ve bileşik etkiyle daha geniş maliyeti yansıtır.", "Is monthly interest rate the same as APR?", "No. Monthly interest shows only the nominal rate, while APR reflects broader cost including fees and compounding effects.")
+            faqEntry("Aylık faiz oranı ile yıllık maliyet oranı aynı mı?", "Hayır. Aylık faiz oranı sadece nominal kredi faizini gösterirken yıllık maliyet oranı ek ücretler ve bileşik etkiyle daha geniş maliyeti yansıtır.", "Is monthly interest rate the same as APR?", "No. Monthly interest shows only the nominal rate, while APR reflects broader cost including fees and compounding effects."),
+            faqEntry("Kredi ödeme planı neden önemlidir?", "Ödeme planı, her taksidin içinde ne kadar faiz ve anapara bulunduğunu gösterir. Böylece erken kapama, yapılandırma veya farklı vade senaryolarını daha bilinçli kıyaslayabilirsiniz.", "Why is the payment schedule important?", "The schedule shows how much of each installment goes to interest and principal, helping you compare early closure, refinancing, and alternative maturity scenarios more clearly.")
         ],
     },
     "ihtiyac-kredisi-hesaplama": {
         relatedCalculators: ["kredi-taksit-hesaplama", "kredi-yillik-maliyet-orani-hesaplama", "kredi-erken-kapama-hesaplama", "kredi-karti-asgari-odeme", "mevduat-faiz-hesaplama"],
+        title: {
+            tr: "İhtiyaç Kredisi Hesaplama 2026 — Aylık Taksit, Faiz ve Toplam Ödeme",
+            en: "Personal Loan Calculator 2026 — Monthly Payment, Interest and Total Cost",
+        },
+        metaDescription: {
+            tr: "İhtiyaç kredisi taksitini, toplam geri ödemeyi, faiz yükünü ve masrafları hesaplayın. Kısa ve orta vadeli ihtiyaç kredisi tekliflerini daha net kıyaslayın.",
+            en: "Calculate personal loan installments, total repayment, interest burden, and fees to compare short- and medium-term offers more clearly.",
+        },
         contentAppend: {
-            tr: "İhtiyaç kredisi seçerken sadece aylık ödeme gücünü değil, toplam faiz, tahsis ücreti ve erken kapama esnekliğini de görmek gerekir. Kredi kartı borcu kapatma veya nakit akışı dengeleme amacıyla kredi kullanılacaksa kart araçlarıyla birlikte karşılaştırma yapmak çoğu zaman daha doğru bir karar üretir.",
+            tr: "<p><strong>İhtiyaç kredisi hesaplama</strong> aramalarında kullanıcı çoğu zaman hızlı nakit ihtiyacını karşılayacak en düşük taksiti bulmaya çalışır. Ancak kısa vadede rahat görünen teklif, tahsis ücreti, sigorta ve toplam faiz etkisi nedeniyle daha pahalı hale gelebilir. Bu nedenle <strong>ihtiyaç kredisi faiz hesaplama</strong> sonucunu yalnız aylık ödeme değil, toplam geri ödeme üzerinden okumak gerekir.</p><p>Kredi kartı borcu kapatma, nakit akışı açığını dengeleme veya toplu harcama finansmanı için ihtiyaç kredisi düşünülüyorsa kart maliyetleriyle çapraz kıyas yapmak çoğu zaman daha sağlıklı karar verir. Sonucu <a href=\"/finansal-hesaplamalar/kredi-karti-asgari-odeme\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kredi kartı asgari ödeme</a>, <a href=\"/finansal-hesaplamalar/kredi-erken-kapama-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kredi erken kapama hesaplama</a> ve <a href=\"/finansal-hesaplamalar/kredi-yillik-maliyet-orani-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kredi yıllık maliyet oranı hesaplama</a> araçlarıyla birlikte okumak daha dengeli sonuç üretir.</p>",
             en: "When choosing a personal loan, review not only affordability but also total interest, allocation fee, and early closure flexibility. If the loan will be used to close card debt or smooth cash flow, comparing with credit card tools usually leads to a better decision."
         },
         faqAppend: [
             faqEntry("İhtiyaç kredisiyle kredi kartı borcu kapatmak mantıklı mı?", "Kart faizi kredi faizinden yüksekse ve disiplinli ödeme planı yapılabiliyorsa mantıklı olabilir. Ancak yeni kredi açıp kart limitini tekrar kullanmak toplam borcu büyütebilir.", "Is it sensible to use a personal loan to pay off credit card debt?", "It can make sense if card interest is higher than loan interest and you can follow a disciplined plan. But reopening spending on the card after taking the loan can enlarge total debt."),
-            faqEntry("Kısa vade mi uzun vade mi daha avantajlı?", "Kısa vadede aylık taksit yükselir ama toplam faiz genellikle azalır. Uzun vadede ödeme rahatlar ancak toplam maliyet büyür.", "Is short or long maturity better?", "Short maturity increases monthly installment but usually lowers total interest. Long maturity eases cash flow but raises total cost.")
+            faqEntry("Kısa vade mi uzun vade mi daha avantajlı?", "Kısa vadede aylık taksit yükselir ama toplam faiz genellikle azalır. Uzun vadede ödeme rahatlar ancak toplam maliyet büyür.", "Is short or long maturity better?", "Short maturity increases monthly installment but usually lowers total interest. Long maturity eases cash flow but raises total cost."),
+            faqEntry("İhtiyaç kredisi teklifinde hangi kalemlere bakılmalı?", "Nominal faiz oranı dışında tahsis ücreti, sigorta, toplam geri ödeme, erken kapama koşulu ve bankanın gelir-belge şartları da birlikte incelenmelidir.", "Which items should be reviewed in a personal-loan offer?", "Beyond the nominal rate, you should also review allocation fees, insurance, total repayment, early-closure terms, and the lender's income-document requirements.")
         ],
     },
     "konut-kredisi-hesaplama": {
         relatedCalculators: ["kredi-taksit-hesaplama", "kredi-yillik-maliyet-orani-hesaplama", "kredi-erken-kapama-hesaplama", "kira-artis-hesaplama", "mevduat-faiz-hesaplama"],
+        title: {
+            tr: "Konut Kredisi Hesaplama 2026 — Ev Kredisi Taksiti, Mortgage ve Toplam Maliyet",
+            en: "Mortgage Calculator 2026 — Home Loan Payment and Total Cost",
+        },
+        metaDescription: {
+            tr: "Konut kredisi aylık taksitini, toplam geri ödemeyi, faiz yükünü ve ekspertiz/masraf etkisini hesaplayın. Ev kredisi ve mortgage senaryolarını peşinatla birlikte kıyaslayın.",
+            en: "Calculate mortgage payment, total repayment, interest burden, and appraisal-fee impact while comparing home-loan scenarios with different down payments.",
+        },
         contentAppend: {
-            tr: "Konut kredisi kararında taksit tutarı kadar peşinat oranı, ekspertiz farkı, sigorta giderleri ve erken kapama senaryosu da önemlidir. Kira artışıyla kıyaslandığında konut kredisi bazı dönemlerde daha öngörülebilir olabilir, ancak toplam sahip olma maliyetini birlikte incelemek gerekir.",
+            tr: "<p><strong>Konut kredisi hesaplama</strong> aramalarında kullanıcıların önemli bir kısmı mevcut kira seviyesine yakın bir taksit bulmaya çalışır. Fakat ev kredisi kararında yalnız aylık taksit değil, peşinat, ekspertiz farkı, sigorta giderleri ve uzun vade faiz yükü de belirleyicidir. Küçük faiz farkları bile 10 yıl ve üzeri vadelerde toplam geri ödemeyi ciddi biçimde değiştirebilir.</p><p><strong>Ev kredisi hesaplama</strong> sonucunu yorumlarken sadece bugünkü taksiti değil toplam sahip olma maliyetini düşünmek gerekir. Sonucu <a href=\"/finansal-hesaplamalar/kira-mi-konut-kredisi-mi-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kira mı konut kredisi mi hesaplama</a>, <a href=\"/finansal-hesaplamalar/kredi-erken-kapama-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kredi erken kapama hesaplama</a> ve <a href=\"/finansal-hesaplamalar/kira-artis-hesaplama\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\">kira artış hesaplama</a> araçlarıyla birlikte okumak, barınma kararını daha gerçekçi hale getirir.</p>",
             en: "In mortgage decisions, down payment ratio, appraisal gap, insurance expenses, and early closure scenario matter as much as the installment amount. Compared with rent increases, a mortgage can sometimes be more predictable, but total ownership cost should be evaluated together."
         },
         faqAppend: [
             faqEntry("Peşinat arttıkça kredi maliyeti nasıl değişir?", "Peşinat yükseldikçe çekilen kredi tutarı düşer; bu da aylık taksiti, toplam faizi ve bankanın risk algısını azaltabilir.", "How does cost change as down payment increases?", "As down payment rises, the loan principal decreases, which can reduce monthly installments, total interest, and the bank's perceived risk."),
-            faqEntry("Konut kredisiyle kira arasında kıyas nasıl yapılmalı?", "Sadece aylık taksit ve mevcut kira kıyaslanmamalıdır. Aidat, bakım gideri, değer artışı ve alternatif yatırım getirisi de hesaba katılmalıdır.", "How should mortgage be compared with rent?", "Do not compare only the monthly installment and current rent. Maintenance, fees, appreciation, and alternative investment returns should also be included.")
+            faqEntry("Konut kredisiyle kira arasında kıyas nasıl yapılmalı?", "Sadece aylık taksit ve mevcut kira kıyaslanmamalıdır. Aidat, bakım gideri, değer artışı ve alternatif yatırım getirisi de hesaba katılmalıdır.", "How should mortgage be compared with rent?", "Do not compare only the monthly installment and current rent. Maintenance, fees, appreciation, and alternative investment returns should also be included."),
+            faqEntry("Mortgage teklifinde hangi farklar toplam maliyeti büyütür?", "Faiz oranı dışında peşinat düzeyi, ekspertiz farkı, sigorta maliyetleri, dosya benzeri ücretler ve vadeyi ne kadar uzattığınız toplam geri ödemeyi belirgin biçimde etkiler.", "Which differences enlarge total mortgage cost?", "Beyond the rate itself, down-payment level, appraisal gap, insurance costs, file-like fees, and how far you extend the term can all materially change total repayment.")
         ],
     },
     "kredi-erken-kapama-hesaplama": {
@@ -14854,6 +15057,321 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
         faqAppend: [
             faqEntry("Aylık faiz aynıysa yıllık maliyet oranı neden değişir?", "Çünkü tahsis ücreti, sigorta, dosya masrafı ve ödeme planı yapısı toplam maliyeti değiştirir. Nominal faiz tek başına yeterli karşılaştırma ölçütü değildir.", "Why can annual cost differ when monthly interest is the same?", "Because allocation fees, insurance, file charges, and payment schedule structure change total cost. Nominal rate alone is not enough for comparison."),
             faqEntry("Yıllık maliyet oranı düşük ama taksit yüksekse ne yapılmalı?", "Burada nakit akışı ile toplam maliyet arasında denge kurmak gerekir. En ucuz kredi, bütçeye en uygun krediyle her zaman aynı olmayabilir.", "What if annual cost is low but installments are high?", "You need to balance cash flow and total cost. The cheapest loan is not always the one best aligned with your budget.")
+        ],
+    },
+    "basit-faiz-hesaplama": {
+        relatedCalculators: ["bilesik-faiz-hesaplama", "mevduat-faiz-hesaplama", "repo-hesaplama", "iskonto-hesaplama", "kredi-taksit-hesaplama"],
+        title: {
+            tr: "Basit Faiz Hesaplama 2026 — Faiz Tutarı, Formül ve Toplam Getiri",
+            en: "Simple Interest Calculator 2026 — Formula and Total Return",
+        },
+        metaDescription: {
+            tr: "Basit faiz hesaplama aracı ile anapara, oran ve vade bilgisine göre faiz tutarını ve toplam geri ödemeyi bulun. Gün, ay ve yıl bazında basit faiz formülü tek sayfada.",
+            en: "Calculate simple interest, total return, and maturity value based on principal, rate, and term.",
+        },
+        contentAppend: {
+            tr: `<h2>Basit Faiz Hesaplama Formülü Nasıl Okunur?</h2>
+<p><strong>Basit faiz hesaplama</strong> işleminde faiz, her dönem yalnızca ilk anapara üzerinden yürür; önceki dönemde oluşan faiz bir sonraki dönemin hesabına eklenmez. Bu nedenle formül doğrusal yapıdadır: <strong>Anapara × Faiz Oranı × Süre</strong>. Günlük, aylık veya yıllık süre seçimi yalnızca zaman katsayısını değiştirir; anapara sabit kaldığı için getiri de düzenli bir çizgi halinde büyür. Kısa vadeli borç ilişkileri, senet hesapları, ticari alacaklar ve hızlı getiri ön izlemeleri için bu yöntem pratik ve anlaşılırdır.</p>
+<p>Basit model özellikle kısa vadede yararlıdır; ancak vade uzadıkça aynı teklifi <a href="/finansal-hesaplamalar/bilesik-faiz-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">bileşik faiz hesaplama</a> ile kıyaslamak gerekir. Çünkü bileşik modelde faiz tekrar anaparaya eklenirken, basit model bunu yapmaz. Kısa vadeli park getirileri için <a href="/finansal-hesaplamalar/repo-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">repo hesaplama</a> ve mevduat teklifleri için <a href="/finansal-hesaplamalar/mevduat-faiz-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">mevduat faiz hesaplama</a> araçlarıyla birlikte okumak daha sağlıklı karar verir.</p>`,
+            en: "Simple interest grows only on the original principal, not on previously earned interest. That makes it useful for short-term trade receivables, promissory notes, and quick return estimates. For longer maturities, compare it with compound interest and deposit tools to avoid understating or overstating the real yield.",
+        },
+        faqAppend: [
+            faqEntry("Basit faiz hangi işlemlerde daha uygundur?", "Basit faiz; kısa vadeli ticari alacak, vade farkı, senet, kısa dönem borç ve hızlı getiri ön izlemelerinde daha uygundur. Faizin yeniden yatırıma döndüğü uzun vadeli mevduat ve yatırım senaryolarında ise çoğu zaman bileşik yaklaşım daha gerçekçi olur.", "Where is simple interest more appropriate?", "It is more appropriate for short-term trade receivables, promissory notes, fixed-term pricing, and quick return previews. For long-term reinvested returns, compound interest is usually more realistic."),
+            faqEntry("30 gün ile 1 ay aynı sonucu verir mi?", "Her zaman vermez. Araç günlük seçenekte yılı 365 güne böler; aylık seçenekte süreyi 12 ay üzerinden hesaplar. Bu nedenle 30 gün ile 1 ay birbirine çok yakın olsa da kullanılan sözleşme ve gün sayımı yöntemine göre küçük fark oluşabilir.", "Do 30 days and 1 month always give the same result?", "Not always. Daily mode uses a 365-day year, while monthly mode uses 12 months. The outputs are close but may differ slightly depending on the day-count convention."),
+        ],
+    },
+    "bilesik-faiz-hesaplama": {
+        relatedCalculators: ["basit-faiz-hesaplama", "birikim-hesaplama", "bilesik-buyume-hesaplama", "reel-getiri-hesaplama", "enflasyon-hesaplama"],
+        title: {
+            tr: "Bileşik Faiz Hesaplama 2026 — Faizin Faizi, Formül ve Gelecek Değer",
+            en: "Compound Interest Calculator 2026 — Formula and Future Value",
+        },
+        metaDescription: {
+            tr: "Bileşik faiz hesaplama aracı ile anaparanızın aylık, üç aylık veya yıllık bileşimle gelecekte kaç TL olacağını görün. Faizin faizi etkisini ve toplam kazancı anında hesaplayın.",
+            en: "Calculate compound growth, future value, and total interest with monthly, quarterly, or annual compounding.",
+        },
+        contentAppend: {
+            tr: `<h2>Bileşik Faiz Neden Uzun Vadede Daha Güçlüdür?</h2>
+<p><strong>Bileşik faiz hesaplama</strong> mantığında her dönem oluşan faiz, bir sonraki dönemin anaparasına eklenir. Bu yüzden büyüme doğrusal değil, ivmelenen bir eğri şeklinde ilerler. Temel formül <strong>A = P × (1 + r / n)<sup>nt</sup></strong> yapısına dayanır; burada P başlangıç anaparasını, r yıllık oranı, n bileşim sıklığını, t ise yılı gösterir. Aynı nominal oranla çalışan iki yatırım arasında aylık bileşim yapan teklif genellikle yıllık bileşim yapan tekliften daha yüksek gelecek değer üretir.</p>
+<p>Bileşik etkiyi doğru yorumlamak için sonucu sadece nominal kazanç olarak değil, <a href="/finansal-hesaplamalar/enflasyon-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">enflasyon hesaplama</a> ve <a href="/finansal-hesaplamalar/reel-getiri-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">reel getiri hesaplama</a> araçlarıyla birlikte okumak gerekir. Düzenli katkı planlıyorsanız <a href="/finansal-hesaplamalar/birikim-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">birikim hesaplama</a> aracı, sabit anapara senaryosu içinse bu ekran daha uygundur. Bu ayrım, yatırımcının vade uzadıkça hangi modelin daha gerçekçi sonuç ürettiğini anlamasını kolaylaştırır.</p>`,
+            en: "Compound interest adds each period's interest back to principal, so growth accelerates over time. A higher compounding frequency usually creates a higher future value at the same nominal rate. For investment decisions, compare nominal growth with inflation and real return tools.",
+        },
+        faqAppend: [
+            faqEntry("Bileşim sıklığı neden sonucu değiştirir?", "Çünkü faiz ne kadar sık anaparaya eklenirse bir sonraki dönemde daha büyük bakiye faiz üretir. Aylık bileşim, aynı nominal oran altında yıllık bileşime göre genellikle daha yüksek toplam tutar oluşturur.", "Why does compounding frequency change the result?", "Because the more often interest is added back to principal, the larger the balance becomes for the next period. Monthly compounding usually produces a higher future value than annual compounding at the same nominal rate."),
+            faqEntry("Nominal faiz aynıyken efektif getiri neden yükselir?", "Nominal oran değişmese bile dönem içi bileşim sayısı arttığında yatırım yıl sonunda daha fazla kez faiz kazanmış olur. Bu fark, özellikle uzun vadede ve yüksek oranlı senaryolarda belirginleşir.", "Why does effective return rise even if the nominal rate stays the same?", "Even if the nominal rate is unchanged, more frequent compounding allows the balance to earn interest more times within the year. The gap becomes more visible over longer horizons and higher rates."),
+        ],
+    },
+    "kdv-hesaplama": {
+        relatedCalculators: ["kar-zarar-marji", "yuzde-hesaplama", "indirim-hesaplama", "fiyat-hesaplama", "kdv-tevkifati-hesaplama"],
+        title: {
+            tr: "KDV Hesaplama 2026 — KDV Dahil, Hariç, Matrah ve Vergi Tutarı",
+            en: "VAT Calculator 2026 — Inclusive, Exclusive and Tax Base",
+        },
+        metaDescription: {
+            tr: "KDV hesaplama aracı ile KDV dahil ve hariç fiyatları, matrahı ve vergi tutarını anında bulun. Fatura kontrolü ve teklif hazırlığı için pratik KDV formülleri tek sayfada.",
+            en: "Calculate VAT-inclusive and VAT-exclusive prices, tax base, and VAT amount instantly.",
+        },
+        contentAppend: {
+            tr: `<h2>KDV Dahil ve Hariç Tutar Arasındaki Fark Neden Önemlidir?</h2>
+<p><strong>KDV hesaplama</strong> ekranlarında en sık yapılan hata, KDV dahil tutardan vergi oranını doğrudan çıkarmaya çalışmaktır. Oysa vergi dahil fiyat içinde hem matrah hem vergi birlikte yer alır; bu nedenle doğru ayrıştırma için toplam tutarı <strong>1 + oran</strong> katsayısına bölmek gerekir. Başka bir ifadeyle <strong>matrah = KDV dahil tutar / (1 + KDV oranı)</strong>, vergi tutarı ise toplam ile matrah arasındaki farktır. Bu mantık özellikle fatura kontrolü, teklif hazırlama, e-ticaret fiyatlandırması ve maliyet-kâr analizi için kritik önemdedir.</p>
+<p>KDV hariç fiyatla teklif verirken ise süreç tersine döner: matrahın üzerine vergi eklenir ve nihai tahsilat tutarı oluşur. Bu nedenle sonucu <a href="/matematik-hesaplama/yuzde-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">yüzde hesaplama</a> ve <a href="/ticaret-ve-is/kar-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kâr hesaplama</a> araçlarıyla birlikte değerlendirmek, işletmenin gerçek ciro ve kârlılık fotoğrafını daha net gösterir. Tevkifatlı işlemler için ayrıca <a href="/maas-ve-vergi/kdv-tevkifati-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">KDV tevkifatı hesaplama</a> ekranına bakmak gerekir.</p>`,
+            en: "The key distinction in VAT calculations is whether the input already includes tax. If the price is VAT-inclusive, you must divide by the gross-up factor to separate the tax base correctly; simply subtracting the tax percentage gives the wrong answer. For pricing and invoice control, evaluate VAT together with margin and percentage tools.",
+        },
+        faqAppend: [
+            faqEntry("KDV dahil tutardan vergi nasıl ayrılır?", "KDV dahil tutar içinden matrahı bulmak için toplam tutar, 1 + (oran / 100) katsayısına bölünür. Matrah bulunduktan sonra vergi tutarı toplamdan çıkarılır. Doğrudan yüzdeyi toplam tutardan düşmek doğru sonuç vermez.", "How do you separate VAT from a VAT-inclusive amount?", "Divide the gross amount by 1 + (rate / 100) to find the tax base, then subtract the base from the total. Simply removing the percentage from the gross amount is incorrect."),
+            faqEntry("Matrah ne demektir?", "Matrah, verginin uygulandığı vergisiz ana tutardır. İşletme gelirini, kâr analizini ve fatura satırını doğru okumak için KDV hariç bedelin yani matrahın ayrıca görülmesi gerekir.", "What does tax base mean?", "The tax base is the net amount before VAT is applied. It is the reference value needed for invoice control, revenue reading, and margin analysis."),
+        ],
+    },
+    "yuzde-hesaplama": {
+        relatedCalculators: ["indirim-hesaplama", "zam-hesaplama", "kar-hesaplama", "kdv-hesaplama", "kar-zarar-marji"],
+        title: {
+            tr: "Yüzde Hesaplama 2026 — Yüzde Alma, Artış, Azalış ve Oran",
+            en: "Percentage Calculator 2026 — Increase, Decrease and Ratio",
+        },
+        metaDescription: {
+            tr: "Yüzde hesaplama aracı ile bir sayının yüzdesini, yüzde artış ve azalış oranını, değişim oranını ve indirimli sonucu hemen bulun. Ticaret ve günlük hesaplar için pratik yüzde formülleri.",
+            en: "Calculate percentages, percentage change, increase, decrease, and ratios instantly.",
+        },
+        contentAppend: {
+            tr: `<h2>Yüzde Hesaplama Günlük Finans ve Ticarette Neden Bu Kadar Kullanılır?</h2>
+<p><strong>Yüzde hesaplama</strong> yalnızca matematik problemi çözmek için değil; indirim, zam, komisyon, vergi, faiz ve performans analizi gibi günlük kararların neredeyse tamamında kullanılır. En kritik nokta, yüzde değişimin hangi tabana göre ölçüldüğünü doğru okumaktır. Örneğin bir fiyat 100'den 120'ye çıkıyorsa artış <strong>%20</strong>'dir; ancak aynı fiyat 120'den tekrar 100'e indiğinde azalış oranı <strong>%16,67</strong> olur. Çünkü yüzdeler her zaman mevcut başlangıç değerine göre hesaplanır.</p>
+<p>Bu yüzden ardışık indirim, zam ve marj hesaplarında basit toplama yapmak çoğu zaman yanıltıcıdır. İki ayrı indirim oranı toplandığında değil, ikinci indirim ilk indirim sonrası oluşan yeni tutar üzerinden hesaplandığında gerçek sonuç çıkar. Benzer şekilde <a href="/ticaret-ve-is/indirim-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">indirim hesaplama</a>, <a href="/ticaret-ve-is/zam-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">zam hesaplama</a>, <a href="/finansal-hesaplamalar/kdv-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">KDV hesaplama</a> ve <a href="/ticaret-ve-is/kar-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kâr hesaplama</a> araçları birlikte kullanıldığında fiyatlama hataları belirgin biçimde azalır.</p>`,
+            en: "Percentage math is used in discounts, markups, taxes, commissions, and growth analysis. The critical issue is always the base value: a percentage change is measured from the starting amount, so two sequential discounts or increases cannot simply be added together.",
+        },
+        faqAppend: [
+            faqEntry("Yüzde değişim neden başlangıç değerine göre hesaplanır?", "Çünkü değişimin büyüklüğünü anlamlı kılan referans ilk değerdir. Aynı 20 TL fark, 100 TL bazında %20 iken 200 TL bazında %10 eder; bu yüzden yüzde değişim her zaman başlangıç tutarı üzerinden okunur.", "Why is percentage change measured from the starting value?", "Because the starting amount is the reference that gives the change meaning. The same numeric difference can represent very different percentages depending on the base value."),
+            faqEntry("İki ayrı indirim oranı neden toplanmaz?", "İkinci indirim ilk indirimden sonra kalan yeni tutara uygulanır. Bu nedenle örneğin iki ayrı %10 indirim, tek seferde %20 indirimle aynı sonucu vermez; gerçek toplam etki daha düşüktür.", "Why are two discount rates not simply added together?", "Because the second discount applies to the reduced amount created by the first one. Two 10% discounts therefore do not equal a single 20% discount."),
+        ],
+    },
+    "ne-kadar-kredi-alabilirim-hesaplama": {
+        relatedCalculators: ["maas-hesaplama", "kredi-taksit-hesaplama", "kredi-karti-asgari-odeme", "kredi-karsilastirma-hesaplama", "kredi-yapilandirma-hesaplama"],
+        title: {
+            tr: "Ne Kadar Kredi Alabilirim Hesaplama 2026 — Gelire Göre Kredi Limiti",
+            en: "How Much Loan Can I Get Calculator 2026 — Income Based Limit",
+        },
+        metaDescription: {
+            tr: "Gelire göre kredi hesaplama aracı ile aylık ödeme kapasitenizi, maksimum taksiti ve yaklaşık çekebileceğiniz kredi tutarını görün. Belgelenebilir gelir ve mevcut borçlara göre kredi limiti ön izlemesi.",
+            en: "Estimate borrowing capacity, maximum installment, and approximate loan limit based on income and existing debts.",
+        },
+        contentAppend: {
+            tr: `<h2>Bankalar Maksimum Kredi Tutarını Nasıl Yaklaşıklar?</h2>
+<p><strong>Ne kadar kredi alabilirim</strong> sorusunun kısa cevabı yalnızca gelire bakılarak verilmez. Bankalar önce belgelenebilir net geliri, ardından mevcut kredi ve kart ödemelerini, seçilen vade yapısını ve faiz oranını birlikte değerlendirir. Aynı gelir düzeyinde iki kişi farklı tutarda kredi görebilir; çünkü mevcut borç yükü, başvuru türü ve aylık taksit kapasitesi sonucu doğrudan etkiler. Bu araç, resmi onay üretmez; ancak gelirinize göre taşıyabileceğiniz taksit bandını ve buna karşılık gelen yaklaşık kredi ana parasını hızlıca gösterir.</p>
+<p>Pratikte vade uzadıkça çekilebilecek anapara artabilir; fakat bu her zaman daha sağlıklı finansman anlamına gelmez. Aylık ödeme rahatladıkça toplam faiz yükü büyüyebilir. Bu nedenle sonucu <a href="/maas-ve-vergi/maas-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">maaş hesaplama</a>, <a href="/finansal-hesaplamalar/kredi-taksit-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi taksit hesaplama</a> ve kart baskısını görmek için <a href="/finansal-hesaplamalar/kredi-karti-asgari-odeme" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi kartı asgari ödeme</a> araçlarıyla birlikte okumak gerekir. Nihai onayda kredi notu, belge kalitesi, çalışma durumu ve teminat yapısı ayrıca rol oynar.</p>`,
+            en: "Maximum borrowing capacity is shaped not only by income but also by existing monthly obligations, term, and effective interest rate. This calculator offers a planning preview, not a bank approval. For a more realistic decision, compare the result with salary, installment, and credit-card burden tools.",
+        },
+        faqAppend: [
+            faqEntry("Boş kredi kartı limiti kredi kapasitesini düşürür mü?", "Kart limitinin kendisinden çok, o ay düzenli ödenmesi gereken kart borcu ve diğer aylık yükümlülükler önemlidir. Özellikle asgari ödeme baskısı oluşmuşsa kullanılabilir kredi kapasitesi aşağı çekilebilir.", "Does an unused credit-card limit lower borrowing capacity?", "The limit itself is less important than the monthly payment burden created by actual card debt. If minimum-payment pressure exists, usable loan capacity may fall."),
+            faqEntry("Vade uzarsa çekebileceğim kredi neden artıyor?", "Aynı toplam borç daha uzun aya yayıldığında aylık taksit küçülür; bu da aynı ödeme kapasitesiyle daha yüksek anapara hesaplanmasına yol açabilir. Ancak toplam geri ödeme ve faiz yükü çoğu zaman yükselir.", "Why can a longer term increase the amount I can borrow?", "Because the same debt is spread over more months, reducing the installment and allowing a higher principal under the same payment capacity. Total repayment usually rises, however."),
+        ],
+    },
+    "kredi-dosya-masrafi-hesaplama": {
+        relatedCalculators: ["kredi-yillik-maliyet-orani-hesaplama", "kredi-karsilastirma-hesaplama", "kredi-taksit-hesaplama", "kredi-yapilandirma-hesaplama", "ihtiyac-kredisi-hesaplama"],
+        title: {
+            tr: "Kredi Dosya Masrafı Hesaplama 2026 — Tahsis Ücreti ve Net Kesinti",
+            en: "Loan Allocation Fee Calculator 2026 — Upfront Deduction",
+        },
+        metaDescription: {
+            tr: "Kredi dosya masrafı hesaplama aracı ile tahsis ücreti, vergi etkisi ve elinize geçecek net kredi tutarını görün. Sıfır masraflı ve ücretli kredi tekliflerini toplam maliyet açısından kıyaslayın.",
+            en: "Calculate loan allocation fee, tax effect, and net cash received after upfront deductions.",
+        },
+        contentAppend: {
+            tr: `<h2>Kredi Dosya Masrafı Tek Başına Yeterli Bir Karşılaştırma Ölçütü Değildir</h2>
+<p><strong>Kredi dosya masrafı hesaplama</strong> ekranı, bankanın krediyi kullandırırken peşin kestiği tahsis ücretinin net nakit üzerindeki etkisini görmeyi kolaylaştırır. Özellikle kısa vadeli kredilerde peşin kesilen masraf, toplam maliyet içinde beklenenden daha yüksek pay alabilir. Bu nedenle kullanıcı yalnızca “faiz oranı düşük mü” sorusuna değil, eline geçen gerçek net tutara da bakmalıdır. Aynı nominal faizle sunulan iki tekliften biri daha düşük tahsis ücreti veya daha düşük peşin kesinti yüzünden daha avantajlı hale gelebilir.</p>
+<p>Burada önemli olan nokta, tahsis ücretini sigorta, ekspertiz, ipotek veya başka operasyonel masraflarla karıştırmamaktır. Bu araç tahsis ücreti ve buna bağlı peşin etkiyi görünür kılar; teklifin tam fotoğrafı için sonucu <a href="/finansal-hesaplamalar/kredi-yillik-maliyet-orani-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi yıllık maliyet oranı hesaplama</a> ve <a href="/finansal-hesaplamalar/kredi-karsilastirma-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi karşılaştırma hesaplama</a> araçlarıyla birlikte değerlendirmek gerekir.</p>`,
+            en: "An upfront allocation fee changes how much cash actually reaches the borrower and can materially affect short-term loans. It should be read together with APR, insurance, and comparison tools rather than in isolation.",
+        },
+        faqAppend: [
+            faqEntry("Tahsis ücreti ile sigorta aynı şey midir?", "Hayır. Tahsis ücreti, kredinin kullandırım sürecine bağlı peşin işlem bedelidir. Sigorta ise ayrı bir ürün veya koruma maliyetidir. Teklifin gerçek maliyeti görülmek isteniyorsa bu iki kalem ayrı ayrı izlenmelidir.", "Is allocation fee the same as insurance?", "No. The allocation fee is an upfront credit-processing charge, while insurance is a separate protection product or service. They should be evaluated separately."),
+            faqEntry("Masrafsız kredi her zaman daha avantajlı mıdır?", "Her zaman değil. Bazı kampanyalarda peşin ücret kaldırılır ama faiz oranı yükseltilir; toplam geri ödeme sonunda ücretli ama düşük faizli bir teklif daha ucuz kalabilir. Bu yüzden toplam maliyet bakışı şarttır.", "Is a zero-fee loan always better?", "Not always. Some no-fee offers compensate with a higher rate, so a lower-rate loan with a fee can still be cheaper in total repayment."),
+        ],
+    },
+    "kredi-karsilastirma-hesaplama": {
+        relatedCalculators: ["kredi-yillik-maliyet-orani-hesaplama", "kredi-dosya-masrafi-hesaplama", "kredi-taksit-hesaplama", "ihtiyac-kredisi-hesaplama", "konut-kredisi-hesaplama"],
+        title: {
+            tr: "Kredi Karşılaştırma Hesaplama 2026 — En Uygun Kredi Teklifini Bul",
+            en: "Loan Comparison Calculator 2026 — Find the Best Offer",
+        },
+        metaDescription: {
+            tr: "Kredi karşılaştırma aracı ile üç farklı banka teklifini aylık taksit, toplam geri ödeme ve peşin masraf etkisiyle kıyaslayın. En uygun kredi teklifini toplam maliyete göre görün.",
+            en: "Compare three loan offers by installment, total repayment, and upfront fees to identify the best overall offer.",
+        },
+        contentAppend: {
+            tr: `<h2>Kredi Karşılaştırma Yaparken Hangi Üç Metrik Birlikte Okunmalı?</h2>
+<p><strong>Kredi karşılaştırma</strong> sürecinde yalnızca afişe edilen faiz oranına bakmak çoğu zaman yeterli değildir. Sağlıklı kıyas için en az üç metrik birlikte okunmalıdır: <strong>aylık taksit</strong>, <strong>toplam geri ödeme</strong> ve <strong>peşin masraf etkisi</strong>. Düşük faizli görünen bir teklif, yüksek tahsis ücreti ve sigorta kesintisi nedeniyle toplamda daha pahalıya gelebilir. Kısa vadeli bir teklif de aylık taksiti yükseltse bile toplam maliyeti belirgin biçimde düşürebilir. Bu nedenle en iyi kredi teklifi, her zaman en düşük oranlı teklif olmak zorunda değildir.</p>
+<p>Teklifleri mümkün olduğunca aynı anapara ve benzer senaryo üzerinden kıyaslamak gerekir. Son kararı verirken sonucu <a href="/finansal-hesaplamalar/kredi-yillik-maliyet-orani-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi yıllık maliyet oranı hesaplama</a>, <a href="/finansal-hesaplamalar/kredi-dosya-masrafi-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi dosya masrafı hesaplama</a> ve <a href="/finansal-hesaplamalar/kredi-taksit-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi taksit hesaplama</a> araçlarıyla çapraz kontrol etmek, kampanya kaynaklı yanıltıcı farkları azaltır.</p>`,
+            en: "A sound loan comparison requires at least three metrics together: monthly installment, total repayment, and upfront fee effect. The lowest stated rate is not always the cheapest offer once fees and term differences are included.",
+        },
+        faqAppend: [
+            faqEntry("En düşük aylık taksit en iyi teklif midir?", "Her zaman değildir. Vade uzadıkça taksit düşebilir ama toplam faiz yükü artar. Bu yüzden düşük aylık ödeme, yüksek toplam maliyet pahasına oluşuyor olabilir.", "Is the lowest monthly installment always the best offer?", "Not always. A longer term can lower the installment while increasing total interest, so the lowest monthly payment may still be the more expensive offer overall."),
+            faqEntry("Aynı faiz oranına rağmen toplam maliyet neden değişir?", "Çünkü tahsis ücreti, sigorta, dosya masrafı, vade yapısı ve bazı kampanya koşulları toplam yükü değiştirir. Nominal oran tek başına tüm maliyeti göstermez.", "Why can total cost differ even when the rate looks the same?", "Because allocation fees, insurance, fees, and maturity structure change the total burden. The nominal rate alone does not show the full cost."),
+        ],
+    },
+    "kredi-yapilandirma-hesaplama": {
+        relatedCalculators: ["kredi-erken-kapama-hesaplama", "kredi-yillik-maliyet-orani-hesaplama", "kredi-dosya-masrafi-hesaplama", "kredi-taksit-hesaplama", "kredi-karsilastirma-hesaplama"],
+        title: {
+            tr: "Kredi Yapılandırma Hesaplama 2026 — Refinansman Kâr mı Zarar mı?",
+            en: "Loan Restructuring Calculator 2026 — Refinance Profit or Loss",
+        },
+        metaDescription: {
+            tr: "Kredi yapılandırma hesaplama aracı ile mevcut krediyi kapatıp yeni oranla devam etmenin mantıklı olup olmadığını görün. Erken kapama, tahsis ücreti ve yeni taksit etkisini birlikte analiz edin.",
+            en: "Analyze whether refinancing an existing loan makes sense once early closure, new fees, and installment changes are included.",
+        },
+        contentAppend: {
+            tr: `<h2>Kredi Yapılandırma Ne Zaman Mantıklıdır?</h2>
+<p><strong>Kredi yapılandırma hesaplama</strong> kararında tek kriter yeni faizin eski faizden düşük olması değildir. Doğru karşılaştırma için mevcut kredinin kalan toplam yükü ile yeni kredinin toplam yükü yan yana konulmalıdır. Bu ikinci tabloya erken kapama tazminatı, yeni tahsis ücreti, varsa sigorta bedeli ve seçilen yeni vade de dahil edilmelidir. Aksi halde taksit düşmüş görünse bile toplam ödeme artabilir. Özellikle vade uzatılarak yapılan refinansman işlemlerinde aylık rahatlama sağlanırken toplam maliyetin yükselmesi oldukça yaygın bir senaryodur.</p>
+<p>Bu nedenle yapılandırma kararını sadece “aylık taksit düştü” başlığıyla okumak yerine, <a href="/finansal-hesaplamalar/kredi-erken-kapama-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi erken kapama hesaplama</a>, <a href="/finansal-hesaplamalar/kredi-dosya-masrafi-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi dosya masrafı hesaplama</a> ve <a href="/finansal-hesaplamalar/kredi-yillik-maliyet-orani-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi yıllık maliyet oranı hesaplama</a> araçlarıyla beraber değerlendirmek daha doğrudur. Böylece gerçek tasarruf ile yalnızca nakit akışı rahatlaması birbirinden ayrılabilir.</p>`,
+            en: "A lower new rate alone does not guarantee that refinancing is beneficial. The remaining cost of the old loan must be compared with the full cost of the new one, including early payoff, allocation fee, and any term extension.",
+        },
+        faqAppend: [
+            faqEntry("Aylık taksit düşüyorsa yapılandırma otomatik olarak avantajlı mıdır?", "Hayır. Vade uzuyorsa toplam geri ödeme artabilir. Bu nedenle aylık rahatlama ile toplam maliyet ayrı ayrı ölçülmeli ve net tasarruf gerçekten oluşuyor mu bakılmalıdır.", "If the installment falls, is restructuring automatically beneficial?", "No. If the term is extended, total repayment can still increase. Monthly relief and total cost must be evaluated separately."),
+            faqEntry("Hangi durumda yapılandırma mantıksız olabilir?", "Faiz düşüşü sınırlıysa, yeni tahsis ücreti yüksekse veya erken kapama maliyeti önemliyse refinansman matematiksel avantaj üretmeyebilir. Kalan vade kısaysa tasarruf alanı da daralabilir.", "When can refinancing be a poor idea?", "If the rate improvement is small, the new fee is high, or early payoff costs are meaningful, refinancing may not create a mathematical benefit. Savings potential also narrows when the remaining term is already short."),
+        ],
+    },
+    "kredi-erken-kapatma-cezasi-hesaplama": {
+        relatedCalculators: ["kredi-erken-kapama-hesaplama", "konut-kredisi-hesaplama", "kredi-yapilandirma-hesaplama", "kredi-taksit-hesaplama", "kredi-karsilastirma-hesaplama"],
+        title: {
+            tr: "Kredi Erken Kapatma Cezası Hesaplama 2026 — Konut Kredisi Tazminatı",
+            en: "Early Loan Closure Fee Calculator 2026 — Mortgage Compensation",
+        },
+        metaDescription: {
+            tr: "Kredi erken kapatma cezası hesaplama aracı ile sabit faizli konut kredisinde uygulanabilecek tazminatı ve toplam kapama tutarını görün. Kalan vade ve anaparaya göre hızlı hesaplama.",
+            en: "Calculate the mortgage early-repayment compensation and total payoff amount based on remaining principal and maturity.",
+        },
+        contentAppend: {
+            tr: `<h2>Erken Kapatma Cezası ile Toplam Kapatma Tutarı Aynı Şey Değildir</h2>
+<p><strong>Kredi erken kapatma cezası hesaplama</strong> sayfasında görülen tazminat, toplam kapama tutarının yalnızca bir parçasıdır. Esas ödeme yükü, kalan anapara bakiyesi üzerine eklenen erken ödeme tazminatıyla oluşur. Bu nedenle kullanıcı yalnızca “ceza ne kadar” sorusuna değil, krediyi bugün kapatmak için bankaya toplamda ne kadar ödeme yapacağına da bakmalıdır. Özellikle sabit faizli konut kredilerinde bu ayrım önemlidir; çünkü asıl karar, cezanın büyüklüğünden çok erken kapanan faiz yükünün ne kadar tasarruf yarattığıyla verilmelidir.</p>
+<p>Bu ekranı <a href="/finansal-hesaplamalar/kredi-erken-kapama-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi erken kapama hesaplama</a> ve <a href="/finansal-hesaplamalar/kredi-yapilandirma-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi yapılandırma hesaplama</a> araçlarıyla birlikte okumak daha doğrudur. Böylece ceza tutarını tek başına değil, kapanacak faiz yükü ve yeni kredi seçeneği ile birlikte karşılaştırabilirsiniz.</p>`,
+            en: "The early closure fee is only one component of the total payoff amount. The real decision should compare the remaining principal, the compensation, and the interest you avoid by closing early. It is best evaluated together with payoff and refinancing tools.",
+        },
+        faqAppend: [
+            faqEntry("Erken kapatma cezası ile erken kapama tutarı arasındaki fark nedir?", "Erken kapatma cezası veya tazminatı, kalan anaparaya eklenen ek maliyet kalemidir. Toplam erken kapama tutarı ise kalan anapara ile bu tazminatın toplamından oluşur; yani kullanıcı bankaya yalnızca ceza kadar değil, anapara dahil daha büyük bir tutar öder.", "What is the difference between the closure fee and the total payoff amount?", "The closure fee is the additional compensation charged on top of the remaining principal. The total payoff amount is the remaining principal plus that compensation."),
+            faqEntry("Ceza varsa erken kapama yine de mantıklı olabilir mi?", "Evet. Özellikle kredinin erken dönemlerinde kalan faiz yükü yüksekse, ödenecek tazminata rağmen toplam maliyet düşebilir. Bu yüzden karar ceza tutarı üzerinden değil, kapanacak faizle birlikte net kazanç üzerinden verilmelidir.", "Can early payoff still make sense even if a fee applies?", "Yes. If the avoided future interest is large enough, early closure may still reduce total cost despite the fee."),
+        ],
+    },
+    "kredi-karti-asgari-odeme-tutari-hesaplama": {
+        relatedCalculators: ["kredi-karti-asgari-odeme", "kredi-karti-gecikme-faizi-hesaplama", "kredi-karti-ek-taksit-hesaplama", "ihtiyac-kredisi-hesaplama", "borc-kapatma-planlayici-hesaplama"],
+        title: {
+            tr: "Kredi Kartı Asgari Ödeme Tutarı Hesaplama 2026 — %20 / %40 Oranı",
+            en: "Credit Card Minimum Payment Calculator 2026 — 20% / 40% Rule",
+        },
+        metaDescription: {
+            tr: "Kredi kartı asgari ödeme tutarı hesaplama aracı ile dönem borcunuz için uygulanacak oranı ve ödenmesi gereken minimum tutarı görün. Asgari sonrası devreden bakiye de tek ekranda.",
+            en: "Calculate the minimum credit-card payment, applied ratio, and carried balance after the minimum is paid.",
+        },
+        contentAppend: {
+            tr: `<h2>Asgari Ödeme Tutarı Yasal Alt Sınırdır, Sağlıklı Borç Yönetimi Planı Değil</h2>
+<p><strong>Kredi kartı asgari ödeme tutarı hesaplama</strong> sonucu, bankanın sizden o ekstre için talep ettiği yasal tabanı gösterir. Bu tutarı ödemek kartı temerrüde düşürmemek açısından önemlidir; ancak kart borcunu sürdürülebilir biçimde azaltmak için çoğu zaman yeterli değildir. Çünkü asgari sonrasında devreden bakiye üzerinde faiz ve vergi yükü işlemeye devam eder. Özellikle yüksek limitli kartlarda veya yeni kartlarda oran yükseldikçe, kullanıcının bir sonraki döneme ne kadar büyük borç taşıdığı daha görünür hale gelir.</p>
+<p>Bu nedenle sonucu yalnızca “kaç TL ödemem gerekiyor” sorusuyla değil, “ödedikten sonra ne kadar borç devredecek” sorusuyla birlikte okumak gerekir. Bunun için <a href="/finansal-hesaplamalar/kredi-karti-gecikme-faizi-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi kartı gecikme faizi hesaplama</a>, <a href="/finansal-hesaplamalar/kredi-karti-asgari-odeme" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi kartı asgari ödeme</a> ve <a href="/finansal-hesaplamalar/borc-kapatma-planlayici-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">borç kapatma planlayıcı</a> araçlarını birlikte değerlendirmek daha doğru olur.</p>`,
+            en: "The minimum payment is a legal floor, not a healthy long-term repayment plan. After paying it, the carried balance can continue to generate cost. Read the result together with carried balance, late-interest, and debt-payoff tools.",
+        },
+        faqAppend: [
+            faqEntry("Asgari tutarı ödedikten sonra limit neden tam açılmaz?", "Çünkü kart limitiniz yalnızca ödediğiniz kısım kadar serbest kalır; devreden bakiye ve işleyen maliyetler limitin geri kalanını meşgul etmeye devam eder. Bu nedenle minimum ödeme, limit problemini tamamen çözmez.", "Why does the card limit not fully recover after paying the minimum?", "Because only the paid portion is released while the carried balance and related costs continue to occupy the rest of the limit."),
+            faqEntry("Asgariyi düzenli ödemek kredi kartı borcunu bitirir mi?", "Çoğu durumda hayır. Minimum ödeme, borcun tamamını azaltmak yerine yalnızca yasal eşik altında kalmamanızı sağlar. Kalan bakiye taşındığı için borç kapama süresi uzar ve toplam maliyet büyüyebilir.", "Does paying the minimum regularly eliminate the card debt?", "Usually not. It helps you stay above the legal floor, but the remaining balance keeps rolling over and can prolong the debt significantly."),
+        ],
+    },
+    "is-yeri-ve-ticari-kredi-hesaplama": {
+        relatedCalculators: ["ticari-kredi-hesaplama", "ticari-ihtiyac-kredisi-hesaplama", "kredi-karsilastirma-hesaplama", "kredi-dosya-masrafi-hesaplama", "kredi-yillik-maliyet-orani-hesaplama"],
+        title: {
+            tr: "İş Yeri ve Ticari Kredi Hesaplama 2026 — KOBİ ve Şirket Kredisi",
+            en: "Commercial and Business Loan Calculator 2026",
+        },
+        metaDescription: {
+            tr: "İş yeri ve ticari kredi hesaplama aracı ile aylık taksit, toplam faiz ve toplam geri ödemeyi görün. KOBİ, iş yeri ve ticari araç finansmanında maliyeti hızlıca kıyaslayın.",
+            en: "Calculate installment, total interest, and repayment for commercial and SME loans.",
+        },
+        contentAppend: {
+            tr: `<h2>Ticari Kredi Kararında Faiz Kadar Nakit Akışı da Önemlidir</h2>
+<p><strong>İş yeri ve ticari kredi hesaplama</strong> ekranında görülen aylık taksit, yalnızca finansman maliyetini değil işletmenin nakit akışına binecek aylık baskıyı da temsil eder. Bu nedenle ticari kredi kararında nominal faiz kadar vade yapısı, tahsilat döngüsü ve kredinin ne amaçla kullanıldığı önemlidir. İşletme sermayesi ihtiyacı için alınan kısa vadeli finansman ile sabit yatırım veya ekipman alımı için kullanılan kredi aynı vade mantığıyla değerlendirilmemelidir. Kısa çevrimli ihtiyaçlarda uzun vade gereksiz faiz yükü yaratabilir; uzun vadeli yatırımda ise aşırı kısa vade nakit akışını zorlayabilir.</p>
+<p>Sağlıklı karşılaştırma için sonucu <a href="/finansal-hesaplamalar/ticari-kredi-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">ticari kredi hesaplama</a>, <a href="/finansal-hesaplamalar/ticari-ihtiyac-kredisi-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">ticari ihtiyaç kredisi hesaplama</a> ve <a href="/finansal-hesaplamalar/kredi-karsilastirma-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi karşılaştırma hesaplama</a> araçlarıyla beraber okumak gerekir. Böylece aynı nominal faizli iki teklifin şirket nakit akışında yaratacağı gerçek fark daha net görülür.</p>`,
+            en: "Commercial-loan decisions should not be read only through the interest rate. The installment must also fit the firm's collection cycle and financing purpose. Working-capital needs and long-term investments usually require different maturity logic.",
+        },
+        faqAppend: [
+            faqEntry("İşletme sermayesi ve yatırım kredisi aynı vadeyle mi düşünülmeli?", "Hayır. Kısa sürede nakde dönen işletme sermayesi ihtiyacı için çok uzun vade gereksiz faiz maliyeti yaratabilir. Daha uzun ömürlü yatırım projelerinde ise vadenin nakit akışını rahatlatacak şekilde tasarlanması gerekebilir.", "Should working-capital and investment loans use the same maturity?", "No. Working-capital needs that turn into cash quickly may not require long maturities, while long-life investments often need a maturity structure that protects cash flow."),
+            faqEntry("Aynı faiz oranı neden ticari kredilerde farklı sonuç verebilir?", "Çünkü vade, peşin kesintiler, sigorta, vergi yapısı ve ödeme planı toplam maliyeti değiştirir. Bu nedenle yalnızca faiz oranına bakmak yerine toplam geri ödeme ve yıllık maliyet benzeri göstergelerle birlikte karar vermek gerekir.", "Why can the same rate produce different results in commercial loans?", "Because maturity, upfront deductions, insurance, tax treatment, and payment structure all affect total cost. The stated rate alone is not enough for a full comparison."),
+        ],
+    },
+    "kira-mi-konut-kredisi-mi-hesaplama": {
+        relatedCalculators: ["konut-kredisi-hesaplama", "kira-artis-hesaplama", "birikim-hesaplama", "mevduat-faiz-hesaplama", "enflasyon-hesaplama"],
+        title: {
+            tr: "Kira mı Konut Kredisi mi Hesaplama 2026 — Ev Almak mı Kirada Kalmak mı?",
+            en: "Rent vs Buy Calculator 2026 — Mortgage or Renting",
+        },
+        metaDescription: {
+            tr: "Kira mı konut kredisi mi sorusunu peşinatın fırsat maliyeti, kira artışı ve konut değer artışı ile birlikte değerlendirin. Uzun vadeli ev alma kararını sayılarla karşılaştırın.",
+            en: "Compare renting and buying with mortgage using down-payment opportunity cost, rent inflation, and home appreciation.",
+        },
+        contentAppend: {
+            tr: `<h2>Kırılma Noktası Süresi Kararı Neden Değiştirir?</h2>
+<p><strong>Kira mı konut kredisi mi</strong> sorusunda sonuç çoğu zaman tek bir yıl için değil, seçtiğiniz analiz ufku için anlamlıdır. Kısa vadede peşinatın alternatif getirisi ve işlem maliyetleri nedeniyle kirada kalmak daha avantajlı görünebilirken, daha uzun vadede kredi taksitinin sabit kalması ve konut değer artışının birikmesi ev sahipliğini öne çıkarabilir. Bu nedenle karar verirken “aylık taksit kiradan yüksek mi” sorusu tek başına yeterli değildir; peşinatın fırsat maliyeti, aidat ve bakım giderleri, kira artışı ve konutun gelecekteki değeri aynı denklem içinde okunmalıdır.</p>
+<p>En sağlıklı yaklaşım, bu sonucu <a href="/finansal-hesaplamalar/konut-kredisi-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">konut kredisi hesaplama</a>, <a href="/finansal-hesaplamalar/kira-artis-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kira artış hesaplama</a> ve <a href="/finansal-hesaplamalar/birikim-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">birikim hesaplama</a> araçlarıyla birlikte yorumlamaktır. Böylece yalnızca bugünkü aylık farkı değil, seçtiğiniz dönemin sonundaki net servet farkını da daha doğru okuyabilirsiniz.</p>`,
+            en: "The decision between renting and buying often changes with the analysis horizon. Short-term results can favor renting because of down-payment opportunity cost, while long-term projections may favor ownership if rent rises and home equity accumulates.",
+        },
+        faqAppend: [
+            faqEntry("Kirada kalmak hangi senaryolarda daha avantajlı olabilir?", "Peşinatın alternatif yatırım getirisi yüksekse, kredi faizi baskınsa ve analiz süresi görece kısaysa kirada kalmak finansal olarak daha güçlü sonuç verebilir. Özellikle fırsat maliyeti yüksek dönemlerde bu fark belirginleşir.", "When can renting be financially better?", "Renting can be stronger when the down payment has a high alternative return, mortgage cost is elevated, and the analysis horizon is relatively short."),
+            faqEntry("Karşılaştırma sonucu analiz süresi değişince neden değişir?", "Çünkü kira artışı, konut değer artışı ve kredi borcunun anapara-faiz dağılımı zaman içinde farklı hızlarda çalışır. Kısa ve uzun dönemlerde aynı değişkenler farklı ağırlıklarla öne çıkabilir.", "Why does the outcome change when the analysis period changes?", "Because rent inflation, home appreciation, and mortgage amortization evolve at different speeds over time. The same variables can dominate differently in short and long horizons."),
+        ],
+    },
+    "borc-kapatma-planlayici-hesaplama": {
+        relatedCalculators: ["kredi-karti-gecikme-faizi-hesaplama", "kredi-karti-asgari-odeme", "kredi-karti-asgari-odeme-tutari-hesaplama", "kredi-yapilandirma-hesaplama", "ihtiyac-kredisi-hesaplama"],
+        title: {
+            tr: "Borç Kapatma Planlayıcı 2026 — Çığ ve Kartopu Stratejisi",
+            en: "Debt Payoff Planner 2026 — Avalanche and Snowball",
+        },
+        metaDescription: {
+            tr: "Borç kapatma planlayıcı ile kredi ve kart borçlarını çığ veya kartopu yöntemiyle hangi sürede kapatacağınızı görün. Toplam faiz farkını ve borçsuz kalma süresini hesaplayın.",
+            en: "Compare avalanche and snowball debt-payoff methods, total interest, and debt-free timing.",
+        },
+        contentAppend: {
+            tr: `<h2>Borç Kapatma Stratejisinde Davranışsal Disiplin de Matematik Kadar Önemlidir</h2>
+<p><strong>Borç kapatma planlayıcı</strong> yalnızca toplam faiz hesabı yapan bir ekran değildir; aynı zamanda kullanıcının hangi stratejiyle plana daha uzun süre sadık kalabileceğini görmesine yardımcı olur. Çığ yöntemi matematiksel olarak daha az faiz ödetirken, kartopu yöntemi bazı kullanıcılar için küçük borçları hızlı kapattığı için motivasyon yaratabilir. Gerçek hayatta en iyi strateji, yalnızca teorik olarak en ucuz olan değil, kullanıcının düzenli uygulayabildiği stratejidir. Aylık ekstra ödeme bütçesi arttıkça iki yöntem arasındaki faiz farkı daha görünür hale gelir.</p>
+<p>Bu sonucu <a href="/finansal-hesaplamalar/kredi-karti-gecikme-faizi-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi kartı gecikme faizi hesaplama</a>, <a href="/finansal-hesaplamalar/kredi-karti-asgari-odeme" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi kartı asgari ödeme</a> ve <a href="/finansal-hesaplamalar/kredi-yapilandirma-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi yapılandırma hesaplama</a> araçlarıyla birlikte değerlendirmek, borç yönetimi planını daha gerçekçi hale getirir. Çünkü bazı durumlarda strateji seçimi kadar yeni borç üretimini durdurmak da sonucu belirler.</p>`,
+            en: "Debt-payoff strategy is not just about math; it is also about behavior. Avalanche usually minimizes interest, while snowball may help some users stay committed by closing small balances faster. The best strategy is often the one the user can sustain consistently.",
+        },
+        faqAppend: [
+            faqEntry("Çığ ve kartopu yöntemleri aynı sürede bitebilir mi?", "Borç tutarları, faiz oranları ve ekstra ödeme bütçesi belirli bir denge içindeyse iki yöntem benzer kapanış süresi verebilir. Ancak toplam faiz yükü çoğu zaman yine farklı olur; bu yüzden yalnızca süreye değil, toplam maliyete de bakılmalıdır.", "Can avalanche and snowball finish in the same time?", "Yes, if balances, rates, and extra-payment budget align in a certain way, the payoff duration can be similar. Total interest usually still differs, however."),
+            faqEntry("Minimum ödemeler bütçenin büyük kısmını yutuyorsa ne yapılmalı?", "Bu durumda yalnızca strateji seçmek yeterli olmayabilir. Ekstra bütçe yaratmak, faiz oranı yüksek borçları yeniden yapılandırmak veya yeni harcamaları tamamen durdurmak gerekebilir; aksi halde borç kapanma süresi çok uzayabilir.", "What if minimum payments consume most of the budget?", "In that case, strategy alone may not be enough. You may need to create extra cash flow, refinance expensive debts, or stop generating new debt, otherwise payoff can take much longer."),
+        ],
+    },
+    "gecmis-altin-fiyatlari": {
+        relatedCalculators: ["altin-hesaplama", "enflasyon-hesaplama", "reel-getiri-hesaplama", "gecmis-doviz-kurlari", "doviz-hesaplama"],
+        title: {
+            tr: "Geçmiş Altın Fiyatları 2010–2026 — Gram Altın Yıllık Ortalama ve Getiri",
+            en: "Historical Gold Prices 2010–2026 — Annual Gram Gold and Return",
+        },
+        metaDescription: {
+            tr: "Geçmiş altın fiyatları sayfasında 2010–2026 gram ve ons altın ortalamalarını inceleyin. Eski altın alımınızı bugüne taşıyarak nominal ve reel getiri analizi yapın.",
+            en: "Review annual gram and ounce gold averages from 2010 to 2026 and analyze historical nominal and real return.",
+        },
+        contentAppend: {
+            tr: `<h2>Yıllık Ortalama Altın Verisi Neyi Gösterir?</h2>
+<p><strong>Geçmiş altın fiyatları</strong> tablosu, tek bir günün zirve veya dip fiyatını değil, seçilen yılın ortalama fiyat seviyesini anlamak için kullanılır. Bu yaklaşım, “o yıl altın alsaydım bugün ne durumda olurdum?” gibi sorularda daha dengeli bir referans sağlar. Çünkü yatırımcıların çoğu tek bir dip noktadan alım yapmaz; yıl içine yayılan alımların etkisini görmek için yıllık ortalama daha sağlıklı bir bazdır. Bu da geçmiş performansı yorumlarken aşırı iyimser veya aşırı kötümser sonuçlardan kaçınmayı kolaylaştırır.</p>
+<p>Bu sayfadaki tarihsel veriyi <a href="/finansal-hesaplamalar/altin-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">altın hesaplama</a>, <a href="/finansal-hesaplamalar/enflasyon-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">enflasyon hesaplama</a> ve <a href="/finansal-hesaplamalar/reel-getiri-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">reel getiri hesaplama</a> araçlarıyla birlikte okumak gerekir. Böylece geçmişte oluşan nominal artışın satın alma gücünü gerçekten koruyup korumadığını daha net görebilirsiniz.</p>`,
+            en: "Historical gold-price tables are most useful when they show annual averages rather than a single peak or trough. That gives a more balanced answer to what a typical investor might have experienced and works better when combined with inflation and real-return analysis.",
+        },
+        faqAppend: [
+            faqEntry("Yıllık ortalama fiyat ile gün sonu fiyatı neden farklıdır?", "Yıllık ortalama, yıl boyunca oluşan fiyatların dengelenmiş seviyesini temsil eder; gün sonu fiyatı ise tek bir tarihin kapanışını gösterir. Geçmiş yatırım performansını yorumlarken ortalama veri genellikle daha sağlıklı bir referans üretir.", "Why is the annual average different from a closing price?", "Because the annual average represents the balanced level of prices over the year, while a closing price reflects a single date. Annual averages are often more useful for historical return interpretation."),
+            faqEntry("Geçmişte yüksek getiri sağlaması gelecekte de aynı sonucu garanti eder mi?", "Hayır. Tarihsel performans yalnızca geçmiş davranışı gösterir; gelecekte aynı hızda artış olacağına dair garanti vermez. Bu nedenle geçmiş altın verisi karar desteği sağlar, kesin yatırım sonucu vaat etmez.", "Does strong historical return guarantee future performance?", "No. Historical performance shows past behavior only and does not guarantee the same future outcome. It supports analysis but does not promise a result."),
+        ],
+    },
+    "gecmis-doviz-kurlari": {
+        relatedCalculators: ["doviz-hesaplama", "enflasyon-hesaplama", "gecmis-altin-fiyatlari", "altin-hesaplama", "reel-getiri-hesaplama"],
+        title: {
+            tr: "Geçmiş Döviz Kurları 2010–2026 — Dolar, Euro ve Sterlin Ortalama Kurları",
+            en: "Historical Exchange Rates 2010–2026 — USD, EUR and GBP Averages",
+        },
+        metaDescription: {
+            tr: "Geçmiş döviz kurları sayfasında 2010–2026 USD, EUR ve GBP/TL ortalamalarını inceleyin. Döviz yatırımının nominal ve reel etkisini tarihsel kur verisiyle karşılaştırın.",
+            en: "Review 2010–2026 average USD, EUR, and GBP/TRY rates and compare historical nominal and real FX performance.",
+        },
+        contentAppend: {
+            tr: `<h2>Tarihsel Kur Tablosu Neden Yıllık Ortalama Kullanır?</h2>
+<p><strong>Geçmiş döviz kurları</strong> ekranında yıllık ortalama kullanılması, tek bir günün aşırı oynak fiyatını genellememek içindir. Dolar, euro veya sterlin kurunun yıl boyunca izlediği gerçek bandı anlamak için ortalama veri daha dengeli bir çerçeve sunar. Bu özellikle bütçe analizi, ithalat maliyeti karşılaştırması ve geçmiş döviz yatırımı yorumlarında önemlidir. Tek bir zirveye bakmak, tarihsel getiriyi olduğundan yüksek gösterebilir; yalnızca dip seviyeye bakmak ise ters yönde yanıltabilir.</p>
+<p>Kur hareketini tek başına yorumlamak yerine <a href="/finansal-hesaplamalar/doviz-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">döviz hesaplama</a>, <a href="/finansal-hesaplamalar/enflasyon-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">enflasyon hesaplama</a> ve <a href="/finansal-hesaplamalar/gecmis-altin-fiyatlari" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">geçmiş altın fiyatları</a> sayfalarıyla birlikte değerlendirmek daha doğru olur. Böylece nominal kur artışının reel satın alma gücü veya alternatif yatırım araçlarına göre ne ifade ettiğini daha net okuyabilirsiniz.</p>`,
+            en: "Historical exchange-rate analysis is more balanced when it uses annual averages instead of a single peak day. That approach reduces distortion in budgeting, import-cost analysis, and retrospective investment comparisons, especially when combined with inflation and gold data.",
+        },
+        faqAppend: [
+            faqEntry("Neden kapanış kuru yerine yıllık ortalama gösteriliyor?", "Çünkü kapanış kuru tek bir tarihin fotoğrafıdır; yıllık ortalama ise yılın tamamındaki fiyat davranışını daha dengeli temsil eder. Geçmiş performansı yorumlamak için çoğu zaman ortalama veri daha işlevseldir.", "Why show annual average instead of the closing rate?", "Because the closing rate is a single-date snapshot, while the annual average represents price behavior across the full year. It is usually more useful for historical interpretation."),
+            faqEntry("Kur artışı her zaman enflasyonun üzerinde reel kazanç sağlar mı?", "Hayır. Nominal kur artışı yüksek görünse bile aynı dönemde iç fiyatlar da hızla yükselmiş olabilir. Reel değerlendirme için enflasyon etkisinin ayrıca çıkarılması gerekir.", "Does a rising exchange rate always create real profit above inflation?", "No. The nominal currency gain may still lag inflation if domestic prices have risen rapidly. Inflation must be removed for a real-return reading."),
         ],
     },
     "kredi-karti-gecikme-faizi-hesaplama": {
@@ -14891,33 +15409,91 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
     },
     "kredi-karti-taksitli-nakit-avans-hesaplama": {
         relatedCalculators: ["kredi-karti-gecikme-faizi-hesaplama", "kredi-karti-asgari-odeme", "kredi-karti-ek-taksit-hesaplama", "kredi-taksit-hesaplama", "ihtiyac-kredisi-hesaplama"],
+        title: {
+            tr: "Nakit Avans Hesaplama 2026 — Taksitli Nakit Avans Faizi ve Maliyeti",
+            en: "Cash Advance Calculator 2026 — Installment Cash Advance Rate and Cost",
+        },
+        metaDescription: {
+            tr: "Nakit avans hesaplama aracında taksitli kredi kartı nakit avansının aylık taksidini, toplam geri ödemesini ve 1 Mart 2026 TCMB tavan oranı ile ücret kuralı çerçevesini görün.",
+            en: "See installment cash-advance payments, total repayment, and the March 1, 2026 CBRT ceiling-rate and fee framework in one calculator.",
+        },
         contentAppend: {
-            tr: "Taksitli nakit avans, acil likidite sağlasa da kredi kartı limitini tüketmesi ve toplam finansman yükünü artırması nedeniyle dikkatli kullanılmalıdır. Aynı tutar için ihtiyaç kredisi, ek taksit veya mevcut borcu taşıma seçenekleriyle birlikte karşılaştırma yapmak daha rasyonel sonuç verir.",
-            en: "Installment cash advance can provide urgent liquidity, but it should be used carefully because it consumes card limit and increases financing burden. Comparing it with personal loan, post-purchase installment, or carrying existing balance gives a more rational result."
+            tr: `<h2>Nakit Avans Hesaplama 2026 — Taksitli Nakit Avans Faizi ve Ücret Kuralı</h2>
+<p>1 Mart 2026 itibarıyla TCMB'nin kredi kartı işlemlerinde uygulanacak azami faiz oranları tablosunda, <strong>nakit çekim/kullanım işlemleri için azami akdi faiz oranı %4,25</strong> olarak yer alır. Bu nedenle sayfadaki faiz alanı varsayılan olarak bu seviyeden başlar; ancak bankanızın kampanya veya müşteri bazlı oranı farklıysa manuel güncellenmelidir.</p>
+<p>Ayrıca TCMB'nin finansal tüketicilerden alınacak ücretlere ilişkin talimatına göre <strong>taksitli nakit avans ve taksitlendirme işlemlerinden ücret alınamaz</strong>. Standart nakit avans işleminde ise ücret kalemi en fazla <strong>%1</strong> olabilir. Bu yüzden aracın komisyon alanı, standart nakit çekim ile taksitli nakit avans arasındaki farkı karşılaştırmak için opsiyonel tutulur.</p>
+<h3>Nakit Avans mı İhtiyaç Kredisi mi?</h3>
+<p>Acil nakit ihtiyacında kullanıcı çoğu zaman <strong>nakit avans hesaplama</strong> ile <strong>ihtiyaç kredisi hesaplama</strong> arasında gidip gelir. Karar verirken yalnız aylık taksite bakmak yeterli değildir; kredi kartı limitinin doluluk etkisi, ekstre yönetimi ve toplam geri ödeme birlikte değerlendirilmelidir. Aynı tutarı bu sayfada ve ihtiyaç kredisi aracında ayrı ayrı test etmek, gerçek maliyet farkını daha net gösterir.</p>`,
+            en: "As of March 1, 2026, the CBRT maximum-rate table lists the contractual ceiling for credit-card cash withdrawal/use transactions at 4.25%. The page therefore starts with that reference rate by default, but you should overwrite it with your bank's actual offer when needed. The CBRT consumer-fee instruction also states that installment cash advances and installment-conversion transactions cannot be charged a fee, while a standard cash advance can carry a fee of up to 1%. That is why the fee field remains optional here and mainly serves comparison between standard cash withdrawal and installment cash advance."
         },
         faqAppend: [
-            faqEntry("Taksitli nakit avans krediye göre neden pahalı olabilir?", "Çünkü kart faizleri, işlem ücretleri ve limit baskısı birlikte toplam maliyeti yükseltebilir. Nominal oran düşük görünse bile tüm yük aynı olmayabilir.", "Why can installment cash advance be more expensive than a loan?", "Because card rates, fees, and credit limit pressure can raise total cost. Even if the nominal rate looks competitive, the overall burden may differ."),
+            faqEntry("Mart 2026 itibarıyla azami aylık nakit avans faizi kaç?", "TCMB'nin 1 Mart 2026 tarihli azami faiz oranları tablosunda kredi kartı nakit çekim/kullanım işlemleri için azami akdi faiz oranı %4,25 olarak görünür. Bankanız daha düşük oran sunabilir; ancak üst sınır bu tabloyla okunur.", "What is the maximum monthly cash advance rate as of March 2026?", "In the CBRT maximum-rate table dated March 1, 2026, the contractual ceiling for credit-card cash withdrawal/use transactions is 4.25% per month. Your bank may offer less, but that table defines the ceiling."),
+            faqEntry("Standart nakit avans ile taksitli nakit avans arasındaki ücret farkı nedir?", "TCMB'nin finansal tüketici ücretleri talimatına göre taksitli nakit avans ve taksitlendirme işlemlerinden ücret alınamaz. Buna karşılık standart nakit avans işleminde ücret en fazla %1 olabilir; başka kuruluş ATM'si kullanılıyorsa ek kanal ücreti ayrıca doğabilir.", "What is the fee difference between standard cash advance and installment cash advance?", "Under the CBRT consumer-fee instruction, installment cash advances and installment-conversion transactions cannot be charged a fee. By contrast, a standard cash advance may carry a fee of up to 1%, and another bank's ATM can add its own channel fee."),
             faqEntry("Nakit avans çekmek kredi notunu etkiler mi?", "Dolaylı olarak etkileyebilir. Yüksek limit kullanımı ve ödeme davranışının bozulması kredi profilini olumsuz yansıtabilir.", "Does taking a cash advance affect credit profile?", "It can indirectly. High limit utilization and weaker payment behavior may reflect negatively on your credit profile.")
         ],
     },
     "mevduat-faiz-hesaplama": {
-        relatedCalculators: ["enflasyon-hesaplama", "kredi-taksit-hesaplama", "ihtiyac-kredisi-hesaplama", "konut-kredisi-hesaplama", "reel-getiri-hesaplama"],
+        relatedCalculators: ["bilesik-faiz-hesaplama", "reel-getiri-hesaplama", "enflasyon-hesaplama", "birikim-hesaplama", "repo-hesaplama"],
+        title: {
+            tr: "Mevduat Faiz Hesaplama 2026 — Net Faiz, Stopaj ve Vadeli Getiri",
+            en: "Deposit Interest Calculator 2026 — Net Interest, Tax and Term Yield",
+        },
+        metaDescription: {
+            tr: "Net faiz hesaplama ve vadeli mevduat getiri hesaplama aracı. Mevduat faiz hesaplama formülü, stopaj sonrası net kazanç ve 14 Mart 2026 itibarıyla geçerli %17,5 / %10 TL mevduat stopaj oranları tek sayfada.",
+            en: "Net interest and term-deposit yield calculator with formula, after-tax return, and current 2026 TRY deposit withholding rates.",
+        },
         contentAppend: {
-            tr: "<h2>Türkiye Mevduat Faizi Hesaplama 2026 — Stopaj Oranları ve Net Getiri</h2><p>Vadeli mevduat hesabı açarken yalnızca bankanın ilan ettiği yıllık brüt faiz oranına bakmak gerçek kazancı değerlendirmek için yeterli değildir. Türkiye'de mevduat faiz geliri <strong>Gelir Vergisi Kanunu (GVK) Madde 94</strong> kapsamında stopaj vergisine tabidir ve 2026 yılı itibarıyla bu oran vadeye göre kademeli olarak değişmektedir.</p><h3>2026 Türkiye Stopaj Oranı Mevduat Faizi — Vadeye Göre Tablo</h3><p>1 aya kadar (dahil) vadeli mevduatlarda stopaj oranı <strong>%15</strong>, 1 ayı aşıp 6 aya kadar (dahil) vadeli mevduatlarda <strong>%12</strong>, 6 ayı aşıp 1 yıla kadar (dahil) vadeli mevduatlarda <strong>%10</strong> ve 1 yıldan uzun vadeli mevduatlarda ise <strong>%10</strong> olarak uygulanmaktadır. Oranlar Cumhurbaşkanlığı kararnamesiyle güncellenebileceğinden hesap açmadan önce bankanızdan teyit ediniz.</p><h3>Faiz Oranı Girerek Mevduat Hesaplama — Adım Adım Net Getiri Formülü</h3><p><strong>Brüt Faiz = Anapara × (Yıllık Oran / 100) × (Vade Günü / 365)</strong>. <strong>Stopaj = Brüt Faiz × Stopaj Oranı</strong>. <strong>Net Faiz = Brüt Faiz − Stopaj</strong>. <strong>Vade Sonu Net Tutar = Anapara + Net Faiz</strong>. Sayısal örnek: 100.000 TL anaparayı yıllık %45 oranla 92 günlük vadede değerlendiriyorsunuz; uygulanan stopaj oranı %15 (1–6 ay dilimi). Brüt faiz = 100.000 × 0,45 × (92/365) = <strong>11.342 TL</strong>. Stopaj = 11.342 × 0,15 = <strong>1.701 TL</strong>. Net faiz = <strong>9.641 TL</strong>. Vade sonu net tutar = <strong>109.641 TL</strong>. Net efektif yıllık oran = (9.641 / 100.000) × (365/92) × 100 ≈ <strong>%38,27</strong>.</p><h3>Mevduat Faizi Hesaplama Net — Otomatik Yenileme ve Bileşik Büyüme Etkisi</h3><p>Vadeli mevduatı otomatik yenileyerek kullandığınızda her dönem sonunda oluşan net faiz bir sonraki vadede <strong>anapara olarak işleme</strong> girer. Bu bileşik büyüme etkisi toplam kazancı tek vade projeksiyonundan belirgin biçimde yükseltir. Yukarıdaki örnek senaryo dört dönem yenilendiğinde plan sonu tutar yaklaşık <strong>143.600 TL</strong>'ye ulaşır; bu değer tek vadelik hesabın dört katlı projeksiyon sonucundan yaklaşık 6.000 TL daha fazladır.</p><h3>Vadeli Mevduat Faiz Hesaplama Formülü — Vade Seçiminin Stopaj Avantajı</h3><p>Stopaj oranı uzayan vadeyle birlikte düşer: 32 günlük vadede %15 olan stopaj, 180 gün vadesinde %10'a geriler. Bu fark net getiriyi doğrudan etkiler. Örneğin 100.000 TL, yıllık %40 faizle 32 günde %15 stopajla net 949 TL getirirken aynı koşullar 180 günlük vadede %10 stopajla net 1.774 TL getirir. Likidite ihtiyacınızı göz önünde bulundurarak uzun vadeyi tercih etmek kazancı artırmanın en kolay yollarından biridir. Farklı bankaların aynı vade için sunduğu brüt oranları bu araca girerek net efektif oranları karşılaştırabilir, en avantajlı seçeneği belirleyebilirsiniz.</p>",
-            en: "In Turkey, withholding tax on deposit interest in 2026 is 15% for terms up to 1 month, 12% for 1-6 months, and 10% for 6-12 months and beyond. Net interest = Gross × (1 − tax rate). Auto-rollover compounds net gains each period into the next principal, meaningfully outperforming single-term projections over multiple renewals."
+            tr: `<h2>Türkiye Mevduat Faizi Hesaplama 2026 — Net Faiz, Stopaj ve Formül</h2>
+<p>Mevduat faiz hesaplama sayfalarında kullanıcıların en çok aradığı sonuç, bankanın ilan ettiği brüt oran değil; gerçek <strong>net faiz hesaplama</strong> sonucudur. Çünkü yatırımcının hesabına geçen tutar, yalnızca yıllık faiz oranına değil aynı zamanda vade gününe, stopaj kesintisine ve mevduatın otomatik yenilenip yenilenmediğine bağlıdır. Bu nedenle <strong>mevduat hesaplama</strong> veya <strong>faiz hesaplama net</strong> sorgularında doğru karşılaştırma, brüt faiz üzerinden değil stopaj sonrası vade sonu net tutar ve efektif yıllık net oran üzerinden yapılmalıdır.</p>
+<p>14 Mart 2026 itibarıyla standart TL vadeli mevduatta referans stopaj yapısı, <strong>9 Temmuz 2025 tarihli ve 10042 sayılı Cumhurbaşkanı Kararı</strong> sonrasında 1 yıl dahil vadelerde <strong>%17,5</strong>, 1 yıldan uzun vadelerde ise <strong>%10</strong> bandındadır. Bu nedenle 32 gün, 92 gün veya 181 gün gibi kısa ve orta vadelerde net getiri hesabı aynı stopaj dilimi içinde değerlendirilir; belirgin vergi avantajı ancak 1 yılı aşan vadelerde ortaya çıkar. Sayfadaki araç, yatırımcının aradığı <strong>vadeli mevduat getiri hesaplama</strong> sonucunu tek vade ve otomatik yenileme seçenekleriyle birlikte üretir.</p>
+<h3>Mevduat Faiz Hesaplama Formülü Nedir?</h3>
+<p><strong>Mevduat faiz hesaplama formülü</strong> üç adımda özetlenir. İlk olarak brüt faiz hesaplanır: <strong>Anapara × (Yıllık Faiz Oranı / 100) × (Vade Günü / 365)</strong>. İkinci adımda stopaj tutarı bulunur: <strong>Brüt Faiz × Stopaj Oranı</strong>. Son adımda ise net faiz elde edilir: <strong>Brüt Faiz − Stopaj</strong>. Vade sonunda yatırımcının elindeki toplam tutar <strong>Anapara + Net Faiz</strong> olur. Farklı bankaların tekliflerini adil biçimde kıyaslamak için ayrıca <strong>net efektif yıllık oran</strong> kullanılır; bu oran, net faizin anaparaya bölünüp yıl bazına taşınmasıyla hesaplanır.</p>
+<p>Bu mantık, arama motorlarında görülen <strong>mevduat faiz hesaplama net</strong>, <strong>net faiz hesaplama</strong> ve <strong>mevduat getiri hesaplama</strong> sorgularının tamamını aslında aynı matematikte buluşturur. Banka oranı yüksek görünse bile stopaj ve vade etkisi hesaba katılmadan çıkan sonuç yatırım kararını yanıltabilir.</p>
+<h3>Stopaj Oranı Vadeli Mevduat 2026 — Güncel Tablo</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Vade</th>
+      <th>Stopaj Oranı</th>
+      <th>Yorum</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1 yıl dahil vadeler</td>
+      <td>%17,5</td>
+      <td>Brüt faizin %82,5'i yatırımcıda kalır.</td>
+    </tr>
+    <tr>
+      <td>1 yıldan uzun vadeler</td>
+      <td>%10</td>
+      <td>Brüt faizin %90'ı yatırımcıda kalır; vergi yükü daha düşüktür.</td>
+    </tr>
+    <tr>
+      <td>İstisna veya özel ürünler</td>
+      <td>Ürüne göre değişebilir</td>
+      <td>Banka bilgi formu ve güncel mevzuat ayrıca kontrol edilmelidir.</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Stopaj oranı vadeli mevduat 2026</strong> aramasında dikkat edilmesi gereken nokta, her mevduat ürününün aynı kampanya veya istisna yapısına sahip olmamasıdır. Sayfadaki hesap makinesi bu nedenle stopaj oranını seçilebilir bırakır; yatırımcı standart TL mevduatla istisnalı bir ürün arasında ayrım yapabilir.</p>
+<h3>Net Faiz Hesaplama Örneği</h3>
+<p>Örnek senaryoda 100.000 TL anapara, yıllık %45 faiz oranı ve 92 gün vade kullanalım. 14 Mart 2026 itibarıyla standart TL mevduat için seçilecek stopaj oranı <strong>%17,5</strong>'tir. Brüt faiz <strong>11.342,47 TL</strong>, stopaj <strong>1.984,93 TL</strong>, net faiz ise <strong>9.357,53 TL</strong> olur. Böylece vade sonu net toplam <strong>109.357,53 TL</strong>'ye ulaşır. Aynı veriyi efektif yıllık net oran cinsinden okuduğunuzda yaklaşık <strong>%37,13</strong>'lük bir net getiri görürsünüz. Arama sonuçlarında sık görülen <strong>mevduat faizi nasıl hesaplanır</strong> sorusunun kısa cevabı tam olarak budur: brüt oran değil, vergi sonrası net akış önemlidir.</p>
+<h3>Vadeli Mevduat Getiri Hesaplama ve Otomatik Yenileme</h3>
+<p>Tek vade hesabı, paranın yalnızca bir dönem sonunda ne getirdiğini gösterir. Ancak yatırımcı mevduatı otomatik yeniliyorsa her dönemin net faizi bir sonraki vadede anaparaya eklenir ve bileşik etki oluşur. Aynı 100.000 TL, yıllık %45, 92 gün ve %17,5 stopaj örneği dört kez otomatik yenilendiğinde plan sonu toplam yaklaşık <strong>143.019,36 TL</strong>'ye çıkar. Bu nedenle <strong>vadeli mevduat getirisi hesaplama</strong> sürecinde sadece ilk vade sonucuna bakmak yeterli değildir; yenileme sayısı ve bankanın sonraki dönemlerde aynı oranı verip vermeyeceği de dikkate alınmalıdır.</p>
+<h3>Mevduat Getirisi Nasıl Karşılaştırılmalı?</h3>
+<p>Doğru karşılaştırma için üç ölçüyü birlikte okuyun: <strong>net faiz tutarı</strong>, <strong>efektif yıllık net oran</strong> ve <strong>enflasyon sonrası reel getiri</strong>. İki banka aynı brüt oranı sunsa bile vade, stopaj ve yenileme yapısı farklıysa yatırımcıya geçen net tutar değişir. Bu yüzden sonucu <a href="/finansal-hesaplamalar/bilesik-faiz-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">bileşik faiz hesaplama</a>, <a href="/finansal-hesaplamalar/reel-getiri-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">reel getiri hesaplama</a> ve <a href="/finansal-hesaplamalar/enflasyon-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">enflasyon hesaplama</a> araçlarıyla birlikte değerlendirmek daha sağlıklıdır. Özellikle yüksek enflasyon dönemlerinde nominal mevduat getirisi güçlü görünse bile reel alım gücü kazancı daha sınırlı kalabilir.</p>`,
+            en: "Users searching for deposit returns usually want the after-tax result, not just the gross rate. As of March 14, 2026, standard TRY term deposits are taxed at 17.5% up to one year and 10% beyond one year. This page explains the deposit-interest formula, current withholding structure, net-yield example, and rollover compounding."
         },
         faqAppend: [
-            faqEntry("2026 Türkiye stopaj oranı mevduat faizi — hangi vade hangi oran?", "2026 itibarıyla Türkiye'de vadeli mevduata uygulanan stopaj oranları şöyledir: 1 aya kadar vadede %15, 1 ayı aşıp 6 aya kadar (dahil) vadede %12, 6 ayı aşıp 1 yıl dahil vadede %10, 1 yıldan uzun vadede %10. Bu oranlar Cumhurbaşkanlığı Kararnamesi ile belirlenir ve değiştirilebilir. Hesap açmadan önce güncel mevzuatı ve bankanızın bilgilendirme dokümanını mutlaka incelemeniz önerilir.", "What are Turkey's 2026 withholding tax rates on deposit interest by maturity?", "As of 2026: 15% for up to 1 month, 12% for 1-6 months, 10% for 6-12 months and beyond. Rates are set by Presidential Decree and may change; verify before opening an account."),
+            faqEntry("2026 stopaj oranı vadeli mevduat için kaç?", "14 Mart 2026 itibarıyla standart TL vadeli mevduatta 1 yıl dahil vadelerde stopaj oranı %17,5, 1 yıldan uzun vadelerde ise %10'dur. Bu çerçeve 9 Temmuz 2025 tarihli ve 10042 sayılı Cumhurbaşkanı Kararı sonrasında uygulanmaktadır. İstisna içeren özel ürünlerde farklı oranlar bulunabileceği için bankanın ürün bilgi formunu ayrıca kontrol etmek gerekir.", "What is the 2026 withholding tax rate for term deposits?", "As of March 14, 2026, standard TRY term deposits are taxed at 17.5% up to one year and 10% beyond one year. Special exempt products may differ and should be verified in the bank's product disclosure."),
             faqEntry("Otomatik yenilemeli vadeli mevduat neden tek vadeden daha fazla getiri üretir?", "Otomatik yenilemede her vade sonunda elde edilen net faiz bir sonraki dönemin anaparasına eklenir; bir sonraki dönem bu daha büyük anapara üzerinden faiz kazanır. Bu bileşik büyüme etkisi zaman içinde kümülatif kazancı tek vadeden dört veya daha fazla katı yıllık projeksiyonun ötesine taşır. Sonucu araçta 'Otomatik Yenileme' modunu seçerek ve yenileme sayısını ayarlayarak doğrudan görebilirsiniz.", "Why does auto-rollover produce higher returns than a single term?", "In auto-rollover each period's net interest is added to the next period's principal, enabling compound growth. Over multiple renewals the ending balance meaningfully exceeds projections from a simple single-term calculation."),
-            faqEntry("Mevduat faizi net getirisi adım adım nasıl hesaplanır — vadeli mevduat faiz hesaplama formülü", "Adım 1: Brüt Faiz = Anapara × (Yıllık Oran / 100) × (Vade Günü / 365). Adım 2: Vadeye göre stopaj oranını belirle (1 aya kadar %15, 1–6 ay %12, 6 ay–1 yıl %10). Adım 3: Stopaj = Brüt Faiz × Stopaj Oranı. Adım 4: Net Faiz = Brüt Faiz − Stopaj. Adım 5: Vade Sonu Net Tutar = Anapara + Net Faiz. Adım 6: Net Efektif Yıllık Oran = (Net Faiz / Anapara) × (365 / Vade Günü) × 100. Altıncı adımdaki oran, farklı vadeli ve oranlı ürünleri adil biçimde karşılaştırmanızı sağlar.", "How is net deposit interest calculated step by step?", "Step 1: Gross = Principal × (Rate/100) × (Days/365). Step 2: Determine tax by term (15% ≤1 mo, 12% 1-6 mo, 10% >6 mo). Step 3: Tax = Gross × Rate. Step 4: Net = Gross − Tax. Step 5: Total = Principal + Net. Step 6: Effective Annual Net Rate = (Net/Principal) × (365/Days) × 100.")
+            faqEntry("Net faiz hesaplama nasıl yapılır?", "Net faiz hesaplama için önce brüt faiz bulunur: Anapara × (Yıllık Oran / 100) × (Vade Günü / 365). Ardından stopaj tutarı brüt faiz üzerinden hesaplanır ve düşülür. Örneğin 100.000 TL, yıllık %45 oran, 92 gün vade ve %17,5 stopajla brüt faiz 11.342,47 TL, net faiz 9.357,53 TL olur. Kullanıcının hesabına geçen gerçek kazanç bu net tutardır.", "How do you calculate net deposit interest?", "First compute gross interest as Principal × (Rate/100) × (Days/365), then subtract withholding tax. With 100,000 TRY, 45%, 92 days, and 17.5% tax, gross interest is 11,342.47 TRY and net interest is 9,357.53 TRY."),
+            faqEntry("Mevduat faizi net getirisi adım adım nasıl hesaplanır — vadeli mevduat faiz hesaplama formülü", "Adım 1: Brüt Faiz = Anapara × (Yıllık Oran / 100) × (Vade Günü / 365). Adım 2: Vadeye göre stopaj oranını belirle; 14 Mart 2026 itibarıyla standart TL mevduatta 1 yıl dahil vadelerde %17,5, 1 yıldan uzun vadelerde %10 referans alınır. Adım 3: Stopaj = Brüt Faiz × Stopaj Oranı. Adım 4: Net Faiz = Brüt Faiz − Stopaj. Adım 5: Vade Sonu Net Tutar = Anapara + Net Faiz. Adım 6: Net Efektif Yıllık Oran = (Net Faiz / Anapara) × (365 / Vade Günü) × 100. Altıncı adım, farklı bankaların tekliflerini adil biçimde kıyaslamanızı sağlar.", "How is net deposit interest calculated step by step?", "Step 1: Gross = Principal × (Rate/100) × (Days/365). Step 2: Determine the current tax band; as of March 14, 2026, standard TRY deposits are taxed at 17.5% up to one year and 10% beyond one year. Step 3: Tax = Gross × Tax Rate. Step 4: Net = Gross − Tax. Step 5: Ending Value = Principal + Net. Step 6: Effective Annual Net Rate = (Net/Principal) × (365/Days) × 100."),
+            faqEntry("Vadeli mevduat getiri hesaplama için hangi oran kıyaslanmalı?", "Karşılaştırmada yalnızca bankanın ilan ettiği brüt faiz oranına bakmak yeterli değildir. Asıl kıyaslanması gereken ölçü, stopaj sonrası net faiz ve bundan türetilen efektif yıllık net orandır. Vade uzunluğu, otomatik yenileme ve enflasyon etkisi de birlikte okunmadığında mevduat getirisi olduğundan yüksek görünebilir.", "Which rate should be compared when evaluating deposit returns?", "Gross bank rates alone are not enough. The most useful comparison metric is after-tax net interest and the effective annual net rate derived from it. Term length, rollover behavior, and inflation should also be considered.")
         ],
     },
     "enflasyon-hesaplama": {
         relatedCalculators: ["mevduat-faiz-hesaplama", "kira-artis-hesaplama", "gelir-vergisi-hesaplama", "maas-hesaplama", "kira-vergisi-hesaplama"],
-        contentAppend: {
-            tr: "Enflasyon hesabı sadece geçmiş fiyat farkını görmek için değil, maaş artışı, kira güncellemesi ve yatırım performansını reel bazda yorumlamak için de kullanılır. Nominal artış ile satın alma gücü artışı aynı olmadığı için enflasyon aracı diğer finans araçlarının yorumunda temel referans görevi görür.",
-            en: "Inflation calculation is useful not only for measuring past price change but also for interpreting salary raises, rent updates, and investment performance in real terms. Since nominal growth is not the same as purchasing power growth, inflation acts as a core reference for other finance tools."
-        },
         faqAppend: [
             faqEntry("Nominal artış yüksekse neden reel getiri düşük olabilir?", "Çünkü aynı dönemde fiyat düzeyi daha hızlı artmış olabilir. Enflasyon etkisi çıkarılmadan görülen kazanç satın alma gücünü tam yansıtmaz.", "Why can real return be low even when nominal increase is high?", "Because overall prices may have risen faster during the same period. Gains seen without removing inflation do not fully reflect purchasing power."),
             faqEntry("Enflasyon hesabı maaş ve kira kararlarında neden önemlidir?", "Çünkü görünen artış oranının gerçek yaşam maliyetini ne kadar telafi ettiğini anlamayı sağlar. Böylece ücret ve kira değişimlerinin reel etkisi daha doğru okunur.", "Why is inflation important for salary and rent decisions?", "It shows how much an observed increase actually offsets cost of living. This makes the real impact of salary and rent changes easier to interpret.")
@@ -14925,19 +15501,20 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
     },
     "eurobond-getiri-hesaplama": {
         title: {
-            tr: "Eurobond Getiri Hesaplama 2026 — Kupon, YTM, Vergi ve Kur Etkisi",
+            tr: "Eurobond Vergi ve Getiri Hesaplama 2026 — Kupon, YTM, Stopaj ve Kur Etkisi",
             en: "Eurobond Yield Calculator 2026 — Coupon, YTM, Tax and FX Impact",
         },
         metaDescription: {
-            tr: "Eurobond kupon gelirini, vadeye kadar getiriyi (YTM), 2026 Türkiye eurobond vergi hesaplama bilgisini ve kur etkisini tek ekranda inceleyin. Hazine eurobondlarında stopaj oranı %0.",
+            tr: "Eurobond kupon gelirini, vadeye kadar getiriyi (YTM), 2026 eurobond vergi hesaplama mantığını ve kur etkisini tek ekranda inceleyin. Hazine eurobondlarında stopaj %0; özel sektör tarafında oran ihraç tipine göre değişebilir.",
             en: "Calculate eurobond coupon income, YTM, 2026 Turkey withholding tax, and FX impact in one screen. Treasury eurobonds carry 0% withholding.",
         },
         contentAppend: {
-            tr: "<h2>Eurobond Vergi Hesaplama 2026 — Türkiye Stopaj Oranları</h2><p>Eurobond; Türkiye Hazinesi veya özel şirketler tarafından yurt dışı piyasalara yönelik dolar ya da euro cinsinden ihraç edilen uzun vadeli borçlanma aracıdır. İki temel getiri kaynağı vardır: düzenli <strong>kupon ödemeleri</strong> ve vade sonunda tahvilin nominal değerine yakınsamasından doğan <strong>sermaye kazancı</strong> (ya da zararı).</p><h3>2026 Eurobond Vergi Hesaplama — Hangi Stopaj Oranı Uygulanır?</h3><p><strong>Türkiye Hazinesi eurobondları:</strong> GVK Madde 94/7-b kapsamında stopajdan muaftır; stopaj oranı <strong>%0</strong>'dır. Bu muafiyet, benzer getirili TL mevduata kıyasla Hazine eurobondlarını vergi açısından avantajlı kılar. <strong>Özel sektör tahvilleri (yerleşik kişiler):</strong> %10 stopaj uygulanır (GVK Md. 94/7-a). Dar mükellef yatırımcılar için oran çifte vergilendirme anlaşması hükümlerine bağlıdır. Oranlar Cumhurbaşkanlığı kararnamesiyle güncellenebilir; işlem öncesinde güncel mevzuatı kontrol ediniz.</p><h3>Eurobond Yıllık Faiz Oranı — Kupon Nasıl Hesaplanır?</h3><p>Kupon geliri sabittir ve ihraç sözleşmesinde belirlenir: <strong>Yıllık Kupon = Nominal Değer × Kupon Oranı</strong>. Yarı yıllık ödemeli tahvillerde her altı ayda Nominal × Oran / 2 tutarında nakit akışı oluşur. Örnek: 10.000$ nominal, %8,5 kupon → yıllık 850$, yarı yıllık 425$ ödeme.</p><h3>Eurobond Getiri Hesaplama Formülü — YTM Nedir?</h3><p>Vadeye Kadar Getiri (YTM — Yield to Maturity), tahvilin bugünkü piyasa fiyatından vade sonuna dek tüm nakit akışlarını bugüne indirgeyen bileşik yıllık iskonto oranıdır. Basitleştirilmiş yaklaşım: <strong>YTM ≈ [Kupon + (Nominal − Alım Fiyatı) / n] / [(Nominal + Alım Fiyatı) / 2] × 100</strong>. Araç, tam iteratif IRR yöntemini kullanmaktadır. Örnek: 10.000$ nominal, %8,5 kupon, %95 fiyatla 5 yıllık eurobond. Alım bedeli 9.500$; yıllık kupon 850$; Sermaye kazancı 500$ (5 yıla bölünürse 100$/yıl). YTM ≈ (850+100) / [(10.000+9.500)/2] × 100 ≈ <strong>%9,74</strong>.</p><h3>İskontolu ve Primli Alımın Etkisi</h3><p>Fiyat %100'ün altındaysa (iskontolu alım) YTM kupon oranından yüksektir; vade sonuna kadar oluşan fiyat yakınsaması ek kazanç sağlar. Fiyat %100'ün üzerindeyse (primli alım) YTM kupon oranından düşüktür çünkü anapara eriyişi getiriyi kısar. Başabaş alımlarda YTM ≈ kupon oranı.</p><h3>Kur Riski — TL Bazındaki Getiri Nasıl Değişir?</h3><p>Eurobond dolar üzerinden kupon üretirken bu gelirin TL karşılığı tamamen kur hareketine bağlıdır. Örnek: 1.000$'lık kupon ödemesi kur 40 TL/$ iken 40.000 TL değerindeyken, kur 45 TL/$'a yükselirse 45.000 TL'ye çıkar; kur 36 TL/$'a düşerse yalnızca 36.000 TL olur. Bu nedenle eurobond değerlendirmesi kupon getirisiyle birlikte beklenen kur seyri de dikkate alınmalıdır.</p><h3>Mevduat ile Eurobond Kıyaslaması</h3><p>Hazine eurobondlarının %0 stopaj avantajı, benzer vadeli TL mevduatın %10–%15 stopaj yüküne kıyasla net getiri farkı yaratır. Öte yandan TL mevduat kur riski içermezken eurobond döviz likiditesi sunar. İki aracı karşılaştırırken stopaj farkı, kur beklentisi ve hedef para birimi birlikte değerlendirilmelidir.</p>",
-            en: "In Turkey, Hazine (Treasury) eurobonds carry 0% withholding under GVK Art.94/7-b while private-sector bonds attract 10% for residents. YTM combines coupon income with price convergence to face value. Discounted purchases push YTM above coupon rate; premium purchases lower it. Currency moves directly affect the TL value of dollar-denominated coupons."
+            tr: "<h2>Eurobond Vergi Hesaplama 2026 — Türkiye Stopaj Mantığı</h2><p>Eurobond; Türkiye Hazinesi veya özel şirketler tarafından yurt dışı piyasalara yönelik dolar ya da euro cinsinden ihraç edilen uzun vadeli borçlanma aracıdır. İki temel getiri kaynağı vardır: düzenli <strong>kupon ödemeleri</strong> ve vade sonunda tahvilin nominal değerine yakınsamasından doğan <strong>sermaye kazancı</strong> (ya da zararı).</p><h3>2026 Eurobond Vergi Hesaplama — Hangi Stopaj Oranı Uygulanır?</h3><p><strong>Türkiye Hazinesi eurobondları:</strong> GVK Madde 94/7-b kapsamında stopajdan muaftır; stopaj oranı <strong>%0</strong>'dır. <strong>Tam mükellef kurumlar tarafından yurt dışında ihraç edilen tahvil ve kira sertifikaları:</strong> GİB'in Menkul Sermaye İradı rehberinde, 31.01.2025 tarihli 9487 sayılı Cumhurbaşkanı Kararı doğrultusunda vadelere göre <strong>%0, %3 veya %7</strong> tevkifat uygulanabileceği belirtilir. <strong>Bunlar dışında kalan özel sektör tahvillerinde</strong> ise Geçici 67 kapsamında <strong>%10</strong> kesinti yer alır. Yani 'özel sektör eurobondu her zaman %10 stopajlıdır' genellemesi doğru değildir.</p><h3>Eurobond Yıllık Faiz Oranı — Kupon Nasıl Hesaplanır?</h3><p>Kupon geliri sabittir ve ihraç sözleşmesinde belirlenir: <strong>Yıllık Kupon = Nominal Değer × Kupon Oranı</strong>. Yarı yıllık ödemeli tahvillerde her altı ayda Nominal × Oran / 2 tutarında nakit akışı oluşur. Örnek: 10.000$ nominal, %8,5 kupon → yıllık 850$, yarı yıllık 425$ ödeme.</p><h3>Eurobond Getiri Hesaplama Formülü — YTM Nedir?</h3><p>Vadeye Kadar Getiri (YTM — Yield to Maturity), tahvilin bugünkü piyasa fiyatından vade sonuna dek tüm nakit akışlarını bugüne indirgeyen bileşik yıllık iskonto oranıdır. Basitleştirilmiş yaklaşım: <strong>YTM ≈ [Kupon + (Nominal − Alım Fiyatı) / n] / [(Nominal + Alım Fiyatı) / 2] × 100</strong>. Araç, tam iteratif IRR yöntemini kullanmaktadır. Örnek: 10.000$ nominal, %8,5 kupon, %95 fiyatla 5 yıllık eurobond. Alım bedeli 9.500$; yıllık kupon 850$; sermaye kazancı 500$ (5 yıla bölünürse 100$/yıl). YTM ≈ (850+100) / [(10.000+9.500)/2] × 100 ≈ <strong>%9,74</strong>.</p><h3>Kur Riski — TL Bazındaki Getiri Nasıl Değişir?</h3><p>Eurobond dolar üzerinden kupon üretirken bu gelirin TL karşılığı tamamen kur hareketine bağlıdır. Örnek: 1.000$'lık kupon ödemesi kur 40 TL/$ iken 40.000 TL değerindeyken, kur 45 TL/$'a yükselirse 45.000 TL'ye çıkar; kur 36 TL/$'a düşerse yalnızca 36.000 TL olur. Bu nedenle eurobond değerlendirmesi kupon getirisiyle birlikte beklenen kur seyri de dikkate alınmalıdır.</p><h3>Resmi Kontrol Notu</h3><p>Stopaj ve beyan yükümlülüğü yıl, ihraç tipi ve yatırımcı statüsüne göre değişebileceği için işlem öncesinde <a href=\"https://intvrg.gib.gov.tr/hazirbeyan/assets/pdf/menkulsermaye2025.pdf\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\" target=\"_blank\" rel=\"noopener noreferrer\">GİB Menkul Sermaye İradı Rehberi</a> ve <a href=\"https://intvrg.gib.gov.tr/hazirbeyan/menkulOzet.html\" class=\"text-blue-600 hover:text-blue-700 underline underline-offset-4\" target=\"_blank\" rel=\"noopener noreferrer\">Hazır Beyan menkul özeti</a> üzerinden güncel durumu teyit etmek gerekir.</p>",
+            en: "In Turkey, Treasury eurobonds carry 0% withholding under GVK Art.94/7-b. Official guidance also shows that some foreign issuances by full taxpayer corporations may face maturity-based withholding such as 0%, 3%, or 7%, while other private-sector bonds may still carry 10%. YTM combines coupon income with price convergence to face value, and FX moves directly affect TRY results."
         },
         faqAppend: [
-            faqEntry("Eurobond vergi hesaplama 2026 — Türkiye Hazinesi eurobondlarında stopaj var mı?", "Türkiye Hazinesi tarafından ihraç edilen eurobondlarda GVK Madde 94/7-b uyarınca 2026 itibarıyla stopaj oranı <strong>%0</strong>'dır. Bu muafiyet; benzer vadeli TL vadeli mevduatın %10–%15 stopaj yüküne kıyasla önemli bir net getiri avantajı sağlar. Özel sektör eurobond ve dış borç araçlarında ise yerleşik kişiler için %10 stopaj uygulanmaktadır. Oranlar değişebileceğinden işlem öncesinde güncel mevzuatı ve varsa vergi danışmanınızı kontrol etmeniz önerilir.", "Does Turkey apply withholding tax to eurobonds in 2026?", "Treasury eurobonds are exempt from withholding (0%) under GVK Art.94/7-b. Private-sector bonds bear 10% for resident investors. Always verify current rates with a tax advisor before transacting."),
+            faqEntry("Eurobond vergi hesaplama 2026 — Türkiye Hazinesi eurobondlarında stopaj var mı?", "Türkiye Hazinesi tarafından ihraç edilen eurobondlarda GVK Madde 94/7-b uyarınca stopaj oranı <strong>%0</strong>'dır. GİB rehberi ayrıca tam mükellef kurumların yurt dışı ihraçlarında vade yapısına göre <strong>%0, %3 veya %7</strong> oranlarının görülebileceğini, bunlar dışında kalan özel sektör tahvillerinde ise <strong>%10</strong> kesinti uygulanabildiğini gösterir. Bu nedenle ihraççı ve ihraç türü kontrol edilmeden tek oran varsayılmamalıdır.", "Does Turkey apply withholding tax to treasury eurobonds in 2026?", "Treasury eurobonds are exempt from withholding under GVK Art.94/7-b. For some foreign issuances by full taxpayer corporations, official guidance shows maturity-based rates such as 0%, 3%, or 7%, while other private-sector bonds may carry 10%."),
+            faqEntry("Özel sektör eurobondlarında vergi her zaman %10 mu?", "Hayır. GİB'in 2025 Menkul Sermaye İradı rehberinde, tam mükellef kurumların yurt dışında ihraç ettiği borçlanma araçlarında vadelere göre <strong>%0, %3 veya %7</strong> kesinti görülebileceği açıkça belirtilir. <strong>%10</strong> oranı, bu grubun dışındaki özel sektör tahvillerinde öne çıkar. Bu yüzden yatırım aracının tam olarak hangi ihraç kategorisine girdiğini kontrol etmek gerekir.", "Are private-sector eurobonds always taxed at 10%?", "No. Official guidance states that some foreign issuances by full taxpayer corporations may be taxed at maturity-based rates such as 0%, 3%, or 7%. The 10% rate is more relevant for private-sector bonds outside that group."),
             faqEntry("Eurobond yıllık faiz oranı ile YTM arasındaki fark nedir?", "Kupon oranı; tahvilin nominal değeri üzerinden ödenen sabit yıllık faiz yüzdesidir ve değişmez. YTM (Vadeye Kadar Getiri) ise alım fiyatını, tüm kupon gelirlerini ve vade sonu nominal değer yakınsamasını birleştirerek hesaplanan bileşik yıllık getiridir. Tahvil iskontolu alındığında YTM kupon oranından yüksek, primli alındığında düşük, başabaş alındığında ise ikisi birbirine eşit olur.", "What is the difference between eurobond annual coupon rate and YTM?", "The coupon rate is the fixed annual interest percentage on face value. YTM is the compound annual return combining purchase price, coupon payments, and face-value convergence at maturity. YTM exceeds coupon for discounted purchases, falls below for premium ones, and equals it at par."),
             faqEntry("Eurobond getiri hesaplama formülü nedir — YTM nasıl okunur?", "Basitleştirilmiş YTM formülü: YTM ≈ [Kupon + (Nominal − Alım Fiyatı) / Kalan Yıl] / [(Nominal + Alım Fiyatı) / 2] × 100. Örnek: 10.000$ nominal, %8,5 kupon, piyasa fiyatı %95 (9.500$), 5 yıl → YTM ≈ [(850 + 100) / 9.750] × 100 ≈ %9,74. Gerçek YTM iteratif IRR hesabıyla elde edilir; bu araç bu yöntemi kullanmaktadır. Kupon oranının yanında YTM'yi incelemek, farklı fiyatlarda işlem gören eurobondları adil biçimde karşılaştırmanızı sağlar.", "What is the eurobond yield-to-maturity formula?", "Simplified: YTM ≈ [Coupon + (Face − Price)/Years] / [(Face + Price)/2] × 100. For precise YTM the tool uses iterative IRR. Reviewing YTM alongside coupon rate gives a fair comparison across bonds trading at different prices."),
         ],
@@ -15000,7 +15577,23 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
         },
     },
     "bilesik-buyume-hesaplama": {
-        relatedCalculators: ["bilesik-faiz-hesaplama", "birikim-hesaplama", "reel-getiri-hesaplama", "sermaye-ve-temettu-hesaplama"],
+        relatedCalculators: ["bilesik-faiz-hesaplama", "birikim-hesaplama", "reel-getiri-hesaplama", "sermaye-ve-temettu-hesaplama", "enflasyon-hesaplama"],
+        title: {
+            tr: "CAGR Hesaplama 2026 — Bileşik Büyüme Oranı ve Yıllık Ortalama Getiri",
+            en: "CAGR Calculator 2026 — Annual Compound Growth Rate and Return",
+        },
+        metaDescription: {
+            tr: "CAGR hesaplama aracı ile yatırım, fon, hisse veya şirket cirosunun yıllık bileşik büyüme oranını hesaplayın. Başlangıç ve bitiş değerlerinden yıllık ortalama getiriyi görün.",
+            en: "Calculate annual compound growth rate for investments, funds, stocks, or business revenue from starting and ending values.",
+        },
+        contentAppend: {
+            tr: `<h2>CAGR Hesaplama Ne İşe Yarar?</h2><p><strong>CAGR hesaplama</strong>, bir yatırımın ya da iş metriğinin belirli bir dönemde yıldan yıla dalgalı ilerlemiş olsa bile yıllık ortalama hangi bileşik hızla büyüdüğünü gösterir. Bu yüzden hisse, fon, şirket ciro büyümesi, kira getirisi ya da portföy performansı gibi alanlarda yalnız toplam yüzdeye bakmaktan daha anlamlıdır. Aynı toplam getiriye sahip iki yatırımın risk ve zaman dağılımı farklı olabilir; CAGR ise bu performansı tek bir yıllık bileşik oran üzerinden okunabilir hale getirir.</p><p>Özellikle kullanıcıların aradığı <strong>"cagr hesaplama"</strong> niyetinde temel soru şudur: "Bu yatırım bana yılda ortalama kaç yüzde kazandırdı?" Araç bu soruya başlangıç değeri, bitiş değeri ve yıl sayısı üzerinden net bir cevap verir. Sonucu <a href="/finansal-hesaplamalar/enflasyon-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">enflasyon hesaplama</a> ve <a href="/finansal-hesaplamalar/reel-getiri-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">reel getiri hesaplama</a> araçlarıyla birlikte okumak, nominal büyümenin satın alma gücünü gerçekten artırıp artırmadığını anlamak için daha sağlıklıdır.</p>`,
+            en: "CAGR shows the annualized compound pace behind a growth story even when yearly returns are volatile. It is especially useful for portfolios, funds, business revenue, rent income, and long-term investment comparisons. Pairing the result with inflation and real-return tools helps you see whether nominal growth truly preserved purchasing power.",
+        },
+        faqAppend: [
+            faqEntry("CAGR hesaplama neyi gösterir?", "CAGR, başlangıç ve bitiş değeri arasındaki toplam değişimi tek bir yıllık bileşik büyüme oranına çevirir. Böylece dalgalı bir süreci tek bir ortalama hız üzerinden okuyabilirsiniz.", "What does a CAGR calculation show?", "CAGR converts the total change between the starting and ending value into one annual compound growth rate so a volatile path can be read as a single average pace."),
+            faqEntry("CAGR ile yıllık ortalama getiri aynı şey mi?", "Tam olarak değil. Aritmetik yıllık ortalama, yıllık getirileri düz toplayıp böler; CAGR ise bileşik etkiyi hesaba kattığı için uzun vadeli yatırım performansında daha doğru bir ölçüdür.", "Is CAGR the same as average annual return?", "Not exactly. Arithmetic average simply averages yearly returns, while CAGR includes compounding and is usually a more reliable measure for long-term performance."),
+        ],
     },
     "bono-hesaplama": {
         relatedCalculators: ["tahvil-hesaplama", "iskonto-hesaplama", "repo-hesaplama", "eurobond-hesaplama"],
@@ -15075,27 +15668,21 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
         ],
     },
     "tasit-kredisi-hesaplama": {
+        title: {
+            tr: "Araç Kredisi Hesaplama 2026 — Taşıt, Araba ve Oto Kredisi Taksitleri",
+            en: "Car Loan Calculator 2026 — Vehicle Financing Installments",
+        },
         metaDescription: {
-            tr: "Araç kredisi için aylık taksit, toplam geri ödeme ve vade uzadıkça oluşan finansman yükünü hızlıca hesaplayın.",
-            en: "Calculate vehicle-loan installment, total repayment, and financing burden as maturity extends.",
+            tr: "Araç kredisi hesaplama aracı ile sıfır ve ikinci el araba için aylık taksit, toplam geri ödeme ve vade uzadıkça oluşan finansman yükünü hızlıca hesaplayın.",
+            en: "Calculate new and used car-loan installments, total repayment, and financing burden as maturity extends.",
         },
         contentAppend: {
-            tr: "Taşıt kredisinde aylık taksit kadar peşinat oranı, kasko-sigorta yükü ve aracın değer kaybı da toplam kararın parçasıdır. Farklı vade seçeneklerini karşılaştırarak sadece taksiti değil toplam finansman yükünü görmek gerekir.",
-            en: "In vehicle loans, down payment ratio, insurance cost, and vehicle depreciation matter alongside the installment. Comparing maturities helps you see not only the monthly payment but also the total financing burden.",
-        },
-    },
-    "ozel-guvenlik-sinav-hesaplama": {
-        relatedCalculators: ["ehliyet-sinav-puan-hesaplama", "pomem-puan-hesaplama", "pmyo-puan-hesaplama", "kpss-puan-hesaplama"],
-        metaDescription: {
-            tr: "Özel güvenlik temel eğitim veya silahlı sınavındaki bölüm doğrularınızı girerek toplam puanı ve 70 geçme barajını hızlıca görün.",
-            en: "Enter your private security exam section scores to quickly see the total and the 70-point passing threshold.",
-        },
-        contentAppend: {
-            tr: "Özel güvenlik sınavında adaylar çoğu zaman toplam puanı görse de bölüm bazlı performans dağılımı da hazırlık planı için önemlidir. Bu ekran, temel net hesabını hızlıca verir; resmi eğitim ve sertifika koşulları için Emniyet ve kurs duyuruları ayrıca takip edilmelidir.",
-            en: "Candidates often focus on the total private security score, but section-level distribution also matters for study planning. This screen gives the basic result quickly; official training and certification conditions should still be followed through course and police notices.",
+            tr: `<h2>Araç Kredisi Hesaplama Nasıl Okunur?</h2><p><strong>Araç kredisi hesaplama</strong> aramalarında kullanıcıların çoğu yalnız aylık taksiti görmek ister; ancak doğru karar için peşinat, vade sınırı, kasko zorunluluğu ve aracın değer segmenti de birlikte değerlendirilmelidir. Özellikle <strong>araba kredisi</strong> veya <strong>oto kredisi</strong> arayan kullanıcılar için aynı faiz oranı altında bile toplam geri ödeme ciddi biçimde değişebilir. Bu nedenle kısa vade ile uzun vade arasındaki farkı sadece aylık taksit üzerinden değil, toplam faiz yükü üzerinden okumak gerekir.</p><p>İkinci el araçlarda kredi oranı, aracın kasko değeri ve yaşına göre daha sınırlı olabilir. Sonucu <a href="/tasit-ve-vergi/otv-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">ÖTV hesaplama</a>, <a href="/tasit-ve-vergi/yakit-tuketim-maliyet" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">yakıt tüketim maliyet</a> ve <a href="/finansal-hesaplamalar/kredi-taksit-hesaplama" class="text-blue-600 hover:text-blue-700 underline underline-offset-4">kredi taksit hesaplama</a> sayfalarıyla birlikte değerlendirmek, toplam sahip olma maliyetini daha gerçekçi gösterir. Böylece yalnız "kaç taksit öderim?" değil, "bu aracı gerçekten sürdürülebilir biçimde finanse edebilir miyim?" sorusuna da cevap yaklaşır.</p>`,
+            en: "When users search for car-loan calculations, they often focus on the monthly payment, but down payment, maturity caps, insurance burden, and vehicle segment should also be considered. Reading the result together with tax, fuel-cost, and general loan-payment tools gives a more realistic total ownership picture.",
         },
         faqAppend: [
-            faqEntry("Silahlı ve silahsız özel güvenlik sürecinde aynı puan yeterli midir?", "Temel puan hesabı benzer görünse de eğitim içeriği ve belge koşulları farklı olabilir. Kursunuzun ve resmi duyuruların istediği şartları ayrıca kontrol etmelisiniz.", "Is the same score sufficient for armed and unarmed private security processes?", "The basic score view may look similar, but training content and certification conditions can differ. You should separately check the requirements announced by your course and the authorities."),
+            faqEntry("Araç kredisi ile ihtiyaç kredisi arasında ne fark vardır?", "Araç kredisinde alınan otomobil banka lehine rehinli olur ve kredi çoğu zaman daha hedefli bir ürün olarak fiyatlanır. İhtiyaç kredisi ise teminatsızdır; bazı senaryolarda daha esnek olabilir ama toplam maliyet ve limit farklılaşabilir.", "What is the difference between a car loan and a personal loan?", "A car loan is secured by the vehicle and is priced as a purpose-specific product. A personal loan is unsecured and may be more flexible in some cases, but total cost and approval structure can differ."),
+            faqEntry("İkinci el araba kredisi vadesi nasıl belirlenir?", "İkinci el araç kredilerinde vade ve kredi oranı; aracın değeri, yaşı ve bankanın politika setine göre belirlenir. Bu yüzden aynı tutar için yeni araçta görülen vade her ikinci el otomobilde geçerli olmayabilir.", "How is maturity determined in a used-car loan?", "Used-car loan maturity and loan-to-value ratio depend on vehicle value, age, and each bank's policy. The maturity available on a new car may not apply to every used vehicle."),
         ],
     },
     "takdir-tesekkur-hesaplama": {
@@ -15151,17 +15738,18 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
         ],
     },
     "isg-puan-hesaplama": {
-        relatedCalculators: ["kpss-puan-hesaplama", "ales-puan-hesaplama", "yds-puan-hesaplama"],
+        relatedCalculators: ["kpss-puan-hesaplama", "ales-puan-hesaplama", "yds-puan-hesaplama", "ehliyet-sinav-puan-hesaplama"],
         metaDescription: {
             tr: "İSG sınavında doğru ve yanlış sayınıza göre net bazlı tahmini puan ön izlemesi alın; resmi belge sonucu için kurum açıklamasını takip edin.",
             en: "Preview a net-based estimated OHS exam score from your correct and wrong answers and follow official announcements for certification.",
         },
         contentAppend: {
-            tr: "İSG sınavında adaylar çoğu zaman belge alıp alamayacaklarını hızlıca görmek ister. Araç, net bazlı pratik bir tahmin sunar; ancak resmi başarı durumu sınav kuralları, belge sınıfı ve kurum değerlendirmesiyle kesinleşir.",
-            en: "Candidates in the OHS exam usually want to quickly see whether they may qualify for certification. The tool provides a practical net-based estimate, but official success depends on exam rules, certificate class, and institutional evaluation.",
+            tr: "İSG sınavında adaylar çoğu zaman belge alıp alamayacaklarını hızlıca görmek ister. Araç, 50 soruluk test için net bazlı pratik bir ön izleme sunar; ancak resmi başarı durumu sınav kuralları, belge sınıfı ve kurum değerlendirmesiyle kesinleşir.",
+            en: "Candidates in the OHS exam usually want to quickly see whether they may qualify for certification. For the 50-question test, the tool provides a practical net-based preview, but official success depends on exam rules, certificate class, and institutional evaluation.",
         },
         faqAppend: [
             faqEntry("İSG sonucunu yorumlarken belge sınıfı önemli mi?", "Evet. Adayın hedeflediği belge sınıfı ve güncel mevzuat, sınav sonucunun nasıl yorumlanacağını etkileyebilir.", "Does certificate class matter when interpreting an OHS result?", "Yes. The certificate class targeted by the candidate and the current regulation may affect how the exam result should be interpreted."),
+            faqEntry("İSG puanını net bazlı görmek neden faydalıdır?", "Çünkü deneme sınavları arasında gelişimi takip etmeyi kolaylaştırır. Resmi sonuç yerine hazırlık temposunu izlemek için güçlü bir ara göstergedir.", "Why is it useful to see the OHS result on a net basis?", "Because it makes it easier to track improvement across mock exams. It is a strong interim indicator for monitoring preparation rather than replacing the official result."),
         ],
     },
     "tus-puan-hesaplama": {
@@ -15192,6 +15780,88 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
             faqEntry("Ehliyet e-Sınavında yanlış cevap puan düşürür mü?", "Hayır. Teorik e-sınavda puan doğru cevap sayısına göre oluşur ve geçme için 70 puan barajı aranır.", "Do wrong answers lower the score in the driving-license e-Exam?", "No. In the theoretical e-Exam, the score is based on the number of correct answers and the passing threshold is 70 points."),
         ],
     },
+    "msu-puan-hesaplama": {
+        relatedCalculators: ["tyt-puan-hesaplama", "yks-puan-hesaplama", "pmyo-puan-hesaplama", "pomem-puan-hesaplama"],
+        contentAppend: {
+            tr: "MSÜ sonucunu değerlendirirken yazılı puanı tek başına nihai karar gibi okumamak gerekir. Yazılı oturum çağrı puanını etkiler; ancak fiziki yeterlilik, sağlık, mülakat ve dönem kılavuzunda yer alan özel şartlar sürecin tamamını belirler.",
+            en: "When evaluating an MSÜ result, the written score should not be read as the final decision on its own. The written session affects the call score, but physical fitness, health, interview, and special conditions in the period guide determine the full process.",
+        },
+        faqAppend: [
+            faqEntry("MSÜ yazılı puanı tek başına kazanmak için yeterli mi?", "Hayır. Yazılı puan yalnızca ilk aşamadır. Fiziki yeterlilik, sağlık ve mülakat gibi sonraki aşamalar da resmi seçim zincirinin parçasıdır.", "Is the MSÜ written score alone enough to secure admission?", "No. The written score is only the first stage. Physical fitness, health, and interview stages are also part of the official selection chain."),
+            faqEntry("Bu ekrandaki MSÜ puanı resmi çağrı puanını birebir verir mi?", "Hayır. Ekrandaki değer, netlerden üretilmiş hızlı bir ön izlemedir. Resmi çağrı ve değerlendirme için ilgili dönem kılavuzu ile sonuç belgesi esas alınmalıdır.", "Does the MSÜ score on this screen exactly match the official call score?", "No. The value on the screen is a quick preview generated from nets. The relevant guide and the official result document remain the basis for official calls and evaluation."),
+        ],
+    },
+    "oyp-puan-hesaplama": {
+        relatedCalculators: ["ales-puan-hesaplama", "yds-puan-hesaplama", "universite-not-ortalamasi-hesaplama", "isg-puan-hesaplama"],
+        contentAppend: {
+            tr: "ÖYP sorgusuyla aranan bu hesaplama, adayın ALES, yabancı dil ve lisans not ortalamasını tek bakışta karşılaştırmasını kolaylaştırır. Yine de güncel üniversite ilanlarında ek belge, alan şartı veya farklı değerlendirme adımı bulunabileceği için sonucu resmi ilan metniyle birlikte okumak gerekir.",
+            en: "This calculation, often searched under the name ÖYP, makes it easier to compare ALES, language score, and undergraduate GPA at a glance. Still, current university postings may include additional documents, field conditions, or different evaluation steps, so the result should be read together with the official announcement text.",
+        },
+        faqAppend: [
+            faqEntry("Lisans notu 4'lük sistemden 100'lük sisteme neden çevriliyor?", "Çünkü ağırlıklı ön değerlendirmede lisans notu yüzlük karşılığıyla kullanılır. Araç da önce bu dönüşümü yapıp ardından ilgili katsayıyı uygular.", "Why is undergraduate GPA converted from 4.0 to 100?", "Because the weighted preview uses the undergraduate GPA on a 100-point basis. The tool first performs this conversion and then applies the relevant coefficient."),
+            faqEntry("ALES yükselirse ÖYP benzeri ön değerlendirme ne kadar etkilenir?", "ALES toplamın yarısını oluşturduğu için yükselişi genellikle en güçlü etkiyi üretir. Bu nedenle puan stratejisinde ALES sonucu çoğu zaman ilk belirleyici kalemdir.", "How much does a higher ALES affect an ÖYP-like preview?", "Because ALES forms half of the total, an increase there usually produces the strongest effect. It is therefore often the main driver in score strategy."),
+        ],
+    },
+    "iyos-puan-hesaplama": {
+        relatedCalculators: ["hmgs-puan-hesaplama", "hakim-savci-yrd-puan-hesaplama", "kpss-puan-hesaplama", "ales-puan-hesaplama"],
+        contentAppend: {
+            tr: "İYÖS sonucunu okurken yalnız puanı değil, sınavın başvuru amacı ve sonraki kariyer adımını da dikkate almak gerekir. Araç, farklı deneme sonuçlarını tek ölçekte kıyaslamak için pratik bir ön izleme sunar.",
+            en: "When reading an IYOS result, one should consider not only the score but also the purpose of the exam and the next career step. The tool offers a practical preview for comparing different mock outcomes on a single scale.",
+        },
+        faqAppend: [
+            faqEntry("İYÖS sonucunu HMGS ve diğer hukuk sınavlarıyla birlikte okumak faydalı mı?", "Evet. Benzer kariyer hattındaki sınavları birlikte izlemek, güçlü ve zayıf alanları daha net görmeyi sağlar.", "Is it useful to read the IYOS result together with HMGS and other law exams?", "Yes. Reviewing exams on a similar career path together helps reveal strengths and weaknesses more clearly."),
+        ],
+    },
+    "pmyo-puan-hesaplama": {
+        relatedCalculators: ["pomem-puan-hesaplama", "kpss-puan-hesaplama", "ozel-guvenlik-sinav-hesaplama", "msu-puan-hesaplama"],
+        contentAppend: {
+            tr: "PMYO tarafında adayın yalnız hesaplanan başarı puanına değil, başvuruya esas puan türüne, dönem kılavuzuna ve parkur performansına da dikkat etmesi gerekir. Bu yüzden sonuç ekranı resmi yerleştirme listesi değil, çağrı öncesi hazırlık tablosu gibi okunmalıdır.",
+            en: "In PMYO, the candidate should focus not only on the calculated ranking score but also on the application score type, the period guide, and track performance. The result should therefore be read like a preparation dashboard before official calls rather than as an official placement list.",
+        },
+        faqAppend: [
+            faqEntry("PMYO puanının 100'ün üstüne çıkması normal mi?", "Evet. Başvuruya esas YKS puanı 500'lük ölçekten geldiği için ağırlıklı toplam 100'ü aşabilir. Bu durum hesaplamanın mantığından kaynaklanır.", "Is it normal for the PMYO score to exceed 100?", "Yes. Because the YKS score used for application comes from a 500-point scale, the weighted total can exceed 100. This follows from the structure of the calculation."),
+            faqEntry("PMYO'da resmi kılavuz değişirse bu hesap da değişir mi?", "Evet. Ağırlık, baraj veya başvuru puan türü değişirse hesap mantığı ve açıklamalar buna göre güncellenir.", "Will this calculation change if the official PMYO guide changes?", "Yes. If the weights, thresholds, or application score type change, the calculation logic and explanations will be updated accordingly."),
+        ],
+    },
+    "pomem-puan-hesaplama": {
+        relatedCalculators: ["pmyo-puan-hesaplama", "kpss-puan-hesaplama", "ozel-guvenlik-sinav-hesaplama", "ales-puan-hesaplama"],
+        contentAppend: {
+            tr: "POMEM adayları için hesaplanan değer, dönem kılavuzundaki ağırlıkları tek ekranda toplayarak süreci daha okunur kılar. Ancak resmi çağrı, parkur, mülakat ve nihai sıralama her zaman Polis Akademisi duyurularıyla birlikte değerlendirilmelidir.",
+            en: "For POMEM candidates, the calculated value makes the process more readable by gathering the period-guide weights on a single screen. Still, official calls, track performance, interview results, and final ranking should always be evaluated together with Police Academy announcements.",
+        },
+        faqAppend: [
+            faqEntry("POMEM sonucunda en kritik bileşen hangisi?", "Ağırlık yapısı kadar adayın barajları geçmesi de kritiktir. Özellikle mülakat ve fiziki yeterlilik, kağıt üzerindeki toplam puanın ötesinde sonucu belirleyebilir.", "Which component is most critical in POMEM?", "Passing the thresholds matters as much as the weighting structure. Interview and physical fitness can determine the outcome beyond the numeric total."),
+            faqEntry("POMEM hesabı resmi yerleştirmeyi garanti eder mi?", "Hayır. Ekran, başarı sıralamasına esas yaklaşık bir ön izleme verir. Resmi sonuç, dönem kılavuzu ve Polis Akademisi açıklamaları belirleyicidir.", "Does the POMEM calculation guarantee official placement?", "No. The screen provides an approximate ranking preview. The period guide and Police Academy announcements remain decisive."),
+        ],
+    },
+    "ogg-sinav-puan-hesaplama": {
+        relatedCalculators: ["ozel-guvenlik-sinav-hesaplama", "ehliyet-sinav-puan-hesaplama", "pmyo-puan-hesaplama", "pomem-puan-hesaplama"],
+        contentAppend: {
+            tr: "ÖGG ekranı özellikle silahlı ve silahsız sonuç ayrımını hızlı görmek isteyen adaylar için kullanışlıdır. Temel eğitim puanı, silah bilgisi ve atış sonucu birlikte okunmadan yalnız tek bir kaleme bakmak çoğu zaman yanıltıcı olur.",
+            en: "The ÖGG screen is especially useful for candidates who want to quickly distinguish between armed and unarmed outcomes. Looking only at a single component without reading the basic training, weapon knowledge, and shooting result together can often be misleading.",
+        },
+        faqAppend: [
+            faqEntry("Silahlı ÖGG'de hangi bölüm zayıfsa risk artar?", "Temel eğitim, silah bilgisi ve atış bölümlerinin her biri sonucu etkiler. Özellikle temel eğitim puanı düşük kaldığında silahsız geçiş ihtimali öne çıkabilir.", "Which weak section increases risk most in armed ÖGG?", "Each of basic training, weapon knowledge, and shooting affects the outcome. In particular, when the basic training score stays low, the possibility of falling back to unarmed qualification may come to the fore."),
+        ],
+    },
+    "ozel-guvenlik-sinav-hesaplama": {
+        relatedCalculators: ["ehliyet-sinav-puan-hesaplama", "ogg-sinav-puan-hesaplama", "pomem-puan-hesaplama", "pmyo-puan-hesaplama"],
+        title: {
+            tr: "Özel Güvenlik Sınavı Puan Hesaplama 2026 — 100 Soruluk Yazılı Ön İzleme",
+            en: "Private Security Exam Score Calculator 2026 — 100-Question Written Preview",
+        },
+        metaDescription: {
+            tr: "Özel güvenlik yazılı sınavında bölüm doğrularınızdan toplam puanı ve 70 geçme barajını hızlıca görün. Resmi kurs ve emniyet duyurularıyla birlikte yorumlayın.",
+            en: "Quickly see the total score and 70-point passing threshold from your private security written exam sections. Interpret it together with official course and police announcements.",
+        },
+        contentAppend: {
+            tr: "Bu sayfa 100 soruluk yazılı yapıyı hızlıca yorumlamak için uygundur. Silahlı süreç, atış sınavı veya kurs özel koşulları gibi ek aşamalar için `ogg-sinav-puan-hesaplama` ekranı ve resmi duyurular birlikte değerlendirilmelidir.",
+            en: "This page is suitable for quickly interpreting the 100-question written structure. For extra stages such as the armed track, shooting test, or course-specific requirements, the ÖGG screen and official announcements should be read together.",
+        },
+        faqAppend: [
+            faqEntry("Özel güvenlik yazılı sınavı ile ÖGG ekranı aynı şeyi mi gösterir?", "Hayır. Bu ekran yazılı 100 soruluk yapıyı hızlıca toplar; ÖGG ekranı ise silahlı-silahsız ayrımı ve atış sonucunu da birlikte yorumlar.", "Do the private security written exam page and the ÖGG page show the same thing?", "No. This screen quickly totals the 100-question written structure, while the ÖGG screen also interprets armed-unarmed distinction and the shooting result together."),
+        ],
+    },
     "vucut-kitle-indeksi-hesaplama": {
         relatedCalculators: ["ideal-kilo-hesaplama", "gunluk-kalori-ihtiyaci", "gebelik-hesaplama", "hamilelik-haftasi-hesaplama", "yumurtlama-donemi-hesaplama"],
         contentAppend: {
@@ -15216,93 +15886,103 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
     },
     "yks-puan-hesaplama": {
         relatedCalculators: ["tyt-puan-hesaplama", "kpss-puan-hesaplama", "ales-puan-hesaplama", "obp-puan-hesaplama", "dgs-puan-hesaplama", "yds-puan-hesaplama"],
-        title: { tr: "YKS Puan Hesaplama 2026 — TYT/AYT Net ve Yerleştirme Puanı", en: "YKS Score Calculator 2026 — TYT/AYT Net and Placement Score" },
-        metaDescription: { tr: "YKS'de TYT ve AYT netlerinizden tahmini yerleştirme puanını hesaplayın; puan türünü, OBP etkisini ve taban tablolarını birlikte okuyun.", en: "Estimate YKS placement score from TYT and AYT nets, and read your score type, OBP effect, and base score tables together." },
+        title: { tr: "YKS Puan Hesaplama 2026 — TYT/AYT Net ve OBP Ön İzleme", en: "YKS Score Calculator 2026 — TYT/AYT Net and OBP Preview" },
+        metaDescription: { tr: "20-21 Haziran 2026 YKS için TYT ve AYT netlerinizden tahmini yerleştirme puanını hesaplayın; OBP etkisini ve puan türü ayrımını birlikte görün.", en: "Estimate your 2026 YKS placement score for the June 20-21 exam from TYT and AYT nets, with OBP impact and score-type breakdown." },
         contentAppend: {
-            tr: "YKS puan hesabı; TYT katkısı, AYT katsayısı ve puan türüne göre farklılaşır. Aynı net sayısına sahip iki aday farklı puan gruplarında farklı sıralamalar alabilir. Bu nedenle YKS sonucunu TYT ayrımı, puan türü ve güncel ÖSYM kılavuzuyla birlikte yorumlamak önemlidir.",
-            en: "YKS score varies by TYT contribution, AYT coefficient, and score type. Two candidates with the same net count can rank differently across score groups. It is important to read the YKS result together with the TYT breakdown, score type, and the current ÖSYM guide.",
+            tr: "ÖSYM, 2026-YKS başvurularını 6 Şubat-2 Mart 2026 arasında aldı ve sınav tarihlerini 20-21 Haziran 2026 olarak duyurdu. Bu sayfa 2026 adayı için resmi takvimi gözetir; hesaplama tarafında ise doğrulanmış 2024 katsayı omurgasına dayanan 2025 güncel simülasyon seti kullanılır. Bu nedenle sonuç ekranı kesin puan belgesi değil, deneme analizi ve tercih öncesi hedef aralığı okuması olarak değerlendirilmelidir. `tyt-puan-hesaplama`, `obp-puan-hesaplama` ve `dgs-puan-hesaplama` araçlarıyla birlikte okunması daha sağlıklı planlama sağlar.",
+            en: "ÖSYM opened 2026-YKS applications between February 6 and March 2, 2026, and announced the June 20-21, 2026 exam dates. This page reflects the official calendar while using a current 2025 simulation set built on the verified 2024 coefficient framework. Treat the output as a planning view for mock exams and preference strategy, not as a final score report.",
         },
         faqAppend: [
             faqEntry("TYT puanı tüm puan türlerinde aynı katkıyı sağlar mı?", "Hayır. TYT katkısı Sayısal, EA ve Sözel puan türlerinde farklı ağırlıkta uygulanır; bu nedenle aynı TYT neti farklı puan türlerinde farklı YKS puanına dönüşebilir.", "Does TYT contribute the same to all score types?", "No. TYT weight differs across score types so the same TYT net can produce different YKS scores."),
             faqEntry("OBP YKS puanını ne kadar etkiler?", "OBP katkısı programa ve yıla göre değişir. Özellikle eşit net durumlarında okul bir adayı diğerinin önüne geçirebilir; bu nedenle güncel kılavuzu kontrol etmeniz gerekir.", "How much does school GPA (OBP) affect YKS score?", "OBP contribution varies by program and year. In tie-breaking situations, school GPA can place one candidate above another."),
+            faqEntry("2026 YKS için neden doğrudan 2026 katsayı seti yok?", "ÖSYM 2026-YKS kılavuzunu yayımlamış olsa da adayların aradığı nihai puan davranışı, resmi sınav uygulaması ve sonuç istatistikleriyle netleşir. Bu nedenle araç, 2026 adayına en yakın senaryoyu üretmek için 2025 güncel seti ve doğrulanmış 2024 katsayı yapısını kullanır; sonuçlar planlama amaçlı ön izlemedir.", "Why is there no direct 2026 coefficient set for YKS?", "Even though the 2026 YKS guide is available, the final score behavior becomes clearer with the official exam administration and result statistics. The calculator therefore uses the current 2025 set and verified 2024 coefficient structure as the closest planning preview for 2026 candidates."),
+            faqEntry("2026 YKS ne zaman yapılacak?", "ÖSYM duyurusuna göre 2026-YKS'nin TYT oturumu 20 Haziran 2026 tarihinde, AYT ve YDT oturumları ise 21 Haziran 2026 tarihinde uygulanacaktır.", "When will the 2026 YKS be held?", "According to ÖSYM, TYT will be held on June 20, 2026, while AYT and YDT sessions will be held on June 21, 2026."),
         ],
     },
     "tyt-puan-hesaplama": {
         relatedCalculators: ["yks-puan-hesaplama", "lgs-puan-hesaplama", "obp-puan-hesaplama", "ales-puan-hesaplama", "universite-not-ortalamasi-hesaplama"],
-        title: { tr: "TYT Puan Hesaplama 2026 — Net Sayısı ve Temel Yeterlilik Puanı", en: "TYT Score Calculator 2026 — Net Count and Basic Proficiency Score" },
-        metaDescription: { tr: "YKS TYT sınavında doğru ve yanlış sayılarınızdan netinizi ve tahmini TYT puanını hesaplayın; puan türüne etkisini anlayın.", en: "Calculate your TYT net and estimated score from correct and wrong answer counts, and understand the effect on YKS score types." },
+        title: { tr: "TYT Puan Hesaplama 2026 — Net, OBP ve Ön İzleme", en: "TYT Score Calculator 2026 — Net, OBP and Preview" },
+        metaDescription: { tr: "20 Haziran 2026 TYT için doğru ve yanlış sayılarınızdan netinizi, tahmini ham puanınızı ve OBP'li yerleştirme puanınızı hesaplayın.", en: "Calculate your net, estimated raw score, and placement score with OBP for the June 20, 2026 TYT." },
         contentAppend: {
-            tr: "TYT, YKS'ye girmek isteyen tüm adaylar için zorunlu bir barajdır. TYT netinin puan türleri üzerindeki katkısını anlamak, AYT hazırlık stratejisini doğru kurmak için önemlidir. TYT sonucunu YKS puanı ve OBP araçlarıyla birlikte okuyun.",
-            en: "TYT is a mandatory threshold for all YKS candidates. Understanding how TYT net contributes to score types is important. Read TYT results together with the YKS score and OBP tools.",
+            tr: "ÖSYM'nin 2026 takvimine göre TYT oturumu 20 Haziran 2026 tarihinde uygulanacaktır. Bu sayfada görülen 2025 seçeneği, 2026 adayı için en yakın güncel senaryoyu temsil eder; 2024 doğrulanmış katsayıları ve 2023 karşılaştırma modu ise kullanıcıya daha şeffaf bir çerçeve sunar. TYT sonucunu `yks-puan-hesaplama`, `obp-puan-hesaplama` ve `universite-not-ortalamasi-hesaplama` araçlarıyla birlikte okumak daha dengeli hedef belirlemenize yardım eder.",
+            en: "According to ÖSYM's 2026 calendar, the TYT session will be held on June 20, 2026. The 2025 option on this page represents the closest current scenario for 2026 candidates, while the verified 2024 coefficients and 2023 comparison mode add transparency. Reading TYT together with the YKS score and OBP tools leads to better planning.",
         },
         faqAppend: [
             faqEntry("TYT'den yüksek puan almak YKS'de sıra garantiler mi?", "Hayır. TYT yüksek oranda katkı sağlar; ancak nihai yerleştirme puanı AYT katkısı, puan türü ve rekabete göre şekillenir.", "Does scoring high on TYT guarantee a ranking in YKS?", "No. The final placement score is shaped by AYT contribution, score type, and competition."),
             faqEntry("TYT barajını geçemezsem ne olur?", "TYT barajını geçememek YKS yerleştirmesinden dışlanmaya yol açabilir. Baraj güncel kılavuzda belirlenir.", "What happens if I fail the TYT threshold?", "Failing TYT can exclude you from YKS placement. The threshold is set in the current guide."),
+            faqEntry("2026 TYT için hangi set seçilmeli?", "2026 adayları için en yakın senaryoyu görmek istiyorsanız varsayılan 2025 güncel simülasyon setiyle başlayabilirsiniz. Daha muhafazakâr bir kıyas için 2024 doğrulanmış ÖSYM katsayılarını, tarihsel farkı görmek için ise 2023 karşılaştırma modunu kullanabilirsiniz.", "Which set should be used for the 2026 TYT?", "For the closest planning scenario in 2026, start with the default 2025 current simulation set. Use the verified 2024 coefficients for a more conservative comparison and the 2023 mode to see historical differences."),
+            faqEntry("2026 TYT ne zaman yapılacak?", "ÖSYM sınav takvimine göre 2026-TYT, 20 Haziran 2026 Cumartesi günü uygulanacaktır.", "When will the 2026 TYT be held?", "According to ÖSYM's exam calendar, the 2026 TYT will be held on Saturday, June 20, 2026."),
         ],
     },
     "kpss-puan-hesaplama": {
         relatedCalculators: ["ales-puan-hesaplama", "yds-puan-hesaplama", "ekpss-puan-hesaplama", "hakim-savci-yrd-puan-hesaplama", "dib-mbsts-puan-hesaplama"],
-        title: { tr: "KPSS Puan Hesaplama 2026 — GY, GK ve Lisans Alan Puanı", en: "KPSS Score Calculator 2026 — GY, GK and Field Score" },
-        metaDescription: { tr: "KPSS Genel Yetenek ve Genel Kültür testlerindeki netlerinizden lisans KPSS puanınızı ve yaklaşık yerleştirme bandını hesaplayın.", en: "Calculate your undergraduate KPSS score from GY and GK nets and estimate your placement band." },
+        title: { tr: "KPSS Puan Hesaplama 2026 — GY, GK ve Yaklaşık P1", en: "KPSS Score Calculator 2026 — GY, GK and Approximate P1" },
+        metaDescription: { tr: "KPSS Genel Yetenek ve Genel Kültür netlerinizden yaklaşık lisans KPSS-P1 puanını hesaplayın; resmi ÖSYM sonucu yerine geçmeyen planlama ekranını kullanın.", en: "Estimate undergraduate KPSS-P1 from GY and GK nets using a planning-oriented view that does not replace the official ÖSYM score." },
         contentAppend: {
-            tr: "KPSS puanı GY ve GK testlerinden oluşur; ancak bazı kurum ve kadrolarda alan bazlı ek sınavlar ek katkı sağlayabilir. Puan hesabının yanı sıra kadronun puan türünü, öğrenim şartını ve son atama puanlarını da takip etmek gerekir.",
-            en: "KPSS score comes from GY and GK tests, but field-specific exams may add weight for some positions. Beyond score calculation, track the score type, education requirement, and recent placement benchmarks.",
+            tr: "KPSS tarafında adayların en çok gözden kaçırdığı nokta, ÖSYM'nin nihai puanı standart sapma ve aday dağılımına göre üretmesidir. Bu yüzden sayfada görülen sonuç birebir resmi sonuç belgesi değil, çalışma temposu ve hedef bandı okumak için yaklaşık planlama çıktısıdır. `ales-puan-hesaplama`, `yds-puan-hesaplama` ve `ekpss-puan-hesaplama` araçlarıyla birlikte değerlendirmek daha doğru çerçeve kurar.",
+            en: "The key nuance in KPSS is that ÖSYM finalizes the official score through standard deviation and candidate distribution data. The result shown here should therefore be treated as an approximate planning output rather than an official score report. Reading it together with ALES, YDS, and EKPSS tools provides a more realistic frame.",
         },
         faqAppend: [
             faqEntry("KPSS lisans puanı ile ön lisans puanı aynı mı hesaplanır?", "Hayır. Lisans ve ön lisans için ayrı test setleri ve ağırlıklar uygulanır.", "Is KPSS undergraduate score the same as associate-degree score?", "No. Separate test sets and weights apply for each level."),
             faqEntry("Yüksek KPSS puanı atamayı garantiler mi?", "Hayır. Atama, puan yanı sıra tercih sırası, kontenjan ve başvuru koşullarına da bağlıdır.", "Does a high KPSS score guarantee placement?", "No. Placement also depends on preference order, quotas, and application conditions."),
+            faqEntry("Bu KPSS puanı neden yaklaşık kabul edilmeli?", "Çünkü ÖSYM nihai KPSS puanını aday kitlesinin ortalama ve standart sapmasına göre standartlaştırır. Sayfada kullanılan formül ise netlerden hızlı bir planlama çıktısı üretir; resmi sonuç belgesinin yerini almaz.", "Why should this KPSS score be treated as approximate?", "Because ÖSYM standardizes the final KPSS score using candidate averages and standard deviation. The formula on this page is designed for quick planning and does not replace the official result document."),
         ],
     },
     "lgs-puan-hesaplama": {
         relatedCalculators: ["yks-puan-hesaplama", "ags-puan-hesaplama", "obp-puan-hesaplama", "lise-taban-puanlari", "pybs-puan-hesaplama"],
-        title: { tr: "LGS Puan Hesaplama 2026 — Net ve Tercih Puanı", en: "LGS Score Calculator 2026 — Net and Placement Score" },
-        metaDescription: { tr: "LGS'de doğru ve yanlış sayılarınızdan net ve tahmini yerleştirme puanını hesaplayın; taban puanları ve tercih planlamasına hazırlanın.", en: "Calculate your LGS net and estimated placement score; prepare for base-score comparison and school-choice planning." },
+        title: { tr: "LGS Puan Hesaplama 2026 — Net ve 14 Haziran Ön İzleme", en: "LGS Score Calculator 2026 — Net and June 14 Preview" },
+        metaDescription: { tr: "14 Haziran 2026 LGS için doğru ve yanlış sayılarınızdan net ve tahmini yerleştirme puanını hesaplayın; taban puanlarıyla birlikte yorumlayın.", en: "Calculate your net and estimated placement score for the June 14, 2026 LGS and interpret it together with base scores." },
         contentAppend: {
-            tr: "LGS sonucu yalnızca sınav netinden oluşmaz; bölüm ağırlık katsayıları da puanı etkiler. Okul tercih sürecinde taban puanlarıyla kıyaslama yapmak ve alternatifleri birlikte sıralamak daha sağlıklı karar üretir.",
-            en: "The LGS result depends not only on net but also on subject weight coefficients. Comparing with school base scores and ranking alternatives leads to better school-choice decisions.",
+            tr: "MEB'in 2026 sınav takvimine göre merkezi sınav 14 Haziran 2026 tarihinde yapılacaktır. Bu sayfadaki hesaplama, güncel soru dağılımı ve ağırlık yapısına göre tahmini ön izleme sunar; başvuru ve uygulama kılavuzunda yeni teknik ayrıntılar yayımlanırsa içerik buna göre güncellenir. `lise-taban-puanlari`, `takdir-tesekkur-hesaplama` ve `pybs-puan-hesaplama` araçlarıyla birlikte okumak tercih planlamasını güçlendirir.",
+            en: "According to MEB's 2026 exam calendar, the central exam will be held on June 14, 2026. The calculation on this page provides an estimated preview based on the current question distribution and weighting structure; if the application guide introduces technical changes, the content will be updated accordingly.",
         },
         faqAppend: [
             faqEntry("LGS puanı 500 üzerinden mi hesaplanır?", "LGS puanı 500 maksimum olacak şekilde normalize edilir. Ham net bu aralıkta ölçeklenir ve okul tercihinde bu normalize puana göre kıyaslama yapılır.", "Is LGS score calculated out of 500?", "LGS score is normalized to a maximum of 500. Raw net is scaled within this range for school-preference comparisons."),
             faqEntry("LGS'de her bölümün ağırlığı eşit midir?", "Hayır. Türkçe, Matematik, Fen ve Sosyal gibi bölümler farklı ağırlık katsayısına sahip olabilir. Yalnızca toplam nete değil, bölüm dağılımına da dikkat edilmelidir.", "Is every LGS subject weighted equally?", "No. Subjects may carry different weights. Pay attention to the subject breakdown, not only total net."),
+            faqEntry("2026 LGS ne zaman yapılacak?", "MEB'in 2026 sınav takvimine göre LGS kapsamındaki merkezi sınav 14 Haziran 2026 tarihinde uygulanacaktır.", "When will the 2026 LGS be held?", "According to MEB's 2026 exam calendar, the central LGS exam will be held on June 14, 2026."),
+            faqEntry("2026 LGS kılavuzu yayımlandığında bu hesap değişir mi?", "Araç şu anda güncel soru dağılımı, ağırlık yapısı ve standart net mantığıyla ön izleme üretir. MEB başvuru ve uygulama kılavuzunda teknik değişiklik duyurursa hesap mantığı ve açıklamalar buna göre güncellenir.", "Will this calculation change when the 2026 LGS guide is published?", "The tool currently produces a preview with the current question distribution, weighting structure, and standard net logic. If MEB announces technical changes in the application guide, the calculation and explanations will be updated accordingly."),
         ],
     },
     "dgs-puan-hesaplama": {
         relatedCalculators: ["ales-puan-hesaplama", "yks-puan-hesaplama", "yds-puan-hesaplama", "ekpss-puan-hesaplama", "kpss-puan-hesaplama"],
-        title: { tr: "DGS Puan Hesaplama 2026 — Dikey Geçiş Net ve Diploma Katkısı", en: "DGS Score Calculator 2026 — Vertical Transfer Net and Diploma Contribution" },
-        metaDescription: { tr: "Dikey Geçiş Sınavı'nda net sayısı ve mezuniyet notuna göre DGS puanınızı hesaplayın; lisans bölümü tercih planlamasına hazırlanın.", en: "Calculate your DGS score from nets and graduation grade; prepare for undergraduate program preference planning." },
+        title: { tr: "DGS Puan Hesaplama 2026 — Net ve ÖBP ile Yaklaşık Ön İzleme", en: "DGS Score Calculator 2026 — Approximate Preview with Nets and OBP" },
+        metaDescription: { tr: "Dikey Geçiş Sınavı'nda net sayısı ve mezuniyet notuna göre DGS puan ön izlemesini hesaplayın; tercih planlamasına yaklaşık ama tutarlı bir referansla hazırlanın.", en: "Calculate a DGS score preview from your nets and graduation grade, and prepare for preference planning with an approximate but consistent reference." },
         contentAppend: {
-            tr: "DGS hesabında diploma notu 0,12 katsayısıyla puana katkı sağlar. Mezuniyet notunuzu kesin değeriyle girmek sonucu anlamlı biçimde değiştirebilir. Puan aralığınızı ALES ve YDS ile birlikte değerlendirmek karşılaştırmalı tercih planlamanızı güçlendirir.",
-            en: "In DGS, graduation grade contributes with a 0.12 coefficient. Entering the exact grade can meaningfully change the result. Combining your score range with ALES and YDS gives a stronger comparative preference plan.",
+            tr: "DGS hesabında diploma notu puanı anlamlı biçimde etkiler; bu yüzden mezuniyet notunuzu mümkün olduğunca kesin girmek gerekir. Bununla birlikte nihai DGS puanı standart sapma ve resmi değerlendirme adımlarıyla kesinleştiği için bu ekran yaklaşık planlama çıktısı olarak okunmalıdır. Puan bandınızı ALES ve YDS ile birlikte değerlendirmek, geçiş ve lisans tamamlama hedeflerinizi daha tutarlı kurmanıza yardım eder.",
+            en: "Graduation grade meaningfully affects the DGS result, so it should be entered as accurately as possible. Still, the final DGS score is finalized through official evaluation steps, which means this screen should be read as an approximate planning output. Reviewing your score band together with ALES and YDS helps build a more consistent transfer and degree-completion plan.",
         },
         faqAppend: [
             faqEntry("Diploma notu DGS puanını ne kadar etkiler?", "Diploma notu 0,12 katsayısıyla direkt puana eklenir. Sınav netinin yakın olduğu adaylar arasında mezuniyet notu farkı belirleyici olabilir.", "How much does graduation grade affect DGS score?", "Graduation grade is added with a 0.12 coefficient and can be decisive among candidates with similar exam nets."),
-            faqEntry("DGS sonucunu değerlendirirken hangi diğer araçlara bakmalıyım?", "ALES puanı bazı programlarda ek kriter olabilir; YDS yabancı dil gerekliliği için izlenmelidir.", "Which other tools should I check when reviewing my DGS result?", "ALES score may be additional criterion for some programs; YDS should be tracked for language requirements."),
+            faqEntry("Bu sayfa resmi DGS puanını birebir verir mi?", "Hayır. Sayfa, ÖSYM mantığına yakın bir puan ön izlemesi üretir. Resmi sonuç ve yerleştirme değerlendirmesi için ÖSYM sonuç belgesi ile DGS kılavuzu esas alınmalıdır.", "Does this page give the exact official DGS score?", "No. The page produces a score preview aligned with ÖSYM logic. The official result report and DGS guide remain the primary reference."),
+            faqEntry("DGS sonucunu değerlendirirken hangi diğer araçlara bakmalıyım?", "ALES puanı bazı programlarda ek kriter olabilir; YDS ise yabancı dil gerekliliği olan başvurularda birlikte izlenmelidir.", "Which other tools should I check when reviewing my DGS result?", "ALES may be an additional criterion in some programs, and YDS should be reviewed together where language requirements apply."),
         ],
     },
     "ales-puan-hesaplama": {
         relatedCalculators: ["yds-puan-hesaplama", "kpss-puan-hesaplama", "dgs-puan-hesaplama", "hakim-savci-yrd-puan-hesaplama"],
-        title: { tr: "ALES Puan Hesaplama 2026 — Sayısal, Sözel ve Eşit Ağırlık", en: "ALES Score Calculator 2026 — Numerical, Verbal and Equal Weight" },
-        metaDescription: { tr: "ALES Sayısal ve Sözel netlerinizden puan türüne göre ALES puanınızı ve lisansüstü başvuru bandınızı hızlıca hesaplayın.", en: "Quickly calculate your ALES score by type from Numerical and Verbal nets for graduate-level application planning." },
+        title: { tr: "ALES Puan Hesaplama 2026 — 2025/3 Dönem Katsayılarıyla Ön İzleme", en: "ALES Score Calculator 2026 — Preview with 2025/3 Period Coefficients" },
+        metaDescription: { tr: "ALES Sayısal ve Sözel netlerinizden, seçtiğiniz sınav dönemine göre ALES puanınızı hesaplayın. 2025/3 dahil doğrulanmış son dönem katsayılarıyla 2026 başvuru planlaması yapın.", en: "Calculate your ALES score by exam period from Numerical and Verbal nets. Plan your 2026 applications with verified recent coefficients including 2025/3." },
         contentAppend: {
-            tr: "ALES puanı hesabında puan türü önemlidir: Sayısal, Sözel veya Eşit Ağırlık seçimi aynı netlere karşın farklı sonuçlar üretir. Lisansüstü başvurularda hangi puan türünün kabul edildiği program kılavuzunda belirtildiği için başvurmadan önce bu detay netleştirilmelidir.",
-            en: "Score type matters in ALES: Sayısal, Sözel, or Equal Weight can produce different results from the same nets. Which type is accepted is in the program guide, so clarify before applying.",
+            tr: "ALES puanı hesabında puan türü kadar sınav dönemi de önemlidir; aynı netler, farklı dönem katsayılarıyla farklı sonuçlar üretebilir. Bu yüzden başvuracağınız ilan veya program hangi dönemi kabul ediyorsa hesaplamayı o döneme göre okumak gerekir. Sayfa, 2025/3 dahil doğrulanmış son katsayı setlerini kullanarak 2026 başvuru takvimi için güçlü bir planlama zemini sağlar.",
+            en: "In ALES, the exam period matters as much as the score type because the same nets can produce different results under different coefficients. Read the calculation according to the period accepted by the program or vacancy you target. The page uses verified recent coefficient sets, including 2025/3, to support 2026 planning.",
         },
         faqAppend: [
             faqEntry("ALES ve YDS lisansüstü başvurularda birlikte nasıl değerlendirilir?", "Çoğu üniversite ALES ile YDS'yi belirli katsayılarla birleştirerek ağırlıklı son puan hesaplar. Katsayılar programa göre değişir; program kılavuzundan doğrulayın.", "How are ALES and YDS evaluated together in graduate applications?", "Most universities combine them with specific coefficients. Verify the coefficients in the program guide."),
-            faqEntry("ALES puanının geçerlilik süresi ne kadar?", "ALES puanı belirli yıllar için geçerlidir. Başvuru yılına göre geçerli sınav dönemini ÖSYM kılavuzuyla teyit edin.", "How long is an ALES score valid?", "An ALES score is valid for a specific number of years. Check the valid period against the ÖSYM guide for your application year."),
+            faqEntry("ALES puanının geçerlilik süresi ne kadar?", "ALES puanı 5 yıl süreyle geçerlidir. Yine de başvuracağınız kurumun özel ilan veya program koşullarını ayrıca kontrol etmeniz gerekir.", "How long is an ALES score valid?", "ALES remains valid for 5 years, but you should still check the special conditions of the institution or program you are applying to."),
+            faqEntry("2026 başvurusu için hangi dönem katsayısını seçmeliyim?", "Elinizde hangi sınav sonucu varsa o dönemi seçin. Sayfa 2025/3 dahil son doğrulanmış dönem katsayılarını sunduğu için başvuru planlamasını gerçek sonuca en yakın set üzerinden yapabilirsiniz.", "Which period coefficient should I choose for a 2026 application?", "Select the period of the result you actually hold. Since the page includes recent verified sets such as 2025/3, you can plan with the closest available official period."),
         ],
     },
     "yds-puan-hesaplama": {
         relatedCalculators: ["ales-puan-hesaplama", "kpss-puan-hesaplama", "dgs-puan-hesaplama", "dib-mbsts-puan-hesaplama"],
-        title: { tr: "YDS Puan Hesaplama 2026 — Yabancı Dil Seviye Puanı", en: "YDS Score Calculator 2026 — Foreign Language Proficiency Score" },
-        metaDescription: { tr: "YDS doğru sayısından tahmini puanı görün; KPSS, lisansüstü başvuru veya akademisyenlik kriteri olarak YDS puanını nasıl okumanız gerektiğini öğrenin.", en: "See estimated YDS score from correct count; learn how to read your YDS result as a KPSS, graduate, or academic eligibility criterion." },
+        title: { tr: "YDS Puan Hesaplama 2026 — Doğru Sayısı ve A-B-C-D-E Bandı", en: "YDS Score Calculator 2026 — Correct Answers and A-B-C-D-E Band" },
+        metaDescription: { tr: "YDS doğru sayısından tahmini puanı görün; yanlışların puandan düşmediği resmi ÖSYM kuralıyla A-B-C-D-E seviye bandını anında hesaplayın.", en: "See your estimated YDS score from correct answers and instantly calculate the A-B-C-D-E band using the official ÖSYM rule that wrong answers are not deducted." },
         contentAppend: {
-            tr: "YDS doğrudan puanlama yapan bir sınavdır: 100 sorudan doğru sayısı puanı belirler, yanlışlar puandan düşülmez. Ancak YDS puanı KPSS veya lisansüstü başvurularda farklı katsayılarla ağırlıklandırılabileceği için, hem YDS hem ALES araçlarını birlikte okumak daha sağlıklı karar sağlar.",
-            en: "YDS uses direct scoring: correct count determines the score and wrongs are not penalized. Since YDS may be weighted with different coefficients in various applications, reading both YDS and ALES tools together leads to a better decision.",
+            tr: "YDS'de resmi değerlendirme 80 soru üzerinden yalnız doğru cevap sayısına göre yapılır; yanlışlar puandan düşülmez. Bu nedenle bu sayfa, ÖSYM kılavuzundaki değerlendirme mantığıyla aynı temel kurala dayanır ve sonucu A-B-C-D-E bandı üzerinden yorumlar. YDS puanı lisansüstü başvuru, akademik kadro ve bazı kamu süreçlerinde farklı eşiklerle kullanıldığı için YDS sonucunu ALES ve ilgili kurum şartlarıyla birlikte okumak daha sağlıklı karar sağlar.",
+            en: "In YDS, official evaluation is based only on the number of correct answers across 80 questions, and wrong answers are not deducted. This page therefore follows the same core rule used in the ÖSYM guide and interprets the result through the A-B-C-D-E band. Because YDS is used with different thresholds in graduate admissions, academic appointments and some public processes, it is healthier to read the result together with ALES and the relevant institutional requirements.",
         },
         faqAppend: [
             faqEntry("YDS ile e-YDS aynı değerlendirmede kullanılabilir mi?", "ÖSYM kılavuzları genellikle her ikisini de tanır; ancak program bazında farklı kural olabilir. Kurumun güncel kabul listesini kontrol etmeniz gerekir.", "Can YDS and e-YDS be used in the same evaluation?", "ÖSYM guides generally recognize both, but individual programs may have different rules. Check the institution's current list."),
-            faqEntry("YDS puanı geçerlilik süresi ne kadar?", "Geçerlilik süresi başvurulan kurum veya sınava göre farklılık gösterebilir. Güncel kılavuz ve ilgili kurum duyuruları esas alınmalıdır.", "How long is a YDS score valid?", "Validity can vary by institution or exam type. The current guide and institutional announcements should be the primary source."),
+            faqEntry("YDS'de 4 yanlış 1 doğruyu götürür mü?", "Hayır. ÖSYM'nin YDS kılavuzunda değerlendirmede yalnız doğru cevapların dikkate alındığı, yanlış cevapların puandan düşülmediği açıkça belirtilir.", "Do 4 wrong answers cancel 1 correct in YDS?", "No. The ÖSYM YDS guide explicitly states that only correct answers are counted in scoring and wrong answers are not deducted."),
+            faqEntry("YDS puanı geçerlilik süresi ne kadar?", "Geçerlilik süresi başvurulan kurum veya sınava göre değişebilir. Bu yüzden güncel kurum duyuruları ile başvuru kılavuzu esas alınmalıdır.", "How long is a YDS score valid?", "Validity can vary by the institution or exam. The current institutional announcement and application guide should be the primary source."),
         ],
     },
     "ekpss-puan-hesaplama": {
@@ -15310,7 +15990,7 @@ const calculatorSeoOverrides: Record<string, CalculatorSeoOverride> = {
         title: { tr: "E-KPSS Puan Hesaplama 2026 — Engelli Kamu Personeli Yerleştirmesi", en: "E-KPSS Score Calculator 2026 — Disabled Public Personnel Placement" },
         metaDescription: { tr: "E-KPSS sınavındaki netlerinizden tahmini puanı hesaplayın; engelli kamu personelin yerleştirme sürecini ve özel koşulları birlikte okuyun.", en: "Calculate estimated E-KPSS score from your nets; read the placement process and special conditions for disabled public personnel." },
         contentAppend: {
-            tr: "E-KPSS, farklı engel grupları için özelleşmiş bir yerleştirme sürecine sahiptir. Puan hesabı standart KPSS mantığına benzese de kadro koşulları, engel oranı belgesi ve özel kontenjanlar sonucu etkiler. Hesap sonucunu ilgili dönem kılavuzu ve ÖSYM açıklamalarıyla karşılaştırın.",
+            tr: "E-KPSS, farklı engel grupları için özelleşmiş bir yerleştirme sürecine sahiptir. Puan hesabı standart KPSS mantığına benzese de kadro koşulları, engel oranı belgesi ve özel kontenjanlar sonucu anlamlı biçimde etkiler. Bu nedenle hesap ekranı resmi sonuç belgesi yerine geçen kesin bir sonuç değil, tercih öncesi güçlü bir ön izleme olarak değerlendirilmelidir.",
             en: "E-KPSS has a specialized placement process for disability groups. While score logic resembles standard KPSS, quota conditions, disability documentation, and special quotas affect outcomes. Compare the result with the relevant guide and ÖSYM announcements.",
         },
         faqAppend: [
@@ -15427,6 +16107,20 @@ const CALCULATOR_SLUG_ALIASES: Record<string, string> = {
     "cc-minimum-payment": "kredi-karti-asgari-odeme",
     "kredi-karti-asgari-odeme-hesaplama": "kredi-karti-asgari-odeme",
     "kredi-hesaplama": "kredi-taksit-hesaplama",
+    "aylik-kredi-taksit-hesaplama": "kredi-taksit-hesaplama",
+    "kredi-odeme-plani-hesaplama": "kredi-taksit-hesaplama",
+    "gun-hesaplama": "iki-tarih-arasindaki-gun-sayisi-hesaplama",
+    "tarih-farki-hesaplama": "iki-tarih-arasi-fark-gun-hesaplama",
+    "iki-tarih-farki-hesaplama": "iki-tarih-arasi-fark-gun-hesaplama",
+    "iki-tarih-arasi-gun-hesaplama": "iki-tarih-arasindaki-gun-sayisi-hesaplama",
+    "iki-tarih-arasi-hafta-hesaplama": "iki-tarih-arasindaki-hafta-sayisi-hesaplama",
+    "kac-gun-kaldi": "kac-gun-kaldi-hesaplama",
+    "gun-kaldi-hesaplama": "kac-gun-kaldi-hesaplama",
+    "ihtiyac-kredisi-faiz-hesaplama": "ihtiyac-kredisi-hesaplama",
+    "nakit-avans-hesaplama": "kredi-karti-taksitli-nakit-avans-hesaplama",
+    "taksitli-nakit-avans-hesaplama": "kredi-karti-taksitli-nakit-avans-hesaplama",
+    "ev-kredisi-hesaplama": "konut-kredisi-hesaplama",
+    "mortgage-hesaplama": "konut-kredisi-hesaplama",
     "is-yeri-kredisi-hesaplama": "is-yeri-ve-ticari-kredi-hesaplama",
     "kira-artis-orani-hesaplama": "kira-artis-hesaplama",
     "yillik-maliyet-orani-hesaplama": "kredi-yillik-maliyet-orani-hesaplama",

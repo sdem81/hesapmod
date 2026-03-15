@@ -1,6 +1,15 @@
+import type { MetadataRoute } from "next";
 import { buildSitemapEntries } from "@/lib/sitemap-data";
-import { MetadataRoute } from "next";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-    return buildSitemapEntries();
+export const revalidate = 86400;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+    const entries = buildSitemapEntries();
+
+    return entries.map((entry) => ({
+        url: entry.url,
+        lastModified: entry.lastModified,
+        changeFrequency: entry.changeFrequency,
+        priority: entry.priority,
+    }));
 }

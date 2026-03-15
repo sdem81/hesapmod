@@ -83,33 +83,41 @@ export default function CalculatorEngine({ calculator, lang }: Props) {
     const [isRuntimeLoading, setIsRuntimeLoading] = useState(
         !isSpecialCalculatorSlug(calculator.slug)
     );
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
         setValues(buildInitialValues(calculator));
+        setErrorMessage(null);
     }, [calculator]);
 
     useEffect(() => {
         if (isSpecialCalculatorSlug(calculator.slug)) {
             setFormula(null);
             setIsRuntimeLoading(false);
+            setErrorMessage(null);
             return;
         }
 
         let isCancelled = false;
         setIsRuntimeLoading(true);
+        setErrorMessage(null);
 
         void loadCalculatorFormula(calculator.category, calculator.slug)
             .then((loadedFormula) => {
                 if (isCancelled) {
                     return;
                 }
-
                 setFormula(() => loadedFormula);
             })
             .catch((error) => {
                 console.error("Calculator runtime load failed:", error);
                 if (!isCancelled) {
                     setFormula(null);
+                    setErrorMessage(
+                        lang === "tr"
+                            ? "Hesaplama motoru yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin."
+                            : "An error occurred while loading the calculator engine. Please refresh the page or try again later."
+                    );
                 }
             })
             .finally(() => {
@@ -121,20 +129,27 @@ export default function CalculatorEngine({ calculator, lang }: Props) {
         return () => {
             isCancelled = true;
         };
-    }, [calculator.category, calculator.slug]);
+    }, [calculator.category, calculator.slug, lang]);
 
     const results = useMemo(() => {
         if (!formula) return {};
         try {
+            setErrorMessage(null);
             return sanitizeCalculationResult(formula(values));
         } catch (error) {
             console.error("Calculation Error:", error);
+            setErrorMessage(
+                lang === "tr"
+                    ? "Hesaplama sırasında bir hata oluştu. Lütfen girdi değerlerinizi kontrol edin."
+                    : "An error occurred during calculation. Please check your input values."
+            );
             return {};
         }
-    }, [formula, values]);
+    }, [formula, values, lang]);
 
     const handleInputChange = (id: string, value: any) => {
         setValues((prev) => ({ ...prev, [id]: value }));
+        setErrorMessage(null);
     };
 
     // Extract primary result for mobile sticky bar
@@ -165,6 +180,11 @@ export default function CalculatorEngine({ calculator, lang }: Props) {
                     <h2 className="text-xl font-bold mb-6 border-b border-slate-100 pb-4 text-slate-900">
                         {calculator.name[lang]}
                     </h2>
+                    {errorMessage && (
+                        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+                            {errorMessage}
+                        </div>
+                    )}
                     <CalculatorForm
                         inputs={calculator.inputs}
                         values={values}

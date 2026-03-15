@@ -1,12 +1,40 @@
+import { loadEnvConfig } from "@next/env";
+import {
+    buildIndexNowUrlList,
+    getIndexNowKeyFromEnv,
+    getPriorityIndexNowUrls,
+    submitIndexNowUrls,
+} from "../lib/indexnow";
 import { buildSitemapEntries } from "../lib/sitemap-data";
 
-function main() {
-    const sitemapEntries = buildSitemapEntries();
+async function main() {
+    loadEnvConfig(process.cwd());
 
-    console.log("Skipping Google Indexing API submission.");
+    const sitemapEntries = buildSitemapEntries();
+    const indexNowKey = getIndexNowKeyFromEnv(process.env);
+
     console.log(`Sitemap currently exposes ${sitemapEntries.length} URLs.`);
-    console.log("Reason: Google Indexing API is reserved for JobPosting pages or livestream BroadcastEvent pages, not general calculators, category pages, or guides.");
-    console.log("Recommended workflow: keep the sitemap submitted in Search Console and use the URL Inspection tool for urgent recrawl requests.");
+    console.log("Google icin otomatik IndexNow entegrasyonu yoktur; Google tarafinda sitemap + Search Console URL Inspection akisina devam edilmelidir.");
+
+    if (!indexNowKey) {
+        console.log("IndexNow atlandi: INDEXNOW_KEY tanimli degil.");
+        console.log("Manuel Google öncelik listesi:");
+        getPriorityIndexNowUrls().forEach((url) => console.log(`- ${url}`));
+        return;
+    }
+
+    const urls = buildIndexNowUrlList(sitemapEntries);
+    const result = await submitIndexNowUrls(urls, { key: indexNowKey });
+
+    console.log(
+        `IndexNow tamamlandi: ${result.submittedUrlCount} URL, ${result.batches} batch, durum=${result.success ? "basarili" : "kismi-hata"}.`
+    );
+    console.log("Manuel Google öncelik listesi:");
+    getPriorityIndexNowUrls().forEach((url) => console.log(`- ${url}`));
 }
 
-main();
+void main().catch((error) => {
+    console.error("Indexing submit adimi basarisiz oldu.");
+    console.error(error);
+    process.exitCode = 1;
+});

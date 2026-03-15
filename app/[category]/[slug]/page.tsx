@@ -5,16 +5,13 @@ import {
     normalizeCalculatorSlug,
 } from "@/lib/calculators";
 import { getCategoryName, getCategoryPath, isHealthCategory, normalizeCategorySlug } from "@/lib/categories";
-import {
-    generateCalculatorMetadata,
-    generateCalculatorSchema,
-    generateCalculatorSupportingSchemas,
-    generateHealthSchema,
-} from "@/lib/seo";
+import { generateCalculatorMetadata } from "@/lib/seo";
 import { getCalculatorTrustInfo } from "@/lib/calculator-trust";
+import { renderRichText } from "@/lib/rich-text";
 import dynamic from "next/dynamic";
 const CalculatorEngine = dynamic(() => import("@/components/calculator/CalculatorEngine"));
 import MedicalDisclaimer from "@/components/health/MedicalDisclaimer";
+import SchemaScripts from "@/components/SchemaScripts";
 import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 
@@ -41,19 +38,55 @@ export async function generateMetadata({
 }: {
     params: { slug: string; category: string };
 }) {
-    return generateCalculatorMetadata(params.slug, "tr", normalizeCategorySlug(params.category));
-}
-
-// ─────────────────────────────────────────────────────────────
-// Page
-// ─────────────────────────────────────────────────────────────
-export default function CalculatorPage({
-    params,
-}: {
-    params: { slug: string; category: string };
-}) {
+    // Burç ve kritik SEO sayfaları için özel metadata/canonical
     const normalizedCategory = normalizeCategorySlug(params.category);
     const normalizedSlug = normalizeCalculatorSlug(params.slug);
+
+    if (
+        normalizedCategory === "finansal-hesaplamalar"
+        && normalizedSlug === "altin-hesaplama"
+    ) {
+        return {
+            title: "Altın Hesaplama 2026 — Gram Altın, Çeyrek Altın, Cumhuriyet ve Ons Altın Çevirici",
+            description:
+                "Altın hesaplama aracı ile 24 ayar ve 22 ayar gram altın, çeyrek, yarım, cumhuriyet ve ons altın değerini hesaplayın. Canlı altın hesaplama, altın çevirici ve altın alım satım makas aralığı mantığını tek sayfada görün.",
+            alternates: {
+                canonical: "https://www.hesapmod.com/finansal-hesaplamalar/altin-hesaplama",
+            },
+            openGraph: {
+                title: "Altın Hesaplama | HesapMod",
+                description:
+                    "Gram altın, çeyrek altın, cumhuriyet altını ve ons altın için profesyonel hesaplama ve karşılaştırma aracı.",
+                url: "https://www.hesapmod.com/finansal-hesaplamalar/altin-hesaplama",
+                type: "website",
+            },
+        };
+    }
+
+    if (normalizedCategory === "astroloji" && normalizedSlug === "burc-hesaplama") {
+        return {
+            title: "Burç Hesaplama — Doğum Tarihine Göre Burç Bul | HesapMod",
+            description: "Doğum tarihinizi girin, Batı burcunuzu ve Çin burcunuzu anında öğrenin. Koç'tan Balık'a tüm burçlar, tarihleri, elementleri ve gezegenleriyle. 2026 güncel burç tarihleriyle doğum tarihine göre burç hesaplama.",
+            alternates: {
+                canonical: "https://www.hesapmod.com/astroloji/burc-hesaplama"
+            },
+            openGraph: {
+                title: "Burç Hesaplama | HesapMod",
+                description: "Doğum tarihine göre burç hesaplama aracı.",
+                url: "https://www.hesapmod.com/astroloji/burc-hesaplama",
+            },
+        };
+    }
+    return generateCalculatorMetadata(normalizedSlug, "tr", normalizedCategory);
+}
+
+export default function CalculatorPage({
+        params,
+}: {
+        params: { slug: string; category: string };
+}) {
+        const normalizedCategory = normalizeCategorySlug(params.category);
+        const normalizedSlug = normalizeCalculatorSlug(params.slug);
 
     if (normalizedCategory !== params.category || normalizedSlug !== params.slug) {
         permanentRedirect(`/${normalizedCategory}/${normalizedSlug}`);
@@ -82,17 +115,6 @@ export default function CalculatorPage({
     const relatedCalcs = [...explicitRelatedCalcs, ...supplementalRelatedCalcs].slice(0, 4);
     const relatedArticles = getRelatedArticlesForCalculator(calc.slug, calc.category).slice(0, 3);
 
-    // JSON-LD
-    const standardSchema = !isHealth
-        ? generateCalculatorSchema(normalizedSlug, "tr", normalizedCategory)
-        : null;
-    const standardSupportingSchemas = !isHealth
-        ? generateCalculatorSupportingSchemas(normalizedSlug, "tr", normalizedCategory)
-        : null;
-    const healthSchemas = isHealth
-        ? generateHealthSchema(normalizedSlug, "tr", normalizedCategory)
-        : null;
-
     // ─────────────────────────────────────────────────────────
     // Ortak bölüm yardımcıları (section badge numaralaması)
     // ─────────────────────────────────────────────────────────
@@ -102,67 +124,9 @@ export default function CalculatorPage({
         </span>
     );
 
-    return (
-        <div className="container mx-auto px-4 py-12 max-w-5xl">
-            {/* ── JSON-LD ──────────────────────────────────── */}
-            {standardSchema && (
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(standardSchema),
-                    }}
-                />
-            )}
-            {!isHealth && standardSupportingSchemas?.faqSchema && (
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(standardSupportingSchemas.faqSchema),
-                    }}
-                />
-            )}
-            {!isHealth && standardSupportingSchemas?.breadcrumbSchema && (
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(standardSupportingSchemas.breadcrumbSchema),
-                    }}
-                />
-            )}
-            {isHealth && healthSchemas && (
-                <>
-                    <script
-                        type="application/ld+json"
-                        dangerouslySetInnerHTML={{
-                            __html: JSON.stringify(
-                                healthSchemas.webPageSchema
-                            ),
-                        }}
-                    />
-                    <script
-                        type="application/ld+json"
-                        dangerouslySetInnerHTML={{
-                            __html: JSON.stringify(healthSchemas.webAppSchema),
-                        }}
-                    />
-                    {healthSchemas.faqSchema && (
-                        <script
-                            type="application/ld+json"
-                            dangerouslySetInnerHTML={{
-                                __html: JSON.stringify(healthSchemas.faqSchema),
-                            }}
-                        />
-                    )}
-                    <script
-                        type="application/ld+json"
-                        dangerouslySetInnerHTML={{
-                            __html: JSON.stringify(
-                                healthSchemas.breadcrumbSchema
-                            ),
-                        }}
-                    />
-                </>
-            )}
+        return (
+                <div className="container mx-auto px-4 py-12 max-w-5xl">
+                        <SchemaScripts calculator={calc} />
 
             {/* ── 1. BREADCRUMB + H1 ───────────────────────── */}
             <div className="mb-6">
@@ -214,6 +178,67 @@ export default function CalculatorPage({
                 </p>
 
             </div>
+
+            {calc.slug === "enflasyon-hesaplama" && (
+                <section
+                    aria-labelledby="inflation-current-data-heading"
+                    className="mb-8 rounded-3xl border border-orange-200 bg-gradient-to-br from-orange-50 to-white p-6 shadow-sm"
+                >
+                    {/* TODO: Her ayın 3'ünde TÜİK verisiyle güncelle */}
+                    <div className="flex items-start gap-3">
+                        {sectionBadge(1)}
+                        <div className="min-w-0 flex-1">
+                            <h2
+                                id="inflation-current-data-heading"
+                                className="text-2xl font-bold text-slate-900"
+                            >
+                                2026 Güncel Enflasyon Verileri
+                            </h2>
+                            <div className="mt-5 overflow-x-auto">
+                                <table className="min-w-full border-collapse text-sm">
+                                    <thead>
+                                        <tr className="border-b border-slate-200 text-left text-slate-700">
+                                            <th className="py-3 pr-4 font-semibold">Dönem</th>
+                                            <th className="py-3 pr-4 font-semibold">TÜFE (Yıllık)</th>
+                                            <th className="py-3 pr-4 font-semibold">Yİ-ÜFE (Yıllık)</th>
+                                            <th className="py-3 font-semibold">12 Aylık Ort.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="text-slate-600">
+                                        <tr className="border-b border-slate-100">
+                                            <td className="py-3 pr-4 font-medium text-slate-900">Şubat 2026</td>
+                                            <td className="py-3 pr-4">%31,53</td>
+                                            <td className="py-3 pr-4">%27,56</td>
+                                            <td className="py-3 font-semibold text-slate-900">%33,39</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="py-3 pr-4 font-medium text-slate-900">Ocak 2026</td>
+                                            <td className="py-3 pr-4">%30,65</td>
+                                            <td className="py-3 pr-4">—</td>
+                                            <td className="py-3">—</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p className="mt-5 text-sm leading-6 text-slate-700">
+                                <strong>Kira artış tavanı (Mart 2026):</strong> TÜFE 12 aylık ortalama %33,39
+                                {" "}— hem konut hem işyeri kiraları için yasal üst sınır.
+                            </p>
+                            <p className="mt-3 text-xs text-slate-500">
+                                Kaynak:{" "}
+                                <a
+                                    href="https://data.tuik.gov.tr/Bulten/Index?p=Tuketici-Fiyat-Endeksi-Subat-2026-53620"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-medium text-slate-700 hover:text-primary transition-colors"
+                                >
+                                    TÜİK, 3 Mart 2026
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            )}
 
             {/* ── 2. HESAP MAKİNESİ ────────────────────────── */}
             <CalculatorEngine
@@ -424,7 +449,9 @@ export default function CalculatorPage({
                 </h2>
                 <div
                     className="text-lg leading-relaxed text-slate-600"
-                    dangerouslySetInnerHTML={{ __html: calc.seo.content.tr }}
+                    dangerouslySetInnerHTML={{
+                        __html: renderRichText(calc.seo.content.tr),
+                    }}
                 />
 
                 {/* SSS */}

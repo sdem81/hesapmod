@@ -104,13 +104,13 @@ export default function RootLayout({
                     <AnalyticsLoader />
 
                     <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-slate-200">
-                        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-                            <div className="flex items-center gap-2">
+                        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+                            <div className="flex shrink-0 items-center gap-2">
                                 <Link href="/" className="text-2xl font-bold tracking-tighter text-blue-600 hover:opacity-80 transition-opacity">
                                     Hesap<span className="text-slate-900">Mod</span>
                                 </Link>
                             </div>
-                            <nav className="hidden md:flex items-center gap-3 lg:gap-5">
+                            <nav className="hidden flex-1 items-center justify-center gap-3 md:flex lg:gap-5">
                                 {navLinks.map((link) => (
                                     <Link
                                         key={link.href}
@@ -125,7 +125,7 @@ export default function RootLayout({
                                     </Link>
                                 ))}
                             </nav>
-                            <div className="flex items-center gap-3">
+                            <div className="flex shrink-0 items-center gap-3">
                                 <NavSearch entries={calculatorSearchIndex} />
                                 <DarkModeToggle />
                                 <MobileMenu links={navLinks} />

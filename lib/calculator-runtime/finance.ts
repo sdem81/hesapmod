@@ -773,7 +773,6 @@ export const formulas: CalculatorRuntimeMap = {
                 termMonths: v.months,
             });
             const principalAmount = Math.max(0, Number.parseFloat(String(v.amount ?? 0).replace(",", ".")) || 0);
-            const numericRate = Math.max(0, Number.parseFloat(String(v.rate ?? 0).replace(",", ".")) || 0);
 
             // Generate dummy but realistic rates based on loan type
             let bankRatesList: any[] = [];
@@ -800,28 +799,18 @@ export const formulas: CalculatorRuntimeMap = {
                 ];
             }
 
-            if (numericRate === 0) {
-                return {
-                    monthly: monthlyPayment, totalPayment, totalInterest, bankRatesList,
-                    chart: {
-                        segments: [
-                            { label: { tr: "Anapara", en: "Principal" }, value: principalAmount, colorClass: "bg-white", colorHex: "#ffffff" },
-                            { label: { tr: "Toplam Faiz", en: "Total Interest" }, value: 0, colorClass: "bg-destructive", colorHex: "hsl(var(--destructive))" }
-                        ]
-                    },
-                    amortizationSchedule
-                };
-            }
-
             return {
-                monthly: monthlyPayment, totalPayment, totalInterest, bankRatesList,
+                monthly: monthlyPayment,
+                totalPayment,
+                totalInterest,
+                bankRatesList,
+                amortizationSchedule,
                 chart: {
                     segments: [
                         { label: { tr: "Anapara", en: "Principal" }, value: principalAmount, colorClass: "bg-white", colorHex: "#ffffff" },
                         { label: { tr: "Toplam Faiz", en: "Total Interest" }, value: totalInterest, colorClass: "bg-destructive", colorHex: "hsl(var(--destructive))" }
                     ]
-                },
-                amortizationSchedule
+                }
             };
         },
     "bilesik-faiz-hesaplama": (v) => {
@@ -1032,8 +1021,7 @@ export const formulas: CalculatorRuntimeMap = {
             }
 
             if (hasFee) {
-                const pureFee = (amount * 0.01) + 50;
-                upfrontFee = pureFee * 1.15; // BSMV
+                upfrontFee = amount * 0.01;
             }
 
             upfrontFee += extraFixedFee;
@@ -1072,10 +1060,10 @@ export const formulas: CalculatorRuntimeMap = {
             }
 
             const taxLabel = taxMode === "campaign"
-                ? { tr: "kampanya/vergisiz", en: "campaign/no-tax" }
+                ? { tr: "ek maliyet yok/kampanya", en: "campaign/no extra cost" }
                 : taxMode === "custom"
-                    ? { tr: `özel vergi yükü %${(taxRate * 100).toFixed(1)}`, en: `custom tax load ${(taxRate * 100).toFixed(1)}%` }
-                    : { tr: "standart %30 vergi etkisi", en: "standard 30% tax effect" };
+                    ? { tr: `özel ek maliyet %${(taxRate * 100).toFixed(1)}`, en: `custom extra cost ${(taxRate * 100).toFixed(1)}%` }
+                    : { tr: "varsayılan %30 maliyet etkisi", en: "default 30% cost effect" };
 
             const summary = {
                 tr: `${amount.toLocaleString("tr-TR", { maximumFractionDigits: 2 })} TL nakit avans çekiminde peşin kesinti sonrası elinize net ${netCashReceived.toLocaleString("tr-TR", { maximumFractionDigits: 2 })} TL geçer. ${taxLabel.tr} ile aylık taksit ${installment.toLocaleString("tr-TR", { maximumFractionDigits: 2 })} TL olur ve toplam finansman maliyeti ${totalFinanceCost.toLocaleString("tr-TR", { maximumFractionDigits: 2 })} TL seviyesine çıkar.`,

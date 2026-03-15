@@ -1,0 +1,35 @@
+{
+  "redirects": [
+    {
+      "source": "/gunluk/birim-donusturucu",
+      "destination": "https://www.hesapmod.com/zaman-hesaplama/birim-donusturucu",
+      "statusCode": 301
+    },
+    {
+      "source": "/gunluk/yas-hesaplama",
+      "destination": "https://www.hesapmod.com/zaman-hesaplama/yas-hesaplama",
+      "statusCode": 301
+    },
+    {
+      "source": "/zaman-hesaplamalari/:slug*",
+      "destination": "https://www.hesapmod.com/zaman-hesaplama/:slug*",
+      "statusCode": 301
+    },
+    {
+      "source": "/gunluk/:slug*",
+      "destination": "https://www.hesapmod.com/tasit-ve-vergi/:slug*",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "hesapmod.com"
+        }
+      ],
+      "destination": "https://www.hesapmod.com/:path*",
+      "statusCode": 301
+    }
+  ]
+}

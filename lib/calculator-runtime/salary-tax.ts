@@ -112,7 +112,7 @@ export const formulas: CalculatorRuntimeMap = {
         },
     "asgari-ucret-hesaplama": (v) => {
             const DATA: Record<string, { gross: number; net: number }> = {
-                jan2026: { gross: 33028.00, net: 28075.20 },
+                jan2026: { gross: 33030.00, net: 28075.50 },
                 jul2026: { gross: 36000.00, net: 30600.00 }, // tahmini
             };
             const d = DATA[v.period] ?? DATA.jan2026;

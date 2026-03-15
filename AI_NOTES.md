@@ -1,6 +1,6 @@
 # HesapMod - AI Notes
 
-Son güncelleme: `2026-03-08`
+Son güncelleme: `2026-03-15`
 
 ## Güncel Durum
 
@@ -8,12 +8,12 @@ Son güncelleme: `2026-03-08`
 - Canonical hesaplayıcı route'u: `/{category}/{slug}`
 - Uyumluluk route'u: `/hesaplama/{slug}` -> kalıcı yönlendirme
 - Mevcut durum: runtime-split mimarisi aktif, kategori hub'ları aktif, rehber kümeleri aktif
-- Son SEO deploy'u: SSR `tum-araclar` hub + finans rehber kümeleri + üst konumda ilgili link modülleri
+- Son SEO deploy'u: sınav batch güncellemesi + navbar hizalama + IndexNow aktif production akışı
 
 ## Sayısal Özet
 
-- Hesaplayıcı sayısı: `193`
-- Sitemap URL sayısı: `222`
+- Hesaplayıcı sayısı: `204`
+- Sitemap URL sayısı: `228`
 - Search Console öncelik çıktısı: `reports/search-console-index-priority.csv`
 
 Bu sayılar son build/export akışına göre yazılmıştır; yeni araç veya rehber eklendiğinde yeniden üretmek gerekir.
@@ -61,6 +61,26 @@ Bu sayılar son build/export akışına göre yazılmıştır; yeni araç veya r
 7. Hesap sayfalarında ilgili rehberler ve ilgili hesaplamalar form alanının yakınına taşındı.
 8. Analytics, cookie onayı olmadan yüklenmeyecek hale getirildi.
 9. Google Indexing API kullanımı kapatıldı; postbuild sadece yönlendirme amaçlı çıktı veriyor.
+10. Dynamic sitemap + IndexNow zinciri kuruldu; production build sonrası IndexNow bildirimi çalışıyor.
+11. Non-www -> www, eski `/zaman-hesaplamalari/*` ve `/gunluk/*` yönlendirmeleri Vercel + middleware katmanında sabitlendi.
+12. `altin-hesaplama`, `mevduat-faiz-hesaplama`, `enflasyon-hesaplama` ve ilk batch SEO güçlendirmeleri production'a alındı.
+13. `sinav-hesaplamalari` kümesinde YKS, TYT, LGS, KPSS, DGS, ALES, YDS, E-KPSS, AGS, AKS, HMGS, DİB MBSTS, DUS, EUS, TUS, MSÜ, ÖYP, İSG, İYÖS, PMYO, POMEM, ÖGG ve özel güvenlik sayfaları güvenli "ön izleme" diline çekildi.
+
+## 15 Mart 2026 Handoff
+
+- Canlı ortam: `https://www.hesapmod.com`
+- Son production deploy: `https://hesapmod-ox2rgml5g-sdem81s-projects.vercel.app`
+- IndexNow durumu: production build'de başarılı, `228 URL`
+- Navbar masaüstü hizalaması ana sayfa ve alt sayfalarda doğrulandı
+- `dizine-eklenmeyenler.md` analizi batch yaklaşımına çevrildi
+- Batch 1'de finans, maaş-vergi ve sınav tarafında yüksek niyetli sayfalar güçlendirildi
+
+## Yarın İlk Bakılacaklar
+
+- `dizine-eklenmeyenler.md` listesinden kalan batch'leri URL bazında ilerletmek
+- `finansal-hesaplamalar`, `maaş-ve-vergi`, `sinav-hesaplamalari` için ilk 25-30 URL çekirdek listesi çıkarmak
+- `zaman-hesaplama` ve legacy `zaman-hesaplamalari` ikiliğini temizleme planı yapmak
+- Kazanan sayfalarda title/CTR optimizasyonuna geçmek
 
 ## Search Console ve İndeksleme Notları
 
